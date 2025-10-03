@@ -7,7 +7,7 @@ class Patient(db.Model):
     __tablename__ = "patients"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
-    mr_number = db.Column(db.String(50), unique=True)
+    mr_number = db.Column(db.String(50), unique=True,nullable=False)
     dob = db.Column(db.Date)
     gender = db.Column(db.String(10))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Add Patient - SeniorMate{% endblock %}
+
+{% block breadcrumb %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="{{ url_for('patients.index') }}">Patients</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Add</li>
+  </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-primary text-white fw-semibold">Add Patient</div>
+    <div class="card-body">
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label">Full Name *</label>
+                <input type="text" name="name" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">MR# *</label>
+                <input type="text" name="mr_number" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Gender</label>
+                <select name="gender" class="form-select">
+                    <option value="">-- Select --</option>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                    <option value="O">Other</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Date of Birth</label>
+                <input type="date" name="dob" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-success">💾 Save</button>
+            <a href="{{ url_for('patients.index') }}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
