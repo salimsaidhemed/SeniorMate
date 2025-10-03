@@ -18,9 +18,7 @@ def create_app():
     from app import models
   
 
-    # Register blueprints
-    from app.routes import bp as routes_bp
-    app.register_blueprint(routes_bp)
+   
 
     # # Setup OIDC + Admin
     # from app.oidc import oidc
@@ -28,5 +26,9 @@ def create_app():
 
     from app.admin import init_admin
     init_admin(app)
+
+    from app.routes import blueprints
+    for bp in blueprints:
+        app.register_blueprint(bp)
 
     return app
