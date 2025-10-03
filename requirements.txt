@@ -1,0 +1,6 @@
+flask
+flask_sqlalchemy
+flask_migrate
+flask_admin
+flask-pyoidc
+python-dotenv
