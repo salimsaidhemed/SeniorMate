@@ -1,3 +1,3 @@
-from flask_pyoidc import OIDCAuthentication
+# from flask_pyoidc import OIDCAuthentication
 
-oidc = OIDCAuthentication()
+# oidc = OIDCAuthentication()
