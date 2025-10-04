@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Import Patients - SeniorMate{% endblock %}
+
+{% block breadcrumb %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="{{ url_for('patients.index') }}">Patients</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Import</li>
+  </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-primary text-white fw-semibold">Import Patients from CSV</div>
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label class="form-label">Upload CSV File</label>
+                <input type="file" name="file" accept=".csv" class="form-control" required>
+                <div class="form-text">CSV must include at least: <code>name, mr_number</code>. Optional: <code>gender, dob (YYYY-MM-DD)</code>.</div>
+            </div>
+            <button type="submit" class="btn btn-success">⬆️ Import</button>
+            <a href="{{ url_for('patients.index') }}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

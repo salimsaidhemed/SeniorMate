@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Edit Visit{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h3>Edit Visit for {{ visit.patient.name }}</h3>
+  <form method="post">
+    <div class="mb-3">
+      <label class="form-label">Visit Date</label>
+      <input type="date" name="visit_date" 
+       value="{{ visit.visit_date or date.today() }}" 
+       class="form-control">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Visit Type</label>
+      <input type="text" name="visit_type" value="{{ visit.visit_type }}" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Narrative</label>
+      <textarea name="narrative" rows="4" class="form-control">{{ visit.narrative }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Update</button>
+    <a href="{{ url_for('visits.list_visits', patient_id=visit.patient_id) }}" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}

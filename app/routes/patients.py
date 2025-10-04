@@ -1,7 +1,10 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash,send_file
 from app import db
 from app.models import Patient
 from datetime import datetime
+import csv
+import io
+
 
 patient_bp = Blueprint("patients", __name__, url_prefix="/patients")
 
@@ -9,12 +12,26 @@ patient_bp = Blueprint("patients", __name__, url_prefix="/patients")
 def index():
     page = request.args.get("page", 1, type=int)
     per_page = 10
-    pagination = Patient.query.paginate(page=page, per_page=per_page, error_out=False)
+    search = request.args.get("search", "", type=str)
+
+    query = Patient.query
+
+    if search:
+        query = query.filter(
+            (Patient.name.ilike(f"%{search}%")) |
+            (Patient.mr_number.ilike(f"%{search}%")) |
+            (Patient.gender.ilike(f"%{search}%"))
+        )
+
+    pagination = query.order_by(Patient.created_at.desc()).paginate(
+        page=page, per_page=per_page, error_out=False
+    )
 
     return render_template(
         "patients/index.html",
-        patients=pagination.items,
-        pagination=pagination
+        pagination=pagination,
+        patients=pagination.items,  # pass full pagination object
+        search=search
     )
 
 @patient_bp.route("/add", methods=["GET", "POST"])
@@ -90,3 +107,79 @@ def delete_patient(id):
     db.session.commit()
     flash("🗑️ Patient deleted successfully!", "success")
     return redirect(url_for("patients.index"))
+
+@patient_bp.route("/import", methods=["GET", "POST"])
+def import_patients():
+    if request.method == "POST":
+        file = request.files.get("file")
+        if not file or file.filename == "":
+            flash("Please upload a CSV file.", "danger")
+            return redirect(url_for("patients.import_patients"))
+
+        try:
+            stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
+            reader = csv.DictReader(stream)
+
+            required_fields = {"name", "mr_number"}
+            if not required_fields.issubset(reader.fieldnames):
+                flash("CSV must include 'name' and 'mr_number' columns.", "danger")
+                return redirect(url_for("patients.import_patients"))
+
+            added, skipped = 0, 0
+            for row in reader:
+                name = row.get("name")
+                mr_number = row.get("mr_number")
+                gender = row.get("gender")
+                dob = row.get("dob")
+
+                if not name or not mr_number:
+                    skipped += 1
+                    continue
+
+                # Ensure MR# is unique
+                if Patient.query.filter_by(mr_number=mr_number).first():
+                    skipped += 1
+                    continue
+
+                patient = Patient(
+                    name=name.strip(),
+                    mr_number=mr_number.strip(),
+                    gender=gender.strip() if gender else None,
+                    dob=datetime.strptime(dob, "%Y-%m-%d") if dob else None
+                )
+                db.session.add(patient)
+                added += 1
+
+            db.session.commit()
+            flash(f"✅ Import complete: {added} added, {skipped} skipped.", "success")
+        except Exception as e:
+            flash(f"❌ Import failed: {str(e)}", "danger")
+
+        return redirect(url_for("patients.index"))
+
+    return render_template("patients/import.html")
+
+@patient_bp.route("/export")
+def export_csv():
+    si = io.StringIO()
+    writer = csv.writer(si)
+
+    writer.writerow(["name", "mr_number", "gender", "dob", "created_at"])
+    for patient in Patient.query.all():
+        writer.writerow([
+            patient.name,
+            patient.mr_number,
+            patient.gender or "",
+            patient.dob or "",
+            patient.created_at.strftime("%Y-%m-%d %H:%M")
+        ])
+
+    output = io.BytesIO()
+    output.write(si.getvalue().encode("utf-8"))
+    output.seek(0)
+    return send_file(
+        output,
+        mimetype="text/csv",
+        as_attachment=True,
+        download_name="patients_export.csv"
+    )
