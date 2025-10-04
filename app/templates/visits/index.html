@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Visits for {{ patient.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('patients.index') }}">Patients</a></li>
+      <li class="breadcrumb-item active">Visits of {{ patient.name }}</li>
+    </ol>
+  </nav>
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Visits for {{ patient.name }}</h3>
+    <a href="{{ url_for('visits.add_visit', patient_id=patient.id) }}" class="btn btn-primary">Add Visit</a>
+  </div>
+
+  <table class="table table-hover">
+    <thead class="table-light">
+      <tr>
+        <th>Date</th>
+        <th>Type</th>
+        <th>Narrative</th>
+        <th class="text-end">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in visits %}
+      <tr>
+        <td>{{ v.visit_date }}</td>
+        <td>{{ v.visit_type }}</td>
+        <td>{{ v.narrative|truncate(50) }}</td>
+        <td class="text-end">
+          <a href="{{ url_for('visits.edit_visit', id=v.id) }}" class="btn btn-sm btn-warning">Edit</a>
+          <form method="post" action="{{ url_for('visits.delete_visit', id=v.id) }}" style="display:inline;" onsubmit="return confirm('Delete this visit?');">
+            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" class="text-center text-muted">No visits found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+

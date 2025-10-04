@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Add Visit{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h3>Add Visit for {{ patient.name }}</h3>
+  <form method="post">
+    <div class="mb-3">
+      <label class="form-label">Visit Date</label>
+      <input type="date" name="visit_date" 
+       value="{{ date.today().isoformat() }}" 
+       class="form-control">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Visit Type</label>
+      <select name="visit_type" class="form-select" required>
+        <option value="">-- Select --</option>
+        <option>Home Health Aide Note</option>
+        <option>Nurses Progress Note</option>
+        <option>General Checkup</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Narrative</label>
+      <textarea name="narrative" rows="4" class="form-control"></textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Save</button>
+    <a href="{{ url_for('visits.list_visits', patient_id=patient.id) }}" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}
+
