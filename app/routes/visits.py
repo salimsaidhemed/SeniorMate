@@ -53,3 +53,11 @@ def delete_visit(id):
     db.session.commit()
     flash("Visit deleted successfully", "info")
     return redirect(url_for("visits.list_visits", patient_id=patient_id))
+
+@bp.route("/patient/<int:patient_id>/details")
+def visit_details(patient_id):
+    """
+    Displays the master-detail view for a patient's visits and assessments.
+    """
+    patient = Patient.query.get_or_404(patient_id)
+    return render_template("visits/master_detail.html", patient=patient)

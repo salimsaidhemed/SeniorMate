@@ -8,13 +8,20 @@ import io
 
 patient_bp = Blueprint("patients", __name__, url_prefix="/patients")
 
+from sqlalchemy import func
+from app.models import Patient, Visit
+
 @patient_bp.route("/")
 def index():
     page = request.args.get("page", 1, type=int)
     per_page = 10
     search = request.args.get("search", "", type=str)
 
-    query = Patient.query
+    # Build base query
+    query = db.session.query(
+        Patient,
+        func.count(Visit.id).label("visit_count")
+    ).outerjoin(Visit).group_by(Patient.id)
 
     if search:
         query = query.filter(
@@ -27,12 +34,21 @@ def index():
         page=page, per_page=per_page, error_out=False
     )
 
+    # Adjust context to pass tuples (Patient, visit_count)
+    patients = [
+        {"data": patient, "visit_count": visit_count}
+        for patient, visit_count in pagination.items
+    ]
+
+    print(patients[0])
+
     return render_template(
         "patients/index.html",
         pagination=pagination,
-        patients=pagination.items,  # pass full pagination object
+        patients=patients,
         search=search
     )
+
 
 @patient_bp.route("/add", methods=["GET", "POST"])
 def add_patient():

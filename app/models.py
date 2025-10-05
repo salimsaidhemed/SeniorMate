@@ -22,6 +22,7 @@ class Visit(db.Model):
     visit_date = db.Column(db.Date, default=datetime.utcnow)
     visit_type = db.Column(db.String(120))   # e.g. "Home Health Aide Note"
     narrative = db.Column(db.Text)
+    created_by = db.Column(db.String(100))
 
     patient = db.relationship("Patient", back_populates="visits")
     vitals = db.relationship("VitalSigns", back_populates="visit", uselist=False)
@@ -68,6 +69,30 @@ class Assessment(db.Model):
     data = db.Column(db.JSON)             # flexible JSON for fields
 
     visit = db.relationship("Visit", back_populates="assessments")
+
+class VisitAssessment(db.Model):
+    __tablename__ = "visit_assessments"
+    id = db.Column(db.Integer, primary_key=True)
+    visit_id = db.Column(db.Integer, db.ForeignKey("visits.id"), nullable=False)
+    # aide_id = db.Column(db.Integer, db.ForeignKey("users.id"))  # Keycloak/Flask user
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    personal_care = db.Column(db.JSON)
+    nutrition = db.Column(db.JSON)
+    mental_status = db.Column(db.JSON)
+    elimination = db.Column(db.JSON)
+    activity = db.Column(db.JSON)
+    assistive_device = db.Column(db.JSON)
+    house_keeping = db.Column(db.JSON)
+
+    notes = db.Column(db.Text)
+    signature = db.Column(db.Text)  # base64
+    time_in = db.Column(db.String(20))
+    time_out = db.Column(db.String(20))
+
+    visit = db.relationship("Visit", backref="aide_assessments")
+
 
 class Signature(db.Model):
     __tablename__ = "signatures"

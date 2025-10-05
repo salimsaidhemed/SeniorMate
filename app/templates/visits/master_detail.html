@@ -1,0 +1,434 @@
+{% extends "base.html" %}
+{% block title %}Visits & Assessments{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h3>Visits for {{ patient.name }}</h3>
+
+   <!-- Toolbar -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a href="{{ url_for('patients.index') }}" class="btn btn-secondary">Back to Patients</a>
+    </div>
+
+  <div class="d-flex justify-content-between mb-3">
+    <button class="btn btn-success" id="btnAddVisit">+ Add Visit</button>
+  </div>
+
+  <div id="alertContainer"></div>
+
+  <!-- Visits Table -->
+  <table class="table table-hover" id="visitsTable">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Type</th>
+        <th>Narrative</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <hr>
+  <h4>Assessments</h4>
+  <div class="d-flex justify-content-between mb-3">
+    <button class="btn btn-primary" id="btnAddAssessment" disabled>+ Add Assessment</button>
+  </div>
+
+  <!-- Assessments Table -->
+  <table class="table table-striped" id="assessmentsTable">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Aide</th>
+        <th>Notes</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<!-- Modals -->
+<div class="modal fade" id="visitModal" tabindex="-1" aria-labelledby="visitModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="visitForm">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Visit</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Notification area -->
+          <div id="visitAlertContainer"></div>
+
+          <div class="mb-3">
+            <label>Date</label>
+            <input type="date" class="form-control" name="visit_date" required>
+          </div>
+          <div class="mb-3">
+            <label>Type</label>
+            <input type="text" class="form-control" name="visit_type" required>
+          </div>
+          <div class="mb-3">
+            <label>Narrative</label>
+            <textarea class="form-control" name="narrative"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-success">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Add Assessment Modal -->
+<div class="modal fade" id="assessmentModal" tabindex="-1" aria-labelledby="assessmentModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <form id="assessmentForm">
+        <div class="modal-header">
+          <h5 class="modal-title" id="assessmentModalLabel">Home Health Aide Assessment</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+          <!-- Notification area -->
+          <div id="assessmentAlertContainer"></div>
+
+          <div class="accordion" id="assessmentAccordion">
+
+            <!-- Personal Care -->
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePersonalCare" aria-expanded="true">
+                  Personal Care
+                </button>
+              </h2>
+              <div id="collapsePersonalCare" class="accordion-collapse collapse show" data-bs-parent="#assessmentAccordion">
+                <div class="accordion-body">
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="personal_care[bed_bath]"> Bed Bath</div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="personal_care[tub_bath]"> Tub Bath</div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="personal_care[chair_bath]"> Chair Bath</div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="personal_care[shower]"> Shower</div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="personal_care[sponge_bath]"> Sponge Bath</div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="personal_care[shampoo]"> Shampoo</div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="personal_care[groom_hair]"> Groom Hair</div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="personal_care[oral_care]"> Oral Care</div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="personal_care[nails]"> Nails (Do not cut toe nails)</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Nutrition -->
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNutrition">
+                  Nutrition
+                </button>
+              </h2>
+              <div id="collapseNutrition" class="accordion-collapse collapse" data-bs-parent="#assessmentAccordion">
+                <div class="accordion-body">
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="nutrition[appetite]"> Appetite</div>
+                  <div class="mb-2"><label>% Meal Eaten</label><input type="text" class="form-control" name="nutrition[meal_percent]" placeholder="%"></div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="nutrition[fluids]"> Fluids Adequate</div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="nutrition[prepare_meals]"> Prepare Meals</div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="nutrition[serve_meals]"> Serve Meals</div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="nutrition[feed_patient]"> Feed Patient</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mental Status -->
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMental">
+                  Mental Status
+                </button>
+              </h2>
+              <div id="collapseMental" class="accordion-collapse collapse" data-bs-parent="#assessmentAccordion">
+                <div class="accordion-body">
+                  {% for item in ['alert','lethargic','confused','disoriented','depressed','hostile','forgetful','tearful','cooperative','combative'] %}
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="mental_status[{{ item }}]">
+                      <label class="form-check-label text-capitalize">{{ item }}</label>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Elimination -->
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseElimination">
+                  Elimination
+                </button>
+              </h2>
+              <div id="collapseElimination" class="accordion-collapse collapse" data-bs-parent="#assessmentAccordion">
+                <div class="accordion-body">
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="elimination[check_bm]"> Check BM</div>
+                  <div class="mb-2"><label>Last Date</label><input type="date" class="form-control" name="elimination[bm_date]"></div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="elimination[voiding]"> Voiding</div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="elimination[incon_urine]"> Incontinent Urine</div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="elimination[incon_stool]"> Incontinent Stool</div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="elimination[empty_bag]"> Empty Drainage Bag</div>
+                  <div class="mb-2"><label>Amount</label><input type="text" class="form-control" name="elimination[drainage_amount]"></div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="elimination[catheter_care]"> Catheter Care</div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="elimination[condom_cath]"> Condom Catheter Care</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Activity & Assistive Devices -->
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseActivity">
+                  Activity & Assistive Devices
+                </button>
+              </h2>
+              <div id="collapseActivity" class="accordion-collapse collapse" data-bs-parent="#assessmentAccordion">
+                <div class="accordion-body">
+                  <label class="fw-bold">Activity</label>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="activity[bed_rest]"> Complete Bed Rest</div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="activity[bathroom_only]"> Bathroom Only</div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="activity[assist_ambulation]"> Assist Ambulation</div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="activity[passive_rom]"> Passive ROM</div>
+
+                  <label class="fw-bold mt-3">Assistive Devices</label>
+                  {% for device in ['wheelchair','walker','crutches','straight_cane','quad_cane','scooter'] %}
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="assistive_device[{{ device }}]">
+                      <label class="form-check-label text-capitalize">{{ device.replace('_',' ') }}</label>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Housekeeping -->
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHousekeeping">
+                  Housekeeping
+                </button>
+              </h2>
+              <div id="collapseHousekeeping" class="accordion-collapse collapse" data-bs-parent="#assessmentAccordion">
+                <div class="accordion-body">
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="housekeeping[light]"> Light Housekeeping</div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="housekeeping[laundry]"> Patient's Laundry</div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="housekeeping[shopping]"> Shopping</div>
+                  <div class="form-check"><input class="form-check-input" type="checkbox" name="housekeeping[dishes]"> Dishes</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="mt-3">
+            <label>Additional Notes / Comments</label>
+            <textarea class="form-control" name="notes" rows="3" placeholder="Document any observations or patient response..."></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save Assessment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<script>
+const patientId = {{ patient.id }};
+let selectedVisitId = null;
+
+// Bootstrap modals
+const visitModal = new bootstrap.Modal(document.getElementById("visitModal"));
+const assessmentModal = new bootstrap.Modal(document.getElementById("assessmentModal"));
+
+// Load visits
+async function loadVisits() {
+  const res = await fetch(`/api/visits/${patientId}`);
+  const visits = await res.json();
+  const tbody = document.querySelector("#visitsTable tbody");
+  tbody.innerHTML = "";
+  visits.forEach(v => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${v.visit_date}</td>
+      <td>${v.visit_type}</td>
+      <td>${v.narrative || ''}</td>
+      <td><button class="btn btn-link text-primary" onclick="selectVisit(${v.id})">View Assessments</button></td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+// Select visit and load assessments
+async function selectVisit(id) {
+  selectedVisitId = id;
+  document.querySelector("#btnAddAssessment").disabled = false;
+  const res = await fetch(`/api/visits/${id}/assessments`);
+  const assessments = await res.json();
+  const tbody = document.querySelector("#assessmentsTable tbody");
+  tbody.innerHTML = "";
+  assessments.forEach(a => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${a.created_at}</td>
+      <td>${a.aide_id}</td>
+      <td>${a.notes || ''}</td>
+      <td>
+      <a href="/assessments/${a.id}/report"
+         class="btn btn-sm btn-outline-primary">
+         View Report
+      </a>
+    </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+// Add Visit
+document.getElementById("btnAddVisit").addEventListener("click", () => {
+  document.getElementById("visitForm").reset();
+  visitModal.show();
+});
+
+
+
+// Add Visit
+document.querySelector("#visitForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(e.target).entries());
+  data.patient_id = patientId;
+
+  const res = await fetch("/api/visits/add", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+
+  const alertContainer = document.getElementById("visitAlertContainer");
+  alertContainer.innerHTML = "";
+
+  if (res.ok) {
+    const successAlert = `
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        ✅ Visit added successfully!
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>`;
+    alertContainer.innerHTML = successAlert;
+
+    e.target.reset();
+    loadVisits();
+  } else {
+    const errorAlert = `
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        ❌ Failed to add visit. Please try again.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>`;
+    alertContainer.innerHTML = errorAlert;
+
+  }
+});
+
+// Add Assessment
+document.getElementById("btnAddAssessment").addEventListener("click", () => {
+  document.getElementById("assessmentForm").reset();
+  assessmentModal.show();
+});
+
+// // Add Assessment
+// document.querySelector("#assessmentForm").addEventListener("submit", async (e) => {
+//   e.preventDefault();
+//   const data = Object.fromEntries(new FormData(e.target).entries());
+//   const res = await fetch(`/api/visits/${selectedVisitId}/assessments/add`, {
+//     method: "POST",
+//     headers: { "Content-Type": "application/json" },
+//     body: JSON.stringify(data)
+//   });
+//   if (res.ok) {
+//     bootstrap.Modal.getInstance(document.querySelector("#assessmentModal")).hide();
+//     selectVisit(selectedVisitId);
+//   }
+// });
+
+loadVisits()
+
+
+
+
+document.querySelector("#assessmentForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  
+  const form = e.target;
+  const alertContainer = document.getElementById("assessmentAlertContainer");
+  alertContainer.innerHTML = "";
+
+  // Helper: serialize grouped form data
+  const serializeGroup = (prefix) => {
+    const groupData = {};
+    form.querySelectorAll(`[name^='${prefix}[']`).forEach(input => {
+      const key = input.name.match(/\[(.*?)\]/)[1];
+      if (input.type === "checkbox") {
+        groupData[key] = input.checked ? "yes" : "no";
+      } else {
+        groupData[key] = input.value.trim();
+      }
+    });
+    return groupData;
+  };
+
+  const assessmentData = {
+    personal_care: serializeGroup("personal_care"),
+    nutrition: serializeGroup("nutrition"),
+    mental_status: serializeGroup("mental_status"),
+    elimination: serializeGroup("elimination"),
+    activity: serializeGroup("activity"),
+    assistive_device: serializeGroup("assistive_device"),
+    housekeeping: serializeGroup("housekeeping"),
+    notes: form.querySelector("[name='notes']").value.trim()
+  };
+
+  try {
+    const res = await fetch(`/api/visits/${selectedVisitId}/assessments/add`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(assessmentData)
+    });
+
+    if (res.ok) {
+      const successAlert = `
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          ✅ Assessment saved successfully!
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>`;
+      alertContainer.innerHTML = successAlert;
+      form.reset();
+      selectVisit(selectedVisitId);  // refresh assessment list
+    } else {
+      const errorAlert = `
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          ❌ Failed to save assessment. Please try again.
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>`;
+      alertContainer.innerHTML = errorAlert;
+    }
+  } catch (err) {
+    console.error("Error submitting assessment:", err);
+    alertContainer.innerHTML = `
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        ⚠️ Network error — could not reach server.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>`;
+  }
+});
+
+
+</script>
+{% endblock %}

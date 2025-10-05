@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+
+  <!-- Breadcrumb Navigation -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('patients.index') }}">Patients</a></li>
+      <li class="breadcrumb-item">
+      <a href="{{ url_for('visits.visit_details', patient_id=meta.patient_id) }}">
+        Visits Overview
+      </a>
+    </li>
+      <li class="breadcrumb-item active" aria-current="page">Assessment Report</li>
+    </ol>
+  </nav>
+
+  <!-- Header + Print -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Assessment Report</h3>
+    <div>
+      <button class="btn btn-outline-secondary me-2" onclick="window.print()">
+        <i class="bi bi-printer"></i> Print
+      </button>
+      
+    </div>
+  </div>
+
+  <!-- Patient and Visit Details -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">Patient Details</h5>
+      <table class="table table-sm mb-0">
+        <tr><th>Name</th><td>{{ meta.patient_name }}</td></tr>
+        <tr><th>MR Number</th><td>{{ meta.mr_number }}</td></tr>
+        <tr><th>Visit Date</th><td>{{ meta.visit_date }}</td></tr>
+        <tr><th>Visit Type</th><td>{{ meta.visit_type }}</td></tr>
+        {% if meta.narrative %}
+        <tr><th>Narrative</th><td>{{ meta.narrative }}</td></tr>
+        {% endif %}
+        <tr><th>Created</th><td>{{ meta.created_at }}</td></tr>
+        <tr><th>Updated</th><td>{{ meta.updated_at }}</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Notes -->
+  {% if meta.notes %}
+  <div class="alert alert-light border">
+    <strong>Notes:</strong> {{ meta.notes }}
+  </div>
+  {% endif %}
+
+  <hr>
+
+  <!-- Assessment Sections -->
+  {% for section, fields in sections.items() %}
+  <h5 class="mt-4">{{ section }}</h5>
+  <table class="table table-sm table-bordered">
+    <tbody>
+      {% for field in fields %}
+      <tr>
+        <th style="width: 40%">{{ field.key.replace('_',' ').title() }}</th>
+        <td>{{ field.value or '-' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endfor %}
+
+</div>
+
+<!-- Print Styling -->
+<style>
+@media print {
+  nav, .btn, .breadcrumb, .d-flex { display: none !important; }
+  body { background: white; }
+  .card { border: none; }
+}
+</style>
+{% endblock %}
