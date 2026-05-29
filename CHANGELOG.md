@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Added GitHub Actions CI checks for backend linting/tests, frontend builds, and Docker Compose image builds.
+- Added minimal backend pytest coverage for app creation and the `/api/health` endpoint.
 - Added a runnable Docker Compose local development stack for Flask, Vue/Vite, PostgreSQL, MinIO, and a future Keycloak profile.
 - Added a Flask backend app with environment-based configuration, SQLAlchemy, Flask-Migrate, PostgreSQL support, CORS, and `/api/health`.
 - Added a Vue/Vite dashboard that reads the backend API base URL from environment configuration.
