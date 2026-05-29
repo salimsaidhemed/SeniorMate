@@ -20,6 +20,15 @@ Validation and not-found responses include a clear message and, when applicable,
 }
 ```
 
+## Interactive API Documentation
+
+SeniorMate exposes browser-based Swagger documentation for local API testing:
+
+- Swagger UI: `http://localhost:5001/api/docs`
+- OpenAPI JSON: `http://localhost:5001/api/openapi.json`
+
+Start the local stack with Docker Compose, then open the Swagger UI in a browser to inspect and test the health and patient endpoints.
+
 ## Patient API
 
 The Patient API is available under `/api/patients`.

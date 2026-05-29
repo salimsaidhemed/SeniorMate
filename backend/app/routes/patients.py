@@ -1,9 +1,17 @@
 from datetime import date
 
+from flasgger import swag_from
 from flask import Blueprint, jsonify, request
 
 from app.extensions import db
 from app.models import Patient
+from app.swagger import (
+    patient_create_spec,
+    patient_delete_spec,
+    patient_get_spec,
+    patient_list_spec,
+    patient_update_spec,
+)
 
 
 patients_bp = Blueprint("patients", __name__, url_prefix="/api/patients")
@@ -74,6 +82,7 @@ def parse_patient_payload(payload, partial=False):
 
 
 @patients_bp.get("")
+@swag_from(patient_list_spec)
 def list_patients():
     patients = Patient.query.order_by(Patient.id.asc()).all()
 
@@ -84,6 +93,7 @@ def list_patients():
 
 
 @patients_bp.get("/<int:patient_id>")
+@swag_from(patient_get_spec)
 def get_patient(patient_id):
     patient = db.session.get(Patient, patient_id)
 
@@ -94,6 +104,7 @@ def get_patient(patient_id):
 
 
 @patients_bp.post("")
+@swag_from(patient_create_spec)
 def create_patient():
     data, errors = parse_patient_payload(request.get_json(silent=True))
 
@@ -108,6 +119,7 @@ def create_patient():
 
 
 @patients_bp.put("/<int:patient_id>")
+@swag_from(patient_update_spec)
 def update_patient(patient_id):
     patient = db.session.get(Patient, patient_id)
 
@@ -128,6 +140,7 @@ def update_patient(patient_id):
 
 
 @patients_bp.delete("/<int:patient_id>")
+@swag_from(patient_delete_spec)
 def delete_patient(patient_id):
     patient = db.session.get(Patient, patient_id)
 
