@@ -103,6 +103,14 @@ Docker Compose is the recommended way to run the local SeniorMate stack. It star
 
 Keycloak is included as an optional Compose profile for future authentication work. It is not required for local development yet.
 
+## CI Checks
+
+GitHub Actions runs basic checks on pull requests and pushes to `main`:
+
+- Backend CI installs Python dependencies, runs Ruff, and executes pytest.
+- Frontend CI installs Node dependencies from the lockfile and runs the Vite build.
+- Docker Build validates the Compose file and builds the backend and frontend images without pushing them.
+
 ## Development Workflow
 
 - Start new work from an up-to-date `main` branch.

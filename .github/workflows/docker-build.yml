@@ -2,33 +2,21 @@ name: Docker Build
 
 on:
   pull_request:
-    paths:
-      - "backend/Dockerfile"
-      - "frontend/Dockerfile"
-      - "docker-compose.yml"
-      - ".github/workflows/docker-build.yml"
   push:
     branches:
       - main
-    paths:
-      - "backend/Dockerfile"
-      - "frontend/Dockerfile"
-      - "docker-compose.yml"
-      - ".github/workflows/docker-build.yml"
 
 jobs:
   docker-validation:
-    name: Docker validation
+    name: Docker Compose build
     runs-on: ubuntu-latest
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Validate Docker scaffold
-        run: |
-          if [ -s docker-compose.yml ]; then
-            docker compose config
-          else
-            echo "docker-compose.yml is empty; Docker Compose validation skipped."
-          fi
+      - name: Validate Docker Compose configuration
+        run: docker compose config
+
+      - name: Build application images
+        run: docker compose build backend frontend

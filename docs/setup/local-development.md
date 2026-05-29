@@ -129,3 +129,13 @@ The main app remains usable without login for now.
 - Run the relevant frontend checks.
 - Run Docker validation when service definitions change.
 - Update `CHANGELOG.md` for notable changes.
+
+## CI Checks
+
+Pull requests and pushes to `main` run GitHub Actions checks for:
+
+- Backend linting and pytest coverage.
+- Frontend dependency installation and production build.
+- Docker Compose configuration and backend/frontend image builds.
+
+The workflows do not require private secrets and do not push Docker images.
