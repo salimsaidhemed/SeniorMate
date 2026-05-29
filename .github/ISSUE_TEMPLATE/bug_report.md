@@ -1,33 +1,34 @@
-<!-- Please fill out this template when reporting a bug. -->
+---
+name: Bug report
+about: Report a reproducible problem in SeniorMate
+labels: bug
+---
 
-## Bug Report
+## Summary
 
-**Summary**
-A brief description of the issue.
+What happened?
 
-**Steps to Reproduce**
-1. Step one.
-2. Step two.
-3. Step three.
+## Steps to Reproduce
 
-**Expected Behavior**
-Describe what you expected to happen.
+1. TODO
+2. TODO
+3. TODO
 
-**Actual Behavior**
-Describe what actually happened.
+## Expected Behavior
 
-**Environment**
-- Platform: (e.g. iOS, Android, Web)
-- App/Browser Version: 
-- OS Version: 
-- Device: 
+What should have happened?
 
-**Additional Information**
-- Screenshots, logs, or error messages:
-- Any other details:
+## Actual Behavior
 
-**Severity**
-- [ ] Critical
-- [ ] Major
-- [ ] Minor
-- [ ] Cosmetic
+What happened instead?
+
+## Environment
+
+- Area: Backend / Frontend / Docker / Documentation
+- Browser or client:
+- Operating system:
+- Relevant version or commit:
+
+## Additional Context
+
+Add logs, screenshots, error messages, or related links.

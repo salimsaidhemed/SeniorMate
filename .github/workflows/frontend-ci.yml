@@ -1,0 +1,36 @@
+name: Frontend CI
+
+on:
+  pull_request:
+    paths:
+      - "frontend/**"
+      - ".github/workflows/frontend-ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "frontend/**"
+      - ".github/workflows/frontend-ci.yml"
+
+jobs:
+  frontend-checks:
+    name: Frontend checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate frontend scaffold
+        run: |
+          if [ -s frontend/package.json ]; then
+            npm --prefix frontend install
+            npm --prefix frontend run build --if-present
+          else
+            echo "frontend/package.json is empty; npm checks skipped."
+          fi

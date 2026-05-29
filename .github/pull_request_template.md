@@ -1,19 +1,35 @@
-# Pull Request
+# Summary
 
-## Summary
-- What changed and why.
+- TODO
 
-## Changes
-- Describe the key changes in this PR.
+## Related Issue / Task
 
-## Related Issue
-- Link the issue, ticket, or story number.
+- TODO
 
-## Testing
-- Describe how this was tested.
+## Type of Change
+
+- [ ] Feature
+- [ ] Bug fix
+- [ ] Documentation
+- [ ] Chore / maintenance
+- [ ] Refactor
+
+## Testing Performed
+
+- TODO
+
+## Screenshots
+
+Add screenshots or screen recordings for UI changes. Write `N/A` if this PR has no UI impact.
 
 ## Checklist
-- [ ] Code builds successfully
-- [ ] Tests pass
-- [ ] Documentation updated if needed
-- [ ] No sensitive data or secrets included
+
+- [ ] Changelog updated
+- [ ] Documentation updated
+- [ ] Tests or manual validation completed
+- [ ] No secrets, credentials, or sensitive data included
+- [ ] PR is ready for maintainer review
+
+## Maintainer Merge Reminder
+
+Only the maintainer merges pull requests into `main`.
