@@ -1,6 +1,6 @@
 # Local Development
 
-SeniorMate is currently in early scaffold form. This guide defines the expected local development workflow as implementation fills in the backend, frontend, and supporting services.
+SeniorMate runs locally with Docker Compose. The default stack includes the Flask backend, Vue/Vite frontend, PostgreSQL, and MinIO. Keycloak is documented as an optional future authentication service and is not required for normal local development yet.
 
 ## Prerequisites
 
@@ -19,6 +19,49 @@ cp .env.example .env
 
 Do not commit `.env` or any file containing real secrets.
 
+The default values in `.env.example` are local-only placeholders. Replace them for your machine if ports conflict.
+
+## Docker Compose
+
+Start the local stack:
+
+```bash
+docker compose up --build
+```
+
+If your machine uses the legacy standalone Compose binary, run `docker-compose up --build` instead.
+
+Stop the stack:
+
+```bash
+docker compose down
+```
+
+Remove local named volumes when you need a clean database and object store:
+
+```bash
+docker compose down -v
+```
+
+## Local URLs
+
+- Frontend: `http://localhost:5173`
+- Backend health endpoint: `http://localhost:5001/api/health`
+- MinIO API: `http://localhost:9000`
+- MinIO console: `http://localhost:9001`
+- PostgreSQL host connection: `localhost:5432`
+
+Default local PostgreSQL values:
+
+- Database: `seniormate`
+- User: `seniormate`
+- Password: `change-me-local-only`
+
+Default local MinIO console values:
+
+- User: `local-access-key`
+- Password: `change-me-local-only`
+
 ## Backend Setup
 
 ```bash
@@ -28,7 +71,13 @@ source .venv/bin/activate
 pip install -r requirements.txt -r requirements-dev.txt
 ```
 
-When the Flask application is implemented, backend run and test commands should be documented here.
+Run the backend directly from the host when needed:
+
+```bash
+flask --app run:app run --debug
+```
+
+When running outside Docker, make sure `DATABASE_URL` points to a reachable PostgreSQL instance. Inside Compose, it uses the `postgres` service hostname.
 
 ## Frontend Setup
 
@@ -37,7 +86,13 @@ cd frontend
 npm install
 ```
 
-When the Vue application is implemented, frontend run, build, lint, and test commands should be documented here.
+Run the frontend directly from the host when needed:
+
+```bash
+npm run dev
+```
+
+Use `VITE_API_BASE_URL` to point the dashboard at the backend API. The default is `http://localhost:5001/api`.
 
 ## Docker Setup
 
@@ -45,7 +100,28 @@ When the Vue application is implemented, frontend run, build, lint, and test com
 docker compose up --build
 ```
 
-Use Docker Compose for local service dependencies such as PostgreSQL, Keycloak, and MinIO once those services are defined.
+Docker Compose uses named volumes for persistent local data:
+
+- `postgres_data`
+- `minio_data`
+- `frontend_node_modules`
+
+## Keycloak
+
+Authentication is not implemented yet. A Keycloak service placeholder is available behind the `auth` profile for future work:
+
+```bash
+docker compose --profile auth up keycloak
+```
+
+The main app remains usable without login for now.
+
+## Troubleshooting
+
+- If ports are already in use, adjust `BACKEND_PORT`, `FRONTEND_PORT`, `POSTGRES_PORT`, `MINIO_API_PORT`, or `MINIO_CONSOLE_PORT` in `.env`.
+- If the backend health endpoint reports `database: unavailable`, wait for PostgreSQL to finish starting or restart the backend container.
+- If frontend dependencies behave oddly, rebuild the frontend container with `docker compose build frontend`.
+- If local data needs to be reset, run `docker compose down -v`.
 
 ## Validation Before Pull Requests
 
