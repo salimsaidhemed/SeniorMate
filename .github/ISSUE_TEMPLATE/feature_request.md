@@ -1,27 +1,29 @@
 ---
 name: Feature request
-about: Suggest a new feature or enhancement for SeniorMate
+about: Suggest a new feature or improvement for SeniorMate
 labels: enhancement
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of the problem this feature would solve.
+## Summary
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+What should SeniorMate support?
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you considered.
+## Problem
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+What problem or workflow does this solve?
 
-**Impact**
-- [ ] Low
-- [ ] Medium
-- [ ] High
+## Proposed Solution
 
-**Priority**
-- [ ] Nice to have
-- [ ] Should have
-- [ ] Must have
+Describe the desired behavior.
+
+## Alternatives Considered
+
+List any simpler or different approaches.
+
+## Acceptance Criteria
+
+- TODO
+
+## Additional Context
+
+Add screenshots, examples, links, or notes.
