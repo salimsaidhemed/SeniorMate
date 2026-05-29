@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Prepared GitHub Actions workflows for the Node.js 24 runtime by updating action versions and enabling Node.js 24 compatibility testing.
 - Added GitHub Actions CI checks for backend linting/tests, frontend builds, and Docker Compose image builds.
 - Added minimal backend pytest coverage for app creation and the `/api/health` endpoint.
 - Added a runnable Docker Compose local development stack for Flask, Vue/Vite, PostgreSQL, MinIO, and a future Keycloak profile.
