@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Added a runnable Docker Compose local development stack for Flask, Vue/Vite, PostgreSQL, MinIO, and a future Keycloak profile.
+- Added a Flask backend app with environment-based configuration, SQLAlchemy, Flask-Migrate, PostgreSQL support, CORS, and `/api/health`.
+- Added a Vue/Vite dashboard that reads the backend API base URL from environment configuration.
 - Added repository standardisation documentation for local development, project structure, technology stack, and contribution workflow.
 - Added practical issue templates for bug reports and feature requests.
 - Added `docs/roadmap.md` to capture near-term product and engineering direction.

@@ -47,7 +47,7 @@ SeniorMate/
 
 ## Local Development
 
-The repository is currently a scaffold. Use these steps as the standard local setup flow as backend, frontend, and Docker services are implemented.
+Docker Compose is the recommended way to run the local SeniorMate stack. It starts the Flask backend, Vue/Vite frontend, PostgreSQL, and MinIO with safe local defaults from `.env.example`.
 
 ### Prerequisites
 
@@ -87,12 +87,21 @@ The repository is currently a scaffold. Use these steps as the standard local se
    npm install
    ```
 
-5. Start services when Docker Compose services are populated.
+5. Start the local stack.
 
    ```bash
    cd ..
    docker compose up --build
    ```
+
+6. Open the local services.
+
+   - Frontend: `http://localhost:5173`
+   - Backend health: `http://localhost:5001/api/health`
+   - MinIO console: `http://localhost:9001`
+   - PostgreSQL: `localhost:5432`
+
+Keycloak is included as an optional Compose profile for future authentication work. It is not required for local development yet.
 
 ## Development Workflow
 
