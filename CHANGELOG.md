@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Added Swagger/OpenAPI documentation with browser-based API testing for health and patient endpoints.
 - Added the Patient Management API with database model, migration, CRUD endpoints, validation, tests, and API documentation.
 - Prepared GitHub Actions workflows for the Node.js 24 runtime by updating action versions and enabling Node.js 24 compatibility testing.
 - Added GitHub Actions CI checks for backend linting/tests, frontend builds, and Docker Compose image builds.
