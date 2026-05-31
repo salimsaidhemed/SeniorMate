@@ -3,6 +3,7 @@ import { ref } from "vue";
 const navItems = [
   { title: "Dashboard", icon: "mdi-view-dashboard-outline", to: "/" },
   { title: "Patients", icon: "mdi-account-heart-outline", to: "/patients" },
+  { title: "Visits", icon: "mdi-calendar-clock-outline", to: "/visits" },
 ];
 
 export default {
