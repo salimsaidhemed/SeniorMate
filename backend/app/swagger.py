@@ -164,6 +164,92 @@ aide_note_request_properties = {
     if key not in {"id", "created_at", "updated_at"}
 }
 
+clinical_section_schema = {
+    "type": "object",
+    "nullable": True,
+    "additionalProperties": True,
+    "example": {"findings": ["within normal limits"], "comments": "Stable"},
+}
+
+nurse_note_properties = {
+    "id": {"type": "integer", "example": 1},
+    "patient_id": {"type": "integer", "example": 1},
+    "visit_id": {"type": "integer", "example": 1},
+    "diagnosis": {"type": "string", "nullable": True, "example": "Hypertension"},
+    "living_arrangements": clinical_section_schema,
+    "visit_type": clinical_section_schema,
+    "vital_signs": clinical_section_schema,
+    "diet": clinical_section_schema,
+    "pain_assessment": clinical_section_schema,
+    "sensory": clinical_section_schema,
+    "neuro": clinical_section_schema,
+    "respiratory": clinical_section_schema,
+    "cardiac": clinical_section_schema,
+    "peripheral_circulation": clinical_section_schema,
+    "genitourinary": clinical_section_schema,
+    "gastrointestinal": clinical_section_schema,
+    "endocrine": clinical_section_schema,
+    "skin_integrity": clinical_section_schema,
+    "wound_evaluation": clinical_section_schema,
+    "mental_status": clinical_section_schema,
+    "functional_status": clinical_section_schema,
+    "homebound_status": clinical_section_schema,
+    "skilled_nursing": {
+        "type": "string",
+        "nullable": True,
+        "example": "Medication reconciliation completed.",
+    },
+    "response_to_intervention": {
+        "type": "string",
+        "nullable": True,
+        "example": "Patient verbalized improvement after education.",
+    },
+    "patient_caregiver_understanding": clinical_section_schema,
+    "md_contact": clinical_section_schema,
+    "discharge_planning": {
+        "type": "string",
+        "nullable": True,
+        "example": "Continue current plan of care.",
+    },
+    "patient_feedback": {
+        "type": "string",
+        "nullable": True,
+        "example": "Patient reports feeling safer at home.",
+    },
+    "narrative": {
+        "type": "string",
+        "nullable": True,
+        "example": "Skilled nursing visit completed without incident.",
+    },
+    "signature_data": {
+        "type": "string",
+        "nullable": True,
+        "example": "data:image/png;base64,...",
+    },
+    "signature_date": {
+        "type": "string",
+        "format": "date",
+        "nullable": True,
+        "example": "2026-06-01",
+    },
+    "created_at": {
+        "type": "string",
+        "format": "date-time",
+        "example": "2026-05-31T10:00:00+00:00",
+    },
+    "updated_at": {
+        "type": "string",
+        "format": "date-time",
+        "example": "2026-05-31T10:00:00+00:00",
+    },
+}
+
+nurse_note_request_properties = {
+    key: value
+    for key, value in nurse_note_properties.items()
+    if key not in {"id", "created_at", "updated_at"}
+}
+
 swagger_config = {
     "headers": [],
     "specs": [
@@ -229,6 +315,19 @@ swagger_template = {
         "AideNoteUpdate": {
             "type": "object",
             "properties": aide_note_request_properties,
+        },
+        "NurseNote": {
+            "type": "object",
+            "properties": nurse_note_properties,
+        },
+        "NurseNoteCreate": {
+            "type": "object",
+            "required": ["patient_id", "visit_id"],
+            "properties": nurse_note_request_properties,
+        },
+        "NurseNoteUpdate": {
+            "type": "object",
+            "properties": nurse_note_request_properties,
         },
         "ErrorResponse": {
             "type": "object",
@@ -310,6 +409,29 @@ swagger_template = {
                 "message": {
                     "type": "string",
                     "example": "Aide notes retrieved successfully",
+                },
+            },
+        },
+        "NurseNoteResponse": {
+            "type": "object",
+            "properties": {
+                "data": {"$ref": "#/definitions/NurseNote"},
+                "message": {
+                    "type": "string",
+                    "example": "Nurse note retrieved successfully",
+                },
+            },
+        },
+        "NurseNoteListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {"$ref": "#/definitions/NurseNote"},
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Nurse notes retrieved successfully",
                 },
             },
         },
@@ -760,6 +882,165 @@ visit_aide_note_get_spec = {
         },
         404: {
             "description": "Visit or aide note not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+nurse_note_list_spec = {
+    "tags": ["Nurse Notes"],
+    "summary": "List nurse notes",
+    "responses": {
+        200: {
+            "description": "Nurse notes retrieved successfully.",
+            "schema": {"$ref": "#/definitions/NurseNoteListResponse"},
+        }
+    },
+}
+
+nurse_note_get_spec = {
+    "tags": ["Nurse Notes"],
+    "summary": "Retrieve a nurse note",
+    "parameters": [
+        {
+            "name": "nurse_note_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        }
+    ],
+    "responses": {
+        200: {
+            "description": "Nurse note retrieved successfully.",
+            "schema": {"$ref": "#/definitions/NurseNoteResponse"},
+        },
+        404: {
+            "description": "Nurse note not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+nurse_note_create_spec = {
+    "tags": ["Nurse Notes"],
+    "summary": "Create a nurse note",
+    "parameters": [
+        {
+            "name": "body",
+            "in": "body",
+            "required": True,
+            "schema": {"$ref": "#/definitions/NurseNoteCreate"},
+        }
+    ],
+    "responses": {
+        201: {
+            "description": "Nurse note created successfully.",
+            "schema": {"$ref": "#/definitions/NurseNoteResponse"},
+        },
+        400: {
+            "description": "Invalid nurse note data.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+nurse_note_update_spec = {
+    "tags": ["Nurse Notes"],
+    "summary": "Update a nurse note",
+    "parameters": [
+        {
+            "name": "nurse_note_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        },
+        {
+            "name": "body",
+            "in": "body",
+            "required": True,
+            "schema": {"$ref": "#/definitions/NurseNoteUpdate"},
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "Nurse note updated successfully.",
+            "schema": {"$ref": "#/definitions/NurseNoteResponse"},
+        },
+        400: {
+            "description": "Invalid nurse note data.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+        404: {
+            "description": "Nurse note not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+nurse_note_delete_spec = {
+    "tags": ["Nurse Notes"],
+    "summary": "Delete a nurse note",
+    "parameters": [
+        {
+            "name": "nurse_note_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        }
+    ],
+    "responses": {
+        200: {
+            "description": "Nurse note deleted successfully.",
+            "schema": {"$ref": "#/definitions/DeleteSuccessResponse"},
+        },
+        404: {
+            "description": "Nurse note not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+patient_nurse_notes_list_spec = {
+    "tags": ["Nurse Notes"],
+    "summary": "List nurse notes for a patient",
+    "parameters": [
+        {
+            "name": "patient_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        }
+    ],
+    "responses": {
+        200: {
+            "description": "Patient nurse notes retrieved successfully.",
+            "schema": {"$ref": "#/definitions/NurseNoteListResponse"},
+        },
+        404: {
+            "description": "Patient not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+visit_nurse_note_get_spec = {
+    "tags": ["Nurse Notes"],
+    "summary": "Retrieve the nurse note for a visit",
+    "parameters": [
+        {
+            "name": "visit_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        }
+    ],
+    "responses": {
+        200: {
+            "description": "Visit nurse note retrieved successfully.",
+            "schema": {"$ref": "#/definitions/NurseNoteResponse"},
+        },
+        404: {
+            "description": "Visit or nurse note not found.",
             "schema": {"$ref": "#/definitions/ErrorResponse"},
         },
     },
