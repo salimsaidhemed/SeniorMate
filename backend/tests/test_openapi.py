@@ -24,6 +24,10 @@ def test_openapi_json_includes_health_and_patient_endpoints(client):
     assert "/api/visits" in paths
     assert "/api/visits/{visit_id}" in paths
     assert "/api/patients/{patient_id}/visits" in paths
+    assert "/api/aide-notes" in paths
+    assert "/api/aide-notes/{aide_note_id}" in paths
+    assert "/api/patients/{patient_id}/aide-notes" in paths
+    assert "/api/visits/{visit_id}/aide-note" in paths
     assert "get" in paths["/api/health"]
     assert {"get", "post"} <= set(paths["/api/patients"].keys())
     assert {"get", "put", "delete"} <= set(
@@ -32,6 +36,12 @@ def test_openapi_json_includes_health_and_patient_endpoints(client):
     assert {"get", "post"} <= set(paths["/api/visits"].keys())
     assert {"get", "put", "delete"} <= set(paths["/api/visits/{visit_id}"].keys())
     assert "get" in paths["/api/patients/{patient_id}/visits"]
+    assert {"get", "post"} <= set(paths["/api/aide-notes"].keys())
+    assert {"get", "put", "delete"} <= set(
+        paths["/api/aide-notes/{aide_note_id}"].keys()
+    )
+    assert "get" in paths["/api/patients/{patient_id}/aide-notes"]
+    assert "get" in paths["/api/visits/{visit_id}/aide-note"]
 
 
 def test_openapi_json_includes_patient_schemas(client):
@@ -49,3 +59,8 @@ def test_openapi_json_includes_patient_schemas(client):
     assert "VisitUpdate" in definitions
     assert "VisitResponse" in definitions
     assert "VisitListResponse" in definitions
+    assert "AideNote" in definitions
+    assert "AideNoteCreate" in definitions
+    assert "AideNoteUpdate" in definitions
+    assert "AideNoteResponse" in definitions
+    assert "AideNoteListResponse" in definitions

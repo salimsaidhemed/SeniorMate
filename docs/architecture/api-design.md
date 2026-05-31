@@ -401,3 +401,333 @@ Example response:
   "message": "Visit deleted successfully"
 }
 ```
+
+## Aide Note API
+
+The Aide Note API records Home Health Aide visit documentation linked to both a patient and a visit. Checklist sections are stored as JSON for flexibility while the final form structure continues to evolve.
+
+### Aide Note Fields
+
+- `id`
+- `patient_id`
+- `visit_id`
+- `personal_care`
+- `nutrition`
+- `mental_status`
+- `elimination`
+- `activity`
+- `assistive_devices`
+- `housekeeping`
+- `additional_notes`
+- `aide_name`
+- `signature_data`
+- `signature_date`
+- `time_in`
+- `time_out`
+- `created_at`
+- `updated_at`
+
+`patient_id`, `visit_id`, and `aide_name` are required. `signature_date` is optional, but when provided it must use `YYYY-MM-DD`. The visit must exist and belong to the selected patient. A visit can have only one aide note.
+
+### List Aide Notes
+
+`GET /api/aide-notes`
+
+Example response:
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "patient_id": 1,
+      "visit_id": 1,
+      "personal_care": {
+        "completed": ["bath", "oral_care"]
+      },
+      "nutrition": {
+        "meal_percentage": 75,
+        "fluids_offered": true
+      },
+      "mental_status": {
+        "observed": ["alert", "oriented"]
+      },
+      "elimination": {
+        "voided": true
+      },
+      "activity": {
+        "ambulated": true
+      },
+      "assistive_devices": {
+        "walker": true
+      },
+      "housekeeping": {
+        "completed": ["laundry"]
+      },
+      "additional_notes": "Patient tolerated care well.",
+      "aide_name": "Alex Morgan",
+      "signature_data": "data:image/png;base64,...",
+      "signature_date": "2026-06-01",
+      "time_in": "09:00",
+      "time_out": "10:30",
+      "created_at": "2026-05-31T10:00:00+00:00",
+      "updated_at": "2026-05-31T10:00:00+00:00"
+    }
+  ],
+  "message": "Aide notes retrieved successfully"
+}
+```
+
+### List Aide Notes for a Patient
+
+`GET /api/patients/<patient_id>/aide-notes`
+
+Example response:
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "patient_id": 1,
+      "visit_id": 1,
+      "personal_care": {
+        "completed": ["bath", "oral_care"]
+      },
+      "nutrition": {
+        "meal_percentage": 75
+      },
+      "mental_status": null,
+      "elimination": null,
+      "activity": null,
+      "assistive_devices": null,
+      "housekeeping": null,
+      "additional_notes": "Patient tolerated care well.",
+      "aide_name": "Alex Morgan",
+      "signature_data": null,
+      "signature_date": "2026-06-01",
+      "time_in": "09:00",
+      "time_out": "10:30",
+      "created_at": "2026-05-31T10:00:00+00:00",
+      "updated_at": "2026-05-31T10:00:00+00:00"
+    }
+  ],
+  "message": "Patient aide notes retrieved successfully"
+}
+```
+
+### Retrieve an Aide Note
+
+`GET /api/aide-notes/<id>`
+
+Example response:
+
+```json
+{
+  "data": {
+    "id": 1,
+    "patient_id": 1,
+    "visit_id": 1,
+    "personal_care": {
+      "completed": ["bath", "oral_care"]
+    },
+    "nutrition": {
+      "meal_percentage": 75
+    },
+    "mental_status": null,
+    "elimination": null,
+    "activity": null,
+    "assistive_devices": null,
+    "housekeeping": null,
+    "additional_notes": "Patient tolerated care well.",
+    "aide_name": "Alex Morgan",
+    "signature_data": null,
+    "signature_date": "2026-06-01",
+    "time_in": "09:00",
+    "time_out": "10:30",
+    "created_at": "2026-05-31T10:00:00+00:00",
+    "updated_at": "2026-05-31T10:00:00+00:00"
+  },
+  "message": "Aide note retrieved successfully"
+}
+```
+
+### Retrieve an Aide Note for a Visit
+
+`GET /api/visits/<visit_id>/aide-note`
+
+Example response:
+
+```json
+{
+  "data": {
+    "id": 1,
+    "patient_id": 1,
+    "visit_id": 1,
+    "personal_care": {
+      "completed": ["bath", "oral_care"]
+    },
+    "nutrition": {
+      "meal_percentage": 75
+    },
+    "mental_status": null,
+    "elimination": null,
+    "activity": null,
+    "assistive_devices": null,
+    "housekeeping": null,
+    "additional_notes": "Patient tolerated care well.",
+    "aide_name": "Alex Morgan",
+    "signature_data": null,
+    "signature_date": "2026-06-01",
+    "time_in": "09:00",
+    "time_out": "10:30",
+    "created_at": "2026-05-31T10:00:00+00:00",
+    "updated_at": "2026-05-31T10:00:00+00:00"
+  },
+  "message": "Visit aide note retrieved successfully"
+}
+```
+
+### Create an Aide Note
+
+`POST /api/aide-notes`
+
+Example request:
+
+```json
+{
+  "patient_id": 1,
+  "visit_id": 1,
+  "personal_care": {
+    "completed": ["bath", "oral_care"]
+  },
+  "nutrition": {
+    "meal_percentage": 75,
+    "fluids_offered": true
+  },
+  "mental_status": {
+    "observed": ["alert", "oriented"]
+  },
+  "elimination": {
+    "voided": true
+  },
+  "activity": {
+    "ambulated": true
+  },
+  "assistive_devices": {
+    "walker": true
+  },
+  "housekeeping": {
+    "completed": ["laundry"]
+  },
+  "additional_notes": "Patient tolerated care well.",
+  "aide_name": "Alex Morgan",
+  "signature_data": "data:image/png;base64,...",
+  "signature_date": "2026-06-01",
+  "time_in": "09:00",
+  "time_out": "10:30"
+}
+```
+
+Example response:
+
+```json
+{
+  "data": {
+    "id": 1,
+    "patient_id": 1,
+    "visit_id": 1,
+    "personal_care": {
+      "completed": ["bath", "oral_care"]
+    },
+    "nutrition": {
+      "meal_percentage": 75,
+      "fluids_offered": true
+    },
+    "mental_status": {
+      "observed": ["alert", "oriented"]
+    },
+    "elimination": {
+      "voided": true
+    },
+    "activity": {
+      "ambulated": true
+    },
+    "assistive_devices": {
+      "walker": true
+    },
+    "housekeeping": {
+      "completed": ["laundry"]
+    },
+    "additional_notes": "Patient tolerated care well.",
+    "aide_name": "Alex Morgan",
+    "signature_data": "data:image/png;base64,...",
+    "signature_date": "2026-06-01",
+    "time_in": "09:00",
+    "time_out": "10:30",
+    "created_at": "2026-05-31T10:00:00+00:00",
+    "updated_at": "2026-05-31T10:00:00+00:00"
+  },
+  "message": "Aide note created successfully"
+}
+```
+
+### Update an Aide Note
+
+`PUT /api/aide-notes/<id>`
+
+Example request:
+
+```json
+{
+  "aide_name": "Taylor Reed",
+  "additional_notes": "Updated after supervisor review."
+}
+```
+
+Example response:
+
+```json
+{
+  "data": {
+    "id": 1,
+    "patient_id": 1,
+    "visit_id": 1,
+    "personal_care": {
+      "completed": ["bath", "oral_care"]
+    },
+    "nutrition": {
+      "meal_percentage": 75
+    },
+    "mental_status": null,
+    "elimination": null,
+    "activity": null,
+    "assistive_devices": null,
+    "housekeeping": null,
+    "additional_notes": "Updated after supervisor review.",
+    "aide_name": "Taylor Reed",
+    "signature_data": null,
+    "signature_date": "2026-06-01",
+    "time_in": "09:00",
+    "time_out": "10:30",
+    "created_at": "2026-05-31T10:00:00+00:00",
+    "updated_at": "2026-05-31T10:10:00+00:00"
+  },
+  "message": "Aide note updated successfully"
+}
+```
+
+### Delete an Aide Note
+
+`DELETE /api/aide-notes/<id>`
+
+Example response:
+
+```json
+{
+  "data": {
+    "id": 1
+  },
+  "message": "Aide note deleted successfully"
+}
+```

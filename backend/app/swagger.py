@@ -109,6 +109,61 @@ visit_request_properties = {
     if key not in {"id", "created_at", "updated_at"}
 }
 
+checklist_schema = {
+    "type": "object",
+    "nullable": True,
+    "additionalProperties": True,
+    "example": {"completed": ["bath", "oral_care"], "declined": []},
+}
+
+aide_note_properties = {
+    "id": {"type": "integer", "example": 1},
+    "patient_id": {"type": "integer", "example": 1},
+    "visit_id": {"type": "integer", "example": 1},
+    "personal_care": checklist_schema,
+    "nutrition": checklist_schema,
+    "mental_status": checklist_schema,
+    "elimination": checklist_schema,
+    "activity": checklist_schema,
+    "assistive_devices": checklist_schema,
+    "housekeeping": checklist_schema,
+    "additional_notes": {
+        "type": "string",
+        "nullable": True,
+        "example": "Patient tolerated care well.",
+    },
+    "aide_name": {"type": "string", "example": "Alex Morgan"},
+    "signature_data": {
+        "type": "string",
+        "nullable": True,
+        "example": "data:image/png;base64,...",
+    },
+    "signature_date": {
+        "type": "string",
+        "format": "date",
+        "nullable": True,
+        "example": "2026-06-01",
+    },
+    "time_in": {"type": "string", "nullable": True, "example": "09:00"},
+    "time_out": {"type": "string", "nullable": True, "example": "10:30"},
+    "created_at": {
+        "type": "string",
+        "format": "date-time",
+        "example": "2026-05-31T10:00:00+00:00",
+    },
+    "updated_at": {
+        "type": "string",
+        "format": "date-time",
+        "example": "2026-05-31T10:00:00+00:00",
+    },
+}
+
+aide_note_request_properties = {
+    key: value
+    for key, value in aide_note_properties.items()
+    if key not in {"id", "created_at", "updated_at"}
+}
+
 swagger_config = {
     "headers": [],
     "specs": [
@@ -161,6 +216,19 @@ swagger_template = {
         "VisitUpdate": {
             "type": "object",
             "properties": visit_request_properties,
+        },
+        "AideNote": {
+            "type": "object",
+            "properties": aide_note_properties,
+        },
+        "AideNoteCreate": {
+            "type": "object",
+            "required": ["patient_id", "visit_id", "aide_name"],
+            "properties": aide_note_request_properties,
+        },
+        "AideNoteUpdate": {
+            "type": "object",
+            "properties": aide_note_request_properties,
         },
         "ErrorResponse": {
             "type": "object",
@@ -219,6 +287,29 @@ swagger_template = {
                 "message": {
                     "type": "string",
                     "example": "Visits retrieved successfully",
+                },
+            },
+        },
+        "AideNoteResponse": {
+            "type": "object",
+            "properties": {
+                "data": {"$ref": "#/definitions/AideNote"},
+                "message": {
+                    "type": "string",
+                    "example": "Aide note retrieved successfully",
+                },
+            },
+        },
+        "AideNoteListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {"$ref": "#/definitions/AideNote"},
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Aide notes retrieved successfully",
                 },
             },
         },
@@ -510,6 +601,165 @@ patient_visits_list_spec = {
         },
         404: {
             "description": "Patient not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+aide_note_list_spec = {
+    "tags": ["Aide Notes"],
+    "summary": "List aide notes",
+    "responses": {
+        200: {
+            "description": "Aide notes retrieved successfully.",
+            "schema": {"$ref": "#/definitions/AideNoteListResponse"},
+        }
+    },
+}
+
+aide_note_get_spec = {
+    "tags": ["Aide Notes"],
+    "summary": "Retrieve an aide note",
+    "parameters": [
+        {
+            "name": "aide_note_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        }
+    ],
+    "responses": {
+        200: {
+            "description": "Aide note retrieved successfully.",
+            "schema": {"$ref": "#/definitions/AideNoteResponse"},
+        },
+        404: {
+            "description": "Aide note not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+aide_note_create_spec = {
+    "tags": ["Aide Notes"],
+    "summary": "Create an aide note",
+    "parameters": [
+        {
+            "name": "body",
+            "in": "body",
+            "required": True,
+            "schema": {"$ref": "#/definitions/AideNoteCreate"},
+        }
+    ],
+    "responses": {
+        201: {
+            "description": "Aide note created successfully.",
+            "schema": {"$ref": "#/definitions/AideNoteResponse"},
+        },
+        400: {
+            "description": "Invalid aide note data.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+aide_note_update_spec = {
+    "tags": ["Aide Notes"],
+    "summary": "Update an aide note",
+    "parameters": [
+        {
+            "name": "aide_note_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        },
+        {
+            "name": "body",
+            "in": "body",
+            "required": True,
+            "schema": {"$ref": "#/definitions/AideNoteUpdate"},
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "Aide note updated successfully.",
+            "schema": {"$ref": "#/definitions/AideNoteResponse"},
+        },
+        400: {
+            "description": "Invalid aide note data.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+        404: {
+            "description": "Aide note not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+aide_note_delete_spec = {
+    "tags": ["Aide Notes"],
+    "summary": "Delete an aide note",
+    "parameters": [
+        {
+            "name": "aide_note_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        }
+    ],
+    "responses": {
+        200: {
+            "description": "Aide note deleted successfully.",
+            "schema": {"$ref": "#/definitions/DeleteSuccessResponse"},
+        },
+        404: {
+            "description": "Aide note not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+patient_aide_notes_list_spec = {
+    "tags": ["Aide Notes"],
+    "summary": "List aide notes for a patient",
+    "parameters": [
+        {
+            "name": "patient_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        }
+    ],
+    "responses": {
+        200: {
+            "description": "Patient aide notes retrieved successfully.",
+            "schema": {"$ref": "#/definitions/AideNoteListResponse"},
+        },
+        404: {
+            "description": "Patient not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+visit_aide_note_get_spec = {
+    "tags": ["Aide Notes"],
+    "summary": "Retrieve the aide note for a visit",
+    "parameters": [
+        {
+            "name": "visit_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        }
+    ],
+    "responses": {
+        200: {
+            "description": "Visit aide note retrieved successfully.",
+            "schema": {"$ref": "#/definitions/AideNoteResponse"},
+        },
+        404: {
+            "description": "Visit or aide note not found.",
             "schema": {"$ref": "#/definitions/ErrorResponse"},
         },
     },
