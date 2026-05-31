@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Added the Home Health Aide Note API with patient/visit-linked records, JSON checklist storage, duplicate visit-note prevention, Swagger documentation, tests, and API documentation.
 - Added the Visits frontend with list, create, edit, detail, delete, API service workflows, and patient detail integration.
 - Added the Visits API with patient-linked visit records, migration, CRUD endpoints, Swagger documentation, tests, and API documentation.
 - Added the Patient Management frontend with list, create, edit, detail, delete, and API service workflows.
