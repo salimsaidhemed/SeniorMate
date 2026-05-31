@@ -731,3 +731,328 @@ Example response:
   "message": "Aide note deleted successfully"
 }
 ```
+
+## Nurse Note API
+
+The Nurse Note API records clinical nurses progress notes linked to both a patient and a visit. Large clinical assessment sections are stored as JSON for flexibility while the clinical form evolves.
+
+### Nurse Note Fields
+
+- `id`
+- `patient_id`
+- `visit_id`
+- `diagnosis`
+- `living_arrangements`
+- `visit_type`
+- `vital_signs`
+- `diet`
+- `pain_assessment`
+- `sensory`
+- `neuro`
+- `respiratory`
+- `cardiac`
+- `peripheral_circulation`
+- `genitourinary`
+- `gastrointestinal`
+- `endocrine`
+- `skin_integrity`
+- `wound_evaluation`
+- `mental_status`
+- `functional_status`
+- `homebound_status`
+- `skilled_nursing`
+- `response_to_intervention`
+- `patient_caregiver_understanding`
+- `md_contact`
+- `discharge_planning`
+- `patient_feedback`
+- `narrative`
+- `signature_data`
+- `signature_date`
+- `created_at`
+- `updated_at`
+
+`patient_id` and `visit_id` are required. The visit must exist and belong to the selected patient. A visit can have only one nurse note.
+
+### List Nurse Notes
+
+`GET /api/nurse-notes`
+
+Example response:
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "patient_id": 1,
+      "visit_id": 1,
+      "diagnosis": "Hypertension",
+      "living_arrangements": {
+        "status": "lives with caregiver"
+      },
+      "visit_type": {
+        "type": "routine skilled nursing"
+      },
+      "vital_signs": {
+        "blood_pressure": "120/80",
+        "pulse": 72
+      },
+      "diet": {
+        "ordered": "low sodium"
+      },
+      "pain_assessment": {
+        "pain_level": 2
+      },
+      "sensory": {
+        "vision": "glasses"
+      },
+      "neuro": {
+        "orientation": "oriented x3"
+      },
+      "respiratory": {
+        "lungs": "clear"
+      },
+      "cardiac": {
+        "rhythm": "regular"
+      },
+      "peripheral_circulation": {
+        "edema": "none"
+      },
+      "genitourinary": {
+        "voiding": "normal"
+      },
+      "gastrointestinal": {
+        "bowel_sounds": "present"
+      },
+      "endocrine": {
+        "blood_glucose": 110
+      },
+      "skin_integrity": {
+        "intact": true
+      },
+      "wound_evaluation": {
+        "wounds": []
+      },
+      "mental_status": {
+        "mood": "calm"
+      },
+      "functional_status": {
+        "ambulation": "walker"
+      },
+      "homebound_status": {
+        "reason": "requires assistance to leave home"
+      },
+      "skilled_nursing": "Medication reconciliation completed.",
+      "response_to_intervention": "Patient verbalized understanding.",
+      "patient_caregiver_understanding": {
+        "understood": true
+      },
+      "md_contact": {
+        "contacted": false
+      },
+      "discharge_planning": "Continue plan of care.",
+      "patient_feedback": "Patient reports feeling stable.",
+      "narrative": "Skilled nursing visit completed without incident.",
+      "signature_data": "data:image/png;base64,...",
+      "signature_date": "2026-06-01",
+      "created_at": "2026-05-31T10:00:00+00:00",
+      "updated_at": "2026-05-31T10:00:00+00:00"
+    }
+  ],
+  "message": "Nurse notes retrieved successfully"
+}
+```
+
+### List Nurse Notes for a Patient
+
+`GET /api/patients/<patient_id>/nurse-notes`
+
+Example response:
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "patient_id": 1,
+      "visit_id": 1,
+      "diagnosis": "Hypertension",
+      "vital_signs": {
+        "blood_pressure": "120/80"
+      },
+      "skilled_nursing": "Medication reconciliation completed.",
+      "narrative": "Skilled nursing visit completed without incident.",
+      "created_at": "2026-05-31T10:00:00+00:00",
+      "updated_at": "2026-05-31T10:00:00+00:00"
+    }
+  ],
+  "message": "Patient nurse notes retrieved successfully"
+}
+```
+
+### Retrieve a Nurse Note
+
+`GET /api/nurse-notes/<id>`
+
+Example response:
+
+```json
+{
+  "data": {
+    "id": 1,
+    "patient_id": 1,
+    "visit_id": 1,
+    "diagnosis": "Hypertension",
+    "vital_signs": {
+      "blood_pressure": "120/80",
+      "pulse": 72
+    },
+    "skilled_nursing": "Medication reconciliation completed.",
+    "narrative": "Skilled nursing visit completed without incident.",
+    "signature_date": "2026-06-01",
+    "created_at": "2026-05-31T10:00:00+00:00",
+    "updated_at": "2026-05-31T10:00:00+00:00"
+  },
+  "message": "Nurse note retrieved successfully"
+}
+```
+
+### Retrieve a Nurse Note for a Visit
+
+`GET /api/visits/<visit_id>/nurse-note`
+
+Example response:
+
+```json
+{
+  "data": {
+    "id": 1,
+    "patient_id": 1,
+    "visit_id": 1,
+    "diagnosis": "Hypertension",
+    "vital_signs": {
+      "blood_pressure": "120/80"
+    },
+    "narrative": "Skilled nursing visit completed without incident.",
+    "created_at": "2026-05-31T10:00:00+00:00",
+    "updated_at": "2026-05-31T10:00:00+00:00"
+  },
+  "message": "Visit nurse note retrieved successfully"
+}
+```
+
+### Create a Nurse Note
+
+`POST /api/nurse-notes`
+
+Example request:
+
+```json
+{
+  "patient_id": 1,
+  "visit_id": 1,
+  "diagnosis": "Hypertension",
+  "vital_signs": {
+    "blood_pressure": "120/80",
+    "pulse": 72
+  },
+  "pain_assessment": {
+    "pain_level": 2
+  },
+  "skilled_nursing": "Medication reconciliation completed.",
+  "response_to_intervention": "Patient verbalized understanding.",
+  "patient_caregiver_understanding": {
+    "understood": true
+  },
+  "md_contact": {
+    "contacted": false
+  },
+  "discharge_planning": "Continue plan of care.",
+  "patient_feedback": "Patient reports feeling stable.",
+  "narrative": "Skilled nursing visit completed without incident.",
+  "signature_data": "data:image/png;base64,...",
+  "signature_date": "2026-06-01"
+}
+```
+
+Example response:
+
+```json
+{
+  "data": {
+    "id": 1,
+    "patient_id": 1,
+    "visit_id": 1,
+    "diagnosis": "Hypertension",
+    "vital_signs": {
+      "blood_pressure": "120/80",
+      "pulse": 72
+    },
+    "pain_assessment": {
+      "pain_level": 2
+    },
+    "skilled_nursing": "Medication reconciliation completed.",
+    "response_to_intervention": "Patient verbalized understanding.",
+    "patient_caregiver_understanding": {
+      "understood": true
+    },
+    "md_contact": {
+      "contacted": false
+    },
+    "discharge_planning": "Continue plan of care.",
+    "patient_feedback": "Patient reports feeling stable.",
+    "narrative": "Skilled nursing visit completed without incident.",
+    "signature_data": "data:image/png;base64,...",
+    "signature_date": "2026-06-01",
+    "created_at": "2026-05-31T10:00:00+00:00",
+    "updated_at": "2026-05-31T10:00:00+00:00"
+  },
+  "message": "Nurse note created successfully"
+}
+```
+
+### Update a Nurse Note
+
+`PUT /api/nurse-notes/<id>`
+
+Example request:
+
+```json
+{
+  "diagnosis": "Hypertension and diabetes",
+  "narrative": "Updated after nursing review."
+}
+```
+
+Example response:
+
+```json
+{
+  "data": {
+    "id": 1,
+    "patient_id": 1,
+    "visit_id": 1,
+    "diagnosis": "Hypertension and diabetes",
+    "narrative": "Updated after nursing review.",
+    "created_at": "2026-05-31T10:00:00+00:00",
+    "updated_at": "2026-05-31T10:10:00+00:00"
+  },
+  "message": "Nurse note updated successfully"
+}
+```
+
+### Delete a Nurse Note
+
+`DELETE /api/nurse-notes/<id>`
+
+Example response:
+
+```json
+{
+  "data": {
+    "id": 1
+  },
+  "message": "Nurse note deleted successfully"
+}
+```
