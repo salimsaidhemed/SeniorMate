@@ -1,5 +1,6 @@
 import { computed, onMounted, ref } from "vue";
 
+import { getVisitAideNote } from "../services/aideNotes.js";
 import { listPatients } from "../services/patients.js";
 import { getVisit } from "../services/visits.js";
 
@@ -12,6 +13,7 @@ export default {
   },
   setup(props) {
     const visit = ref(null);
+    const aideNote = ref(null);
     const patients = ref([]);
     const loading = ref(true);
     const error = ref("");
@@ -38,6 +40,16 @@ export default {
         ]);
         visit.value = visitResponse.data;
         patients.value = patientResponse.data;
+
+        try {
+          const aideNoteResponse = await getVisitAideNote(props.id);
+          aideNote.value = aideNoteResponse.data;
+        } catch (err) {
+          if (err.message !== "Aide note not found") {
+            throw err;
+          }
+          aideNote.value = null;
+        }
       } catch (err) {
         error.value = err.message;
       } finally {
@@ -48,6 +60,7 @@ export default {
     onMounted(loadVisit);
 
     return {
+      aideNote,
       error,
       loading,
       patient,
@@ -77,11 +90,47 @@ export default {
             </v-chip>
           </v-col>
           <v-col cols="12" md="4" class="text-md-right">
+            <v-btn
+              v-if="!aideNote"
+              color="primary"
+              prepend-icon="mdi-clipboard-plus-outline"
+              :to="\`/aide-notes/new?visit_id=\${visit.id}\`"
+              class="mr-2"
+            >
+              Create Aide Note
+            </v-btn>
+            <v-btn
+              v-if="aideNote"
+              color="primary"
+              prepend-icon="mdi-clipboard-check-outline"
+              :to="\`/aide-notes/\${aideNote.id}\`"
+              class="mr-2"
+            >
+              View Aide Note
+            </v-btn>
+            <v-btn
+              v-if="aideNote"
+              color="primary"
+              variant="tonal"
+              prepend-icon="mdi-pencil-outline"
+              :to="\`/aide-notes/\${aideNote.id}/edit\`"
+              class="mr-2"
+            >
+              Edit Aide Note
+            </v-btn>
             <v-btn color="primary" prepend-icon="mdi-pencil-outline" :to="\`/visits/\${visit.id}/edit\`">
               Edit visit
             </v-btn>
           </v-col>
         </v-row>
+
+        <v-alert
+          :type="aideNote ? 'success' : 'info'"
+          variant="tonal"
+          class="mb-5"
+        >
+          {{ aideNote ? 'Aide note completed for this visit.' : 'No aide note has been created for this visit yet.' }}
+        </v-alert>
 
         <v-row>
           <v-col cols="12" md="6">
