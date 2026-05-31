@@ -1,6 +1,9 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import DashboardView from "./views/DashboardView.js";
+import AideNoteDetailView from "./views/AideNoteDetailView.js";
+import AideNoteFormView from "./views/AideNoteFormView.js";
+import AideNoteListView from "./views/AideNoteListView.js";
 import PatientDetailView from "./views/PatientDetailView.js";
 import PatientFormView from "./views/PatientFormView.js";
 import PatientListView from "./views/PatientListView.js";
@@ -58,6 +61,29 @@ const routes = [
     path: "/visits/:id/edit",
     name: "visit-edit",
     component: VisitFormView,
+    props: { mode: "edit" },
+  },
+  {
+    path: "/aide-notes",
+    name: "aide-notes",
+    component: AideNoteListView,
+  },
+  {
+    path: "/aide-notes/new",
+    name: "aide-note-create",
+    component: AideNoteFormView,
+    props: { mode: "create" },
+  },
+  {
+    path: "/aide-notes/:id",
+    name: "aide-note-detail",
+    component: AideNoteDetailView,
+    props: true,
+  },
+  {
+    path: "/aide-notes/:id/edit",
+    name: "aide-note-edit",
+    component: AideNoteFormView,
     props: { mode: "edit" },
   },
 ];

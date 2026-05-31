@@ -99,6 +99,7 @@ Docker Compose is the recommended way to run the local SeniorMate stack. It star
    - Frontend: `http://localhost:5173`
    - Patient management UI: `http://localhost:5173/patients`
    - Visits UI: `http://localhost:5173/visits`
+   - Aide Notes UI: `http://localhost:5173/aide-notes`
    - Backend health: `http://localhost:5001/api/health`
    - Swagger UI: `http://localhost:5001/api/docs`
    - OpenAPI JSON: `http://localhost:5001/api/openapi.json`
