@@ -21,11 +21,17 @@ def test_openapi_json_includes_health_and_patient_endpoints(client):
     assert "/api/health" in paths
     assert "/api/patients" in paths
     assert "/api/patients/{patient_id}" in paths
+    assert "/api/visits" in paths
+    assert "/api/visits/{visit_id}" in paths
+    assert "/api/patients/{patient_id}/visits" in paths
     assert "get" in paths["/api/health"]
     assert {"get", "post"} <= set(paths["/api/patients"].keys())
     assert {"get", "put", "delete"} <= set(
         paths["/api/patients/{patient_id}"].keys()
     )
+    assert {"get", "post"} <= set(paths["/api/visits"].keys())
+    assert {"get", "put", "delete"} <= set(paths["/api/visits/{visit_id}"].keys())
+    assert "get" in paths["/api/patients/{patient_id}/visits"]
 
 
 def test_openapi_json_includes_patient_schemas(client):
@@ -38,3 +44,8 @@ def test_openapi_json_includes_patient_schemas(client):
     assert "ErrorResponse" in definitions
     assert "PatientSuccessResponse" in definitions
     assert "PatientListSuccessResponse" in definitions
+    assert "Visit" in definitions
+    assert "VisitCreate" in definitions
+    assert "VisitUpdate" in definitions
+    assert "VisitResponse" in definitions
+    assert "VisitListResponse" in definitions

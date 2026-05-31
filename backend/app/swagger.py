@@ -55,6 +55,60 @@ patient_request_properties = {
     if key not in {"id", "created_at", "updated_at"}
 }
 
+visit_properties = {
+    "id": {"type": "integer", "example": 1},
+    "patient_id": {"type": "integer", "example": 1},
+    "visit_date": {
+        "type": "string",
+        "format": "date",
+        "example": "2026-06-01",
+    },
+    "visit_type": {"type": "string", "example": "Home care visit"},
+    "staff_name": {"type": "string", "nullable": True, "example": "Jordan Lee"},
+    "staff_role": {
+        "type": "string",
+        "nullable": True,
+        "enum": ["aide", "nurse"],
+        "example": "aide",
+    },
+    "time_in": {
+        "type": "string",
+        "nullable": True,
+        "example": "09:00",
+    },
+    "time_out": {
+        "type": "string",
+        "nullable": True,
+        "example": "10:30",
+    },
+    "notes": {
+        "type": "string",
+        "nullable": True,
+        "example": "Patient completed morning mobility exercises.",
+    },
+    "status": {
+        "type": "string",
+        "enum": ["scheduled", "completed", "cancelled"],
+        "example": "scheduled",
+    },
+    "created_at": {
+        "type": "string",
+        "format": "date-time",
+        "example": "2026-05-31T10:00:00+00:00",
+    },
+    "updated_at": {
+        "type": "string",
+        "format": "date-time",
+        "example": "2026-05-31T10:00:00+00:00",
+    },
+}
+
+visit_request_properties = {
+    key: value
+    for key, value in visit_properties.items()
+    if key not in {"id", "created_at", "updated_at"}
+}
+
 swagger_config = {
     "headers": [],
     "specs": [
@@ -95,6 +149,19 @@ swagger_template = {
             "type": "object",
             "properties": patient_request_properties,
         },
+        "Visit": {
+            "type": "object",
+            "properties": visit_properties,
+        },
+        "VisitCreate": {
+            "type": "object",
+            "required": ["patient_id", "visit_date", "visit_type"],
+            "properties": visit_request_properties,
+        },
+        "VisitUpdate": {
+            "type": "object",
+            "properties": visit_request_properties,
+        },
         "ErrorResponse": {
             "type": "object",
             "properties": {
@@ -129,6 +196,29 @@ swagger_template = {
                 "message": {
                     "type": "string",
                     "example": "Patients retrieved successfully",
+                },
+            },
+        },
+        "VisitResponse": {
+            "type": "object",
+            "properties": {
+                "data": {"$ref": "#/definitions/Visit"},
+                "message": {
+                    "type": "string",
+                    "example": "Visit retrieved successfully",
+                },
+            },
+        },
+        "VisitListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {"$ref": "#/definitions/Visit"},
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Visits retrieved successfully",
                 },
             },
         },
@@ -281,6 +371,142 @@ patient_delete_spec = {
         200: {
             "description": "Patient deleted successfully.",
             "schema": {"$ref": "#/definitions/DeleteSuccessResponse"},
+        },
+        404: {
+            "description": "Patient not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+visit_list_spec = {
+    "tags": ["Visits"],
+    "summary": "List visits",
+    "responses": {
+        200: {
+            "description": "Visits retrieved successfully.",
+            "schema": {"$ref": "#/definitions/VisitListResponse"},
+        }
+    },
+}
+
+visit_get_spec = {
+    "tags": ["Visits"],
+    "summary": "Retrieve a visit",
+    "parameters": [
+        {
+            "name": "visit_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        }
+    ],
+    "responses": {
+        200: {
+            "description": "Visit retrieved successfully.",
+            "schema": {"$ref": "#/definitions/VisitResponse"},
+        },
+        404: {
+            "description": "Visit not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+visit_create_spec = {
+    "tags": ["Visits"],
+    "summary": "Create a visit",
+    "parameters": [
+        {
+            "name": "body",
+            "in": "body",
+            "required": True,
+            "schema": {"$ref": "#/definitions/VisitCreate"},
+        }
+    ],
+    "responses": {
+        201: {
+            "description": "Visit created successfully.",
+            "schema": {"$ref": "#/definitions/VisitResponse"},
+        },
+        400: {
+            "description": "Invalid visit data.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+visit_update_spec = {
+    "tags": ["Visits"],
+    "summary": "Update a visit",
+    "parameters": [
+        {
+            "name": "visit_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        },
+        {
+            "name": "body",
+            "in": "body",
+            "required": True,
+            "schema": {"$ref": "#/definitions/VisitUpdate"},
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "Visit updated successfully.",
+            "schema": {"$ref": "#/definitions/VisitResponse"},
+        },
+        400: {
+            "description": "Invalid visit data.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+        404: {
+            "description": "Visit not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+visit_delete_spec = {
+    "tags": ["Visits"],
+    "summary": "Delete a visit",
+    "parameters": [
+        {
+            "name": "visit_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        }
+    ],
+    "responses": {
+        200: {
+            "description": "Visit deleted successfully.",
+            "schema": {"$ref": "#/definitions/DeleteSuccessResponse"},
+        },
+        404: {
+            "description": "Visit not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+patient_visits_list_spec = {
+    "tags": ["Visits"],
+    "summary": "List visits for a patient",
+    "parameters": [
+        {
+            "name": "patient_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        }
+    ],
+    "responses": {
+        200: {
+            "description": "Patient visits retrieved successfully.",
+            "schema": {"$ref": "#/definitions/VisitListResponse"},
         },
         404: {
             "description": "Patient not found.",

@@ -206,3 +206,198 @@ Example response:
   "message": "Patient deleted successfully"
 }
 ```
+
+## Visit API
+
+The Visit API records caregiver and nursing visits linked to patients.
+
+### Visit Fields
+
+- `id`
+- `patient_id`
+- `visit_date`
+- `visit_type`
+- `staff_name`
+- `staff_role`
+- `time_in`
+- `time_out`
+- `notes`
+- `status`
+- `created_at`
+- `updated_at`
+
+`patient_id`, `visit_date`, and `visit_type` are required. `visit_date` must use `YYYY-MM-DD`. `staff_role` currently supports `aide` and `nurse`. `status` defaults to `scheduled` and must be `scheduled`, `completed`, or `cancelled`.
+
+### List Visits
+
+`GET /api/visits`
+
+Example response:
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "patient_id": 1,
+      "visit_date": "2026-06-01",
+      "visit_type": "Home care visit",
+      "staff_name": "Jordan Lee",
+      "staff_role": "aide",
+      "time_in": "09:00",
+      "time_out": "10:30",
+      "notes": "Patient completed morning mobility exercises.",
+      "status": "scheduled",
+      "created_at": "2026-05-31T10:00:00+00:00",
+      "updated_at": "2026-05-31T10:00:00+00:00"
+    }
+  ],
+  "message": "Visits retrieved successfully"
+}
+```
+
+### List Visits for a Patient
+
+`GET /api/patients/<patient_id>/visits`
+
+Example response:
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "patient_id": 1,
+      "visit_date": "2026-06-01",
+      "visit_type": "Home care visit",
+      "staff_name": "Jordan Lee",
+      "staff_role": "aide",
+      "time_in": "09:00",
+      "time_out": "10:30",
+      "notes": "Patient completed morning mobility exercises.",
+      "status": "scheduled",
+      "created_at": "2026-05-31T10:00:00+00:00",
+      "updated_at": "2026-05-31T10:00:00+00:00"
+    }
+  ],
+  "message": "Patient visits retrieved successfully"
+}
+```
+
+### Retrieve a Visit
+
+`GET /api/visits/<id>`
+
+Example response:
+
+```json
+{
+  "data": {
+    "id": 1,
+    "patient_id": 1,
+    "visit_date": "2026-06-01",
+    "visit_type": "Home care visit",
+    "staff_name": "Jordan Lee",
+    "staff_role": "aide",
+    "time_in": "09:00",
+    "time_out": "10:30",
+    "notes": "Patient completed morning mobility exercises.",
+    "status": "scheduled",
+    "created_at": "2026-05-31T10:00:00+00:00",
+    "updated_at": "2026-05-31T10:00:00+00:00"
+  },
+  "message": "Visit retrieved successfully"
+}
+```
+
+### Create a Visit
+
+`POST /api/visits`
+
+Example request:
+
+```json
+{
+  "patient_id": 1,
+  "visit_date": "2026-06-01",
+  "visit_type": "Home care visit",
+  "staff_name": "Jordan Lee",
+  "staff_role": "aide",
+  "time_in": "09:00",
+  "time_out": "10:30",
+  "notes": "Patient completed morning mobility exercises."
+}
+```
+
+Example response:
+
+```json
+{
+  "data": {
+    "id": 1,
+    "patient_id": 1,
+    "visit_date": "2026-06-01",
+    "visit_type": "Home care visit",
+    "staff_name": "Jordan Lee",
+    "staff_role": "aide",
+    "time_in": "09:00",
+    "time_out": "10:30",
+    "notes": "Patient completed morning mobility exercises.",
+    "status": "scheduled",
+    "created_at": "2026-05-31T10:00:00+00:00",
+    "updated_at": "2026-05-31T10:00:00+00:00"
+  },
+  "message": "Visit created successfully"
+}
+```
+
+### Update a Visit
+
+`PUT /api/visits/<id>`
+
+Example request:
+
+```json
+{
+  "staff_role": "nurse",
+  "status": "completed",
+  "notes": "Vitals checked and medication reminder completed."
+}
+```
+
+Example response:
+
+```json
+{
+  "data": {
+    "id": 1,
+    "patient_id": 1,
+    "visit_date": "2026-06-01",
+    "visit_type": "Home care visit",
+    "staff_name": "Jordan Lee",
+    "staff_role": "nurse",
+    "time_in": "09:00",
+    "time_out": "10:30",
+    "notes": "Vitals checked and medication reminder completed.",
+    "status": "completed",
+    "created_at": "2026-05-31T10:00:00+00:00",
+    "updated_at": "2026-05-31T10:15:00+00:00"
+  },
+  "message": "Visit updated successfully"
+}
+```
+
+### Delete a Visit
+
+`DELETE /api/visits/<id>`
+
+Example response:
+
+```json
+{
+  "data": {
+    "id": 1
+  },
+  "message": "Visit deleted successfully"
+}
+```
