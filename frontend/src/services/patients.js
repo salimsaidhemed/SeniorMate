@@ -1,29 +1,4 @@
-import { apiBaseUrl } from "../config.js";
-
-async function parseResponse(response) {
-  const payload = await response.json().catch(() => ({}));
-
-  if (!response.ok) {
-    const message = payload.message || "The request could not be completed.";
-    const error = new Error(message);
-    error.payload = payload;
-    throw error;
-  }
-
-  return payload;
-}
-
-async function apiRequest(path, options = {}) {
-  const response = await fetch(`${apiBaseUrl}${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.headers || {}),
-    },
-    ...options,
-  });
-
-  return parseResponse(response);
-}
+import { apiRequest } from "./http.js";
 
 export async function listPatients() {
   return apiRequest("/patients");

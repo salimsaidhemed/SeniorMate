@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Added the Visits frontend with list, create, edit, detail, delete, API service workflows, and patient detail integration.
 - Added the Visits API with patient-linked visit records, migration, CRUD endpoints, Swagger documentation, tests, and API documentation.
 - Added the Patient Management frontend with list, create, edit, detail, delete, and API service workflows.
 - Added Swagger/OpenAPI documentation with browser-based API testing for health and patient endpoints.
