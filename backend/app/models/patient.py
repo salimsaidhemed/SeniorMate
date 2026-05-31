@@ -34,6 +34,11 @@ class Patient(db.Model):
         default=lambda: datetime.now(UTC),
         onupdate=lambda: datetime.now(UTC),
     )
+    visits = db.relationship(
+        "Visit",
+        back_populates="patient",
+        cascade="all, delete-orphan",
+    )
 
     def to_dict(self):
         return {
