@@ -736,6 +736,8 @@ Example response:
 
 The Nurse Note API records clinical nurses progress notes linked to both a patient and a visit. Large clinical assessment sections are stored as JSON for flexibility while the clinical form evolves.
 
+The frontend Nurse Notes UI is available at `http://localhost:5173/nurse-notes` during local development. Visit Detail pages show whether a Nurse Note exists for the visit and provide create, view, and edit actions. The UI groups clinical sections while sending the larger assessment areas as JSON payloads to the API.
+
 ### Nurse Note Fields
 
 - `id`

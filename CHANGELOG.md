@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Added the Nurses Progress Note frontend with visit detail integration, grouped clinical form, read-only detail view, edit workflow, and API service functions.
 - Added the Nurses Progress Note API with patient/visit-linked clinical records, JSON clinical section storage, duplicate visit-note prevention, Swagger documentation, tests, and API documentation.
 - Added the Home Health Aide Note frontend with visit detail integration, grouped checklist form, read-only detail view, edit workflow, and API service functions.
 - Added the Home Health Aide Note API with patient/visit-linked records, JSON checklist storage, duplicate visit-note prevention, Swagger documentation, tests, and API documentation.

@@ -1,6 +1,7 @@
 import { computed, onMounted, ref } from "vue";
 
 import { getVisitAideNote } from "../services/aideNotes.js";
+import { getVisitNurseNote } from "../services/nurseNotes.js";
 import { listPatients } from "../services/patients.js";
 import { getVisit } from "../services/visits.js";
 
@@ -14,6 +15,7 @@ export default {
   setup(props) {
     const visit = ref(null);
     const aideNote = ref(null);
+    const nurseNote = ref(null);
     const patients = ref([]);
     const loading = ref(true);
     const error = ref("");
@@ -50,6 +52,16 @@ export default {
           }
           aideNote.value = null;
         }
+
+        try {
+          const nurseNoteResponse = await getVisitNurseNote(props.id);
+          nurseNote.value = nurseNoteResponse.data;
+        } catch (err) {
+          if (err.message !== "Nurse note not found") {
+            throw err;
+          }
+          nurseNote.value = null;
+        }
       } catch (err) {
         error.value = err.message;
       } finally {
@@ -63,6 +75,7 @@ export default {
       aideNote,
       error,
       loading,
+      nurseNote,
       patient,
       patientName,
       visit,
@@ -89,22 +102,29 @@ export default {
               {{ visit.status }}
             </v-chip>
           </v-col>
-          <v-col cols="12" md="4" class="text-md-right">
+          <v-col cols="12" md="4">
+            <div class="d-flex flex-wrap justify-md-end ga-2">
             <v-btn
               v-if="!aideNote"
               color="primary"
               prepend-icon="mdi-clipboard-plus-outline"
               :to="\`/aide-notes/new?visit_id=\${visit.id}\`"
-              class="mr-2"
             >
               Create Aide Note
+            </v-btn>
+            <v-btn
+              v-if="!nurseNote"
+              color="secondary"
+              prepend-icon="mdi-clipboard-pulse-outline"
+              :to="\`/nurse-notes/new?visit_id=\${visit.id}\`"
+            >
+              Create Nurse Note
             </v-btn>
             <v-btn
               v-if="aideNote"
               color="primary"
               prepend-icon="mdi-clipboard-check-outline"
               :to="\`/aide-notes/\${aideNote.id}\`"
-              class="mr-2"
             >
               View Aide Note
             </v-btn>
@@ -114,13 +134,30 @@ export default {
               variant="tonal"
               prepend-icon="mdi-pencil-outline"
               :to="\`/aide-notes/\${aideNote.id}/edit\`"
-              class="mr-2"
             >
               Edit Aide Note
+            </v-btn>
+            <v-btn
+              v-if="nurseNote"
+              color="secondary"
+              prepend-icon="mdi-clipboard-pulse-outline"
+              :to="\`/nurse-notes/\${nurseNote.id}\`"
+            >
+              View Nurse Note
+            </v-btn>
+            <v-btn
+              v-if="nurseNote"
+              color="secondary"
+              variant="tonal"
+              prepend-icon="mdi-pencil-outline"
+              :to="\`/nurse-notes/\${nurseNote.id}/edit\`"
+            >
+              Edit Nurse Note
             </v-btn>
             <v-btn color="primary" prepend-icon="mdi-pencil-outline" :to="\`/visits/\${visit.id}/edit\`">
               Edit visit
             </v-btn>
+            </div>
           </v-col>
         </v-row>
 
@@ -130,6 +167,14 @@ export default {
           class="mb-5"
         >
           {{ aideNote ? 'Aide note completed for this visit.' : 'No aide note has been created for this visit yet.' }}
+        </v-alert>
+
+        <v-alert
+          :type="nurseNote ? 'success' : 'info'"
+          variant="tonal"
+          class="mb-5"
+        >
+          {{ nurseNote ? 'Nurse note completed for this visit.' : 'No nurse note has been created for this visit yet.' }}
         </v-alert>
 
         <v-row>
