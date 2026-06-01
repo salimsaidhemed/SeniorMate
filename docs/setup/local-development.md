@@ -46,6 +46,10 @@ docker compose down -v
 ## Local URLs
 
 - Frontend: `http://localhost:5173`
+- Patient management UI: `http://localhost:5173/patients`
+- Visits UI: `http://localhost:5173/visits`
+- Aide Notes UI: `http://localhost:5173/aide-notes`
+- Nurse Notes UI: `http://localhost:5173/nurse-notes`
 - Backend health endpoint: `http://localhost:5001/api/health`
 - MinIO API: `http://localhost:9000`
 - MinIO console: `http://localhost:9001`

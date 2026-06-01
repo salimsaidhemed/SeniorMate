@@ -7,6 +7,9 @@ import AideNoteListView from "./views/AideNoteListView.js";
 import PatientDetailView from "./views/PatientDetailView.js";
 import PatientFormView from "./views/PatientFormView.js";
 import PatientListView from "./views/PatientListView.js";
+import NurseNoteDetailView from "./views/NurseNoteDetailView.js";
+import NurseNoteFormView from "./views/NurseNoteFormView.js";
+import NurseNoteListView from "./views/NurseNoteListView.js";
 import VisitDetailView from "./views/VisitDetailView.js";
 import VisitFormView from "./views/VisitFormView.js";
 import VisitListView from "./views/VisitListView.js";
@@ -84,6 +87,29 @@ const routes = [
     path: "/aide-notes/:id/edit",
     name: "aide-note-edit",
     component: AideNoteFormView,
+    props: { mode: "edit" },
+  },
+  {
+    path: "/nurse-notes",
+    name: "nurse-notes",
+    component: NurseNoteListView,
+  },
+  {
+    path: "/nurse-notes/new",
+    name: "nurse-note-create",
+    component: NurseNoteFormView,
+    props: { mode: "create" },
+  },
+  {
+    path: "/nurse-notes/:id",
+    name: "nurse-note-detail",
+    component: NurseNoteDetailView,
+    props: true,
+  },
+  {
+    path: "/nurse-notes/:id/edit",
+    name: "nurse-note-edit",
+    component: NurseNoteFormView,
     props: { mode: "edit" },
   },
 ];

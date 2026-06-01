@@ -5,6 +5,7 @@ const navItems = [
   { title: "Patients", icon: "mdi-account-heart-outline", to: "/patients" },
   { title: "Visits", icon: "mdi-calendar-clock-outline", to: "/visits" },
   { title: "Aide Notes", icon: "mdi-clipboard-check-outline", to: "/aide-notes" },
+  { title: "Nurse Notes", icon: "mdi-clipboard-pulse-outline", to: "/nurse-notes" },
 ];
 
 export default {
