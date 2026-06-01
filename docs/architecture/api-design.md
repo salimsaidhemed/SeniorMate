@@ -29,6 +29,90 @@ SeniorMate exposes browser-based Swagger documentation for local API testing:
 
 Start the local stack with Docker Compose, then open the Swagger UI in a browser to inspect and test the health and patient endpoints.
 
+## Dashboard API
+
+The Dashboard API summarizes patient, visit, and care-note activity for the frontend dashboard.
+
+### Dashboard Fields
+
+- `total_patients`
+- `active_patients`
+- `inactive_patients`
+- `total_visits`
+- `visits_this_month`
+- `aide_notes_this_month`
+- `nurse_notes_this_month`
+- `patients_by_status`
+- `patients_by_gender`
+- `visits_by_type`
+- `visits_by_status`
+- `recent_visits`
+
+Grouped chart fields are returned as arrays of `{ "label": "...", "count": 1 }`. The frontend renders these groups with lightweight Vuetify progress bars instead of adding a charting dependency.
+
+### Retrieve Dashboard Stats
+
+`GET /api/dashboard/stats`
+
+Example response:
+
+```json
+{
+  "data": {
+    "total_patients": 2,
+    "active_patients": 1,
+    "inactive_patients": 1,
+    "total_visits": 4,
+    "visits_this_month": 3,
+    "aide_notes_this_month": 1,
+    "nurse_notes_this_month": 1,
+    "patients_by_status": [
+      {
+        "label": "active",
+        "count": 1
+      },
+      {
+        "label": "inactive",
+        "count": 1
+      }
+    ],
+    "patients_by_gender": [
+      {
+        "label": "female",
+        "count": 1
+      },
+      {
+        "label": "male",
+        "count": 1
+      }
+    ],
+    "visits_by_type": [
+      {
+        "label": "Skilled nursing visit",
+        "count": 2
+      }
+    ],
+    "visits_by_status": [
+      {
+        "label": "completed",
+        "count": 3
+      }
+    ],
+    "recent_visits": [
+      {
+        "id": 4,
+        "patient_name": "Maria Santos",
+        "visit_date": "2026-06-03",
+        "visit_type": "Skilled nursing visit",
+        "staff_role": "nurse",
+        "status": "completed"
+      }
+    ]
+  },
+  "message": "Dashboard stats retrieved successfully"
+}
+```
+
 ## Patient API
 
 The Patient API is available under `/api/patients`.

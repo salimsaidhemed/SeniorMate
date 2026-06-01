@@ -19,6 +19,7 @@ def test_openapi_json_includes_health_and_patient_endpoints(client):
     paths = response.get_json()["paths"]
 
     assert "/api/health" in paths
+    assert "/api/dashboard/stats" in paths
     assert "/api/patients" in paths
     assert "/api/patients/{patient_id}" in paths
     assert "/api/visits" in paths
@@ -33,6 +34,7 @@ def test_openapi_json_includes_health_and_patient_endpoints(client):
     assert "/api/patients/{patient_id}/nurse-notes" in paths
     assert "/api/visits/{visit_id}/nurse-note" in paths
     assert "get" in paths["/api/health"]
+    assert "get" in paths["/api/dashboard/stats"]
     assert {"get", "post"} <= set(paths["/api/patients"].keys())
     assert {"get", "put", "delete"} <= set(
         paths["/api/patients/{patient_id}"].keys()
@@ -79,3 +81,7 @@ def test_openapi_json_includes_patient_schemas(client):
     assert "NurseNoteUpdate" in definitions
     assert "NurseNoteResponse" in definitions
     assert "NurseNoteListResponse" in definitions
+    assert "DashboardGroupItem" in definitions
+    assert "DashboardRecentVisit" in definitions
+    assert "DashboardStats" in definitions
+    assert "DashboardStatsResponse" in definitions
