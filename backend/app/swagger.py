@@ -250,6 +250,54 @@ nurse_note_request_properties = {
     if key not in {"id", "created_at", "updated_at"}
 }
 
+dashboard_group_item_properties = {
+    "label": {"type": "string", "example": "active"},
+    "count": {"type": "integer", "example": 4},
+}
+
+dashboard_recent_visit_properties = {
+    "id": {"type": "integer", "example": 1},
+    "patient_name": {"type": "string", "nullable": True, "example": "Maria Santos"},
+    "visit_date": {"type": "string", "format": "date", "example": "2026-06-01"},
+    "visit_type": {"type": "string", "example": "Skilled nursing visit"},
+    "staff_role": {
+        "type": "string",
+        "nullable": True,
+        "example": "nurse",
+    },
+    "status": {"type": "string", "example": "completed"},
+}
+
+dashboard_stats_properties = {
+    "total_patients": {"type": "integer", "example": 12},
+    "active_patients": {"type": "integer", "example": 10},
+    "inactive_patients": {"type": "integer", "example": 2},
+    "total_visits": {"type": "integer", "example": 24},
+    "visits_this_month": {"type": "integer", "example": 8},
+    "aide_notes_this_month": {"type": "integer", "example": 5},
+    "nurse_notes_this_month": {"type": "integer", "example": 3},
+    "patients_by_status": {
+        "type": "array",
+        "items": {"$ref": "#/definitions/DashboardGroupItem"},
+    },
+    "patients_by_gender": {
+        "type": "array",
+        "items": {"$ref": "#/definitions/DashboardGroupItem"},
+    },
+    "visits_by_type": {
+        "type": "array",
+        "items": {"$ref": "#/definitions/DashboardGroupItem"},
+    },
+    "visits_by_status": {
+        "type": "array",
+        "items": {"$ref": "#/definitions/DashboardGroupItem"},
+    },
+    "recent_visits": {
+        "type": "array",
+        "items": {"$ref": "#/definitions/DashboardRecentVisit"},
+    },
+}
+
 swagger_config = {
     "headers": [],
     "specs": [
@@ -328,6 +376,28 @@ swagger_template = {
         "NurseNoteUpdate": {
             "type": "object",
             "properties": nurse_note_request_properties,
+        },
+        "DashboardGroupItem": {
+            "type": "object",
+            "properties": dashboard_group_item_properties,
+        },
+        "DashboardRecentVisit": {
+            "type": "object",
+            "properties": dashboard_recent_visit_properties,
+        },
+        "DashboardStats": {
+            "type": "object",
+            "properties": dashboard_stats_properties,
+        },
+        "DashboardStatsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {"$ref": "#/definitions/DashboardStats"},
+                "message": {
+                    "type": "string",
+                    "example": "Dashboard stats retrieved successfully",
+                },
+            },
         },
         "ErrorResponse": {
             "type": "object",
@@ -476,6 +546,17 @@ health_spec = {
         503: {
             "description": "Backend is reachable but a dependency is unavailable.",
         },
+    },
+}
+
+dashboard_stats_spec = {
+    "tags": ["Dashboard"],
+    "summary": "Retrieve dashboard statistics",
+    "responses": {
+        200: {
+            "description": "Dashboard stats retrieved successfully.",
+            "schema": {"$ref": "#/definitions/DashboardStatsResponse"},
+        }
     },
 }
 
