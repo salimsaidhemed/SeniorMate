@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Added search, filtering, and pagination for patient, visit, aide note, and nurse note list workflows.
 - Added the dashboard API and frontend dashboard with patient, visit, care-note, chart, and recent visit activity summaries.
 - Added the Nurses Progress Note frontend with visit detail integration, grouped clinical form, read-only detail view, edit workflow, and API service functions.
 - Added the Nurses Progress Note API with patient/visit-linked clinical records, JSON clinical section storage, duplicate visit-note prevention, Swagger documentation, tests, and API documentation.

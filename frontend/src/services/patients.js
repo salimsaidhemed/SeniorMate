@@ -1,7 +1,8 @@
 import { apiRequest } from "./http.js";
+import { withQuery } from "./query.js";
 
-export async function listPatients() {
-  return apiRequest("/patients");
+export async function listPatients(params = {}) {
+  return apiRequest(withQuery("/patients", params));
 }
 
 export async function getPatient(id) {

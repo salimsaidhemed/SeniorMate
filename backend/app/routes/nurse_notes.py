@@ -5,6 +5,12 @@ from flask import Blueprint, jsonify, request
 
 from app.extensions import db
 from app.models import NurseNote, Patient, Visit
+from app.routes.query_utils import (
+    end_of_day,
+    paginated_response,
+    parse_iso_date,
+    start_of_day,
+)
 from app.swagger import (
     nurse_note_create_spec,
     nurse_note_delete_spec,
@@ -147,10 +153,31 @@ def parse_nurse_note_payload(payload, partial=False, current_note=None):
 @nurse_notes_bp.get("/nurse-notes")
 @swag_from(nurse_note_list_spec)
 def list_nurse_notes():
-    nurse_notes = NurseNote.query.order_by(NurseNote.id.desc()).all()
+    query = NurseNote.query
+    patient_id = request.args.get("patient_id", "").strip()
+    visit_id = request.args.get("visit_id", "").strip()
+    diagnosis = request.args.get("diagnosis", "").strip()
+    start_date = parse_iso_date(request.args.get("start_date"))
+    end_date = parse_iso_date(request.args.get("end_date"))
 
-    return success_response(
-        [nurse_note.to_dict() for nurse_note in nurse_notes],
+    if patient_id:
+        query = query.filter(NurseNote.patient_id == int(patient_id))
+
+    if visit_id:
+        query = query.filter(NurseNote.visit_id == int(visit_id))
+
+    if diagnosis:
+        query = query.filter(NurseNote.diagnosis.ilike(f"%{diagnosis}%"))
+
+    if start_date:
+        query = query.filter(NurseNote.created_at >= start_of_day(start_date))
+
+    if end_date:
+        query = query.filter(NurseNote.created_at <= end_of_day(end_date))
+
+    return paginated_response(
+        query.order_by(NurseNote.id.desc()),
+        lambda nurse_note: nurse_note.to_dict(),
         "Nurse notes retrieved successfully",
     )
 

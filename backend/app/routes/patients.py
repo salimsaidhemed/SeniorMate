@@ -2,9 +2,11 @@ from datetime import date
 
 from flasgger import swag_from
 from flask import Blueprint, jsonify, request
+from sqlalchemy import or_
 
 from app.extensions import db
 from app.models import Patient
+from app.routes.query_utils import paginated_response
 from app.swagger import (
     patient_create_spec,
     patient_delete_spec,
@@ -84,10 +86,32 @@ def parse_patient_payload(payload, partial=False):
 @patients_bp.get("")
 @swag_from(patient_list_spec)
 def list_patients():
-    patients = Patient.query.order_by(Patient.id.asc()).all()
+    query = Patient.query
+    search = request.args.get("search", "").strip()
+    status = request.args.get("status", "").strip()
+    gender = request.args.get("gender", "").strip()
 
-    return success_response(
-        [patient.to_dict() for patient in patients],
+    if search:
+        pattern = f"%{search}%"
+        query = query.filter(
+            or_(
+                Patient.first_name.ilike(pattern),
+                Patient.last_name.ilike(pattern),
+                Patient.phone.ilike(pattern),
+                Patient.email.ilike(pattern),
+                Patient.diagnosis_summary.ilike(pattern),
+            )
+        )
+
+    if status:
+        query = query.filter(Patient.status == status)
+
+    if gender:
+        query = query.filter(Patient.gender == gender)
+
+    return paginated_response(
+        query.order_by(Patient.id.asc()),
+        lambda patient: patient.to_dict(),
         "Patients retrieved successfully",
     )
 

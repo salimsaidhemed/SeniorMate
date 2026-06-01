@@ -85,3 +85,4 @@ def test_openapi_json_includes_patient_schemas(client):
     assert "DashboardRecentVisit" in definitions
     assert "DashboardStats" in definitions
     assert "DashboardStatsResponse" in definitions
+    assert "PaginationMeta" in definitions
