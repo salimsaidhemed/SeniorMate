@@ -117,51 +117,49 @@ export default {
     };
   },
   template: `
-    <v-container class="py-8" style="max-width: 1280px;">
-      <v-row align="center" class="mb-6">
-        <v-col cols="12" md="8">
-          <h1 class="text-h4 font-weight-bold mb-2">Care operations dashboard</h1>
-          <p class="text-body-1 text-medium-emphasis mb-0">
-            A quick view of patient, visit, and care-note activity.
-          </p>
-        </v-col>
-        <v-col cols="12" md="4" class="text-md-right">
+    <div class="page-shell">
+      <PageHeader
+        title="Care operations dashboard"
+        subtitle="A quick view of patient, visit, and care-note activity."
+        icon="mdi-view-dashboard-outline"
+      >
+        <template #actions>
           <v-btn color="primary" variant="flat" :loading="loading" @click="loadDashboard">
             Refresh dashboard
           </v-btn>
-        </v-col>
-      </v-row>
+        </template>
+      </PageHeader>
 
-      <v-alert v-if="error" type="error" variant="tonal" class="mb-6">
-        {{ error }}
-      </v-alert>
+      <ErrorAlert :message="error" />
 
-      <v-skeleton-loader v-if="loading" type="heading, card, card, table" />
+      <LoadingState v-if="loading" type="heading, card, card, table" />
 
       <template v-else-if="stats">
-        <v-alert v-if="!hasDashboardData" type="info" variant="tonal" class="mb-6">
-          No patient, visit, or care-note activity has been recorded yet.
-        </v-alert>
+        <EmptyState
+          v-if="!hasDashboardData"
+          icon="mdi-chart-box-outline"
+          title="No activity yet"
+          description="Patient, visit, and care-note activity will appear here as records are added."
+          class="mb-6"
+        />
 
-        <v-row class="mb-6">
-          <v-col v-for="card in cards" :key="card.title" cols="12" sm="6" lg="2">
-            <v-card>
-              <v-card-text>
+        <v-row class="mb-7">
+          <v-col v-for="card in cards" :key="card.title" cols="12" sm="6" lg>
+            <v-card class="metric-card">
+              <v-card-text class="pa-5">
                 <div class="d-flex align-center justify-space-between mb-4">
-                  <v-icon :icon="card.icon" :color="card.color" size="32" />
-                  <div class="text-h4 font-weight-bold">{{ card.value }}</div>
+                  <v-icon :icon="card.icon" :color="card.color" size="28" />
+                  <div class="metric-card__value">{{ card.value }}</div>
                 </div>
-                <div class="text-body-2 text-medium-emphasis">{{ card.title }}</div>
+                <div class="text-body-2 font-weight-medium">{{ card.title }}</div>
               </v-card-text>
             </v-card>
           </v-col>
         </v-row>
 
-        <v-row class="mb-6">
+        <v-row class="mb-7">
           <v-col v-for="section in chartSections" :key="section.title" cols="12" md="6">
-            <v-card class="h-100">
-              <v-card-title>{{ section.title }}</v-card-title>
-              <v-card-text>
+            <SectionCard :title="section.title" icon="mdi-chart-bar">
                 <div v-if="!section.items.length" class="text-medium-emphasis">
                   No data available.
                 </div>
@@ -177,41 +175,46 @@ export default {
                     rounded
                   />
                 </div>
-              </v-card-text>
-            </v-card>
+            </SectionCard>
           </v-col>
         </v-row>
 
-        <v-card>
-          <v-card-title>Recent Visits</v-card-title>
-          <v-data-table
-            :headers="recentVisitHeaders"
-            :items="stats.recent_visits"
-            item-value="id"
-          >
-            <template #no-data>
-              <div class="pa-8 text-center">
-                <v-icon icon="mdi-calendar-clock-outline" size="40" class="mb-3" />
-                <div class="text-h6 mb-2">No recent visits</div>
-              </div>
-            </template>
+        <SectionCard
+          title="Recent Visits"
+          subtitle="The latest care activity across patients."
+          icon="mdi-calendar-clock-outline"
+          class="data-card"
+        >
+            <v-data-table
+              :headers="recentVisitHeaders"
+              :items="stats.recent_visits"
+              item-value="id"
+              density="comfortable"
+            >
+              <template #no-data>
+                <EmptyState
+                  icon="mdi-calendar-blank-outline"
+                  title="No recent visits"
+                  description="New visits will appear here."
+                />
+              </template>
 
-            <template #[\`item.patient_name\`]="{ item }">
-              {{ item.patient_name || 'Patient not available' }}
-            </template>
+              <template #[\`item.patient_name\`]="{ item }">
+                {{ item.patient_name || 'Patient not available' }}
+              </template>
 
-            <template #[\`item.status\`]="{ item }">
-              <v-chip :color="item.status === 'completed' ? 'success' : item.status === 'cancelled' ? 'grey' : 'primary'" size="small">
-                {{ item.status }}
-              </v-chip>
-            </template>
+              <template #[\`item.status\`]="{ item }">
+                <StatusChip :status="item.status" />
+              </template>
 
-            <template #[\`item.actions\`]="{ item }">
-              <v-btn icon="mdi-eye-outline" variant="text" :to="\`/visits/\${item.id}\`" aria-label="View visit" />
-            </template>
-          </v-data-table>
-        </v-card>
+              <template #[\`item.actions\`]="{ item }">
+                <div class="table-actions">
+                  <v-btn icon="mdi-eye-outline" variant="text" :to="\`/visits/\${item.id}\`" aria-label="View visit" />
+                </div>
+              </template>
+            </v-data-table>
+        </SectionCard>
       </template>
-    </v-container>
+    </div>
   `,
 };

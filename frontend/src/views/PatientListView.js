@@ -85,27 +85,25 @@ export default {
     };
   },
   template: `
-    <v-container class="py-8" style="max-width: 1280px;">
-      <v-row align="center" class="mb-5">
-        <v-col cols="12" md="8">
-          <h1 class="text-h4 font-weight-bold mb-1">Patients</h1>
-          <p class="text-body-2 text-medium-emphasis mb-0">Manage patient demographics and emergency contacts.</p>
-        </v-col>
-        <v-col cols="12" md="4" class="text-md-right">
+    <div class="page-shell">
+      <PageHeader
+        title="Patients"
+        subtitle="Manage patient demographics and emergency contacts."
+        icon="mdi-account-heart-outline"
+      >
+        <template #actions>
           <v-btn color="primary" prepend-icon="mdi-plus" to="/patients/new">
             New patient
           </v-btn>
-        </v-col>
-      </v-row>
+        </template>
+      </PageHeader>
 
-      <v-alert v-if="error" type="error" variant="tonal" class="mb-4">
-        {{ error }}
-      </v-alert>
+      <ErrorAlert :message="error" />
       <v-alert v-if="success" type="success" variant="tonal" class="mb-4">
         {{ success }}
       </v-alert>
 
-      <v-card>
+      <v-card class="data-card">
         <v-data-table
           :headers="headers"
           :items="rows"
@@ -113,46 +111,40 @@ export default {
           item-value="id"
         >
           <template #loading>
-            <v-skeleton-loader type="table-row@5" />
+            <LoadingState />
           </template>
 
           <template #no-data>
-            <div class="pa-8 text-center">
-              <v-icon icon="mdi-account-heart-outline" size="40" class="mb-3" />
-              <div class="text-h6 mb-2">No patients yet</div>
-              <v-btn color="primary" variant="flat" to="/patients/new">Create patient</v-btn>
-            </div>
+            <EmptyState
+              icon="mdi-account-plus-outline"
+              title="No patients yet"
+              description="Create the first patient profile to begin tracking care."
+              action-label="Create patient"
+              action-to="/patients/new"
+            />
           </template>
 
           <template #[\`item.status\`]="{ item }">
-            <v-chip :color="item.status === 'active' ? 'success' : 'grey'" size="small">
-              {{ item.status }}
-            </v-chip>
+            <StatusChip :status="item.status" />
           </template>
 
           <template #[\`item.actions\`]="{ item }">
-            <v-btn icon="mdi-eye-outline" variant="text" :to="\`/patients/\${item.id}\`" aria-label="View patient" />
-            <v-btn icon="mdi-pencil-outline" variant="text" :to="\`/patients/\${item.id}/edit\`" aria-label="Edit patient" />
-            <v-btn icon="mdi-delete-outline" variant="text" color="error" aria-label="Delete patient" @click="askDelete(item)" />
+            <div class="table-actions">
+              <v-btn icon="mdi-eye-outline" variant="text" :to="\`/patients/\${item.id}\`" aria-label="View patient" />
+              <v-btn icon="mdi-pencil-outline" variant="text" :to="\`/patients/\${item.id}/edit\`" aria-label="Edit patient" />
+              <v-btn icon="mdi-delete-outline" variant="text" color="error" aria-label="Delete patient" @click="askDelete(item)" />
+            </div>
           </template>
         </v-data-table>
       </v-card>
 
-      <v-dialog v-model="confirmDelete" max-width="440">
-        <v-card>
-          <v-card-title>Delete patient</v-card-title>
-          <v-card-text>
-            Delete {{ selectedPatient?.full_name }}?
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn variant="text" @click="confirmDelete = false">Cancel</v-btn>
-            <v-btn color="error" variant="flat" :loading="deleting" @click="removePatient">
-              Delete
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-container>
+      <ConfirmDialog
+        v-model="confirmDelete"
+        title="Delete patient"
+        :message="\`Delete \${selectedPatient?.full_name || 'this patient'}? This cannot be undone.\`"
+        :loading="deleting"
+        @confirm="removePatient"
+      />
+    </div>
   `,
 };

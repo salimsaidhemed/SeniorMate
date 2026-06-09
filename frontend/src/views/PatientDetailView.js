@@ -94,7 +94,7 @@ export default {
     };
   },
   template: `
-    <v-container class="py-8" style="max-width: 1120px;">
+    <div class="page-shell">
       <v-btn variant="text" prepend-icon="mdi-arrow-left" to="/patients" class="mb-4">
         Patients
       </v-btn>
@@ -199,6 +199,6 @@ export default {
           </v-card-actions>
         </v-card>
       </v-dialog>
-    </v-container>
+    </div>
   `,
 };

@@ -90,7 +90,7 @@ export default {
     };
   },
   template: `
-    <v-container class="py-8" style="max-width: 1120px;">
+    <div class="page-shell">
       <v-btn variant="text" prepend-icon="mdi-arrow-left" to="/aide-notes" class="mb-4">
         Aide Notes
       </v-btn>
@@ -151,6 +151,6 @@ export default {
           </v-col>
         </v-row>
       </template>
-    </v-container>
+    </div>
   `,
 };

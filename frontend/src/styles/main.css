@@ -1,0 +1,208 @@
+:root {
+  color-scheme: light;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+html {
+  background: #f4f7f7;
+}
+
+body {
+  margin: 0;
+  color: #20302f;
+  background: #f4f7f7;
+}
+
+.app-surface {
+  min-height: 100%;
+  background: #f4f7f7;
+}
+
+.page-shell {
+  width: 100%;
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 32px 28px 48px;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.page-header__copy {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.page-header__icon,
+.empty-state__icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  color: #1f6f68;
+  background: #e4f1ef;
+  border-radius: 8px;
+  flex: 0 0 auto;
+}
+
+.page-header__title {
+  margin: 0;
+  color: #1f302f;
+  font-size: 1.75rem;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.page-header__subtitle {
+  margin: 6px 0 0;
+  color: #647675;
+  font-size: 0.925rem;
+  line-height: 1.5;
+}
+
+.page-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.section-card {
+  height: 100%;
+}
+
+.page-shell .v-card-title {
+  padding: 18px 20px;
+  color: #263938;
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+.page-shell .v-card-text {
+  line-height: 1.55;
+}
+
+.page-shell .v-form > .v-card {
+  margin-bottom: 20px;
+}
+
+.section-card__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 64px;
+  padding: 16px 20px;
+}
+
+.section-card__title {
+  color: #263938;
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+.section-card__subtitle {
+  margin-top: 2px;
+  color: #6b7c7b;
+  font-size: 0.8rem;
+}
+
+.empty-state {
+  padding: 42px 24px;
+  text-align: center;
+}
+
+.empty-state__icon {
+  margin: 0 auto 14px;
+}
+
+.loading-state {
+  padding: 8px;
+}
+
+.metric-card {
+  min-height: 142px;
+  border-top: 3px solid rgb(var(--v-theme-primary));
+}
+
+.metric-card__value {
+  color: #20302f;
+  font-size: 2rem;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.data-card .v-data-table-header__content {
+  color: #516462;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.data-card .v-data-table__tr:hover td {
+  background: #f8fbfa;
+}
+
+.table-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+.app-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 18px 16px;
+}
+
+.app-brand__mark {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  color: white;
+  background: #1f6f68;
+  border-radius: 8px;
+}
+
+.app-brand__name {
+  color: #20302f;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.app-brand__caption {
+  margin-top: 1px;
+  color: #71817f;
+  font-size: 0.72rem;
+}
+
+@media (max-width: 700px) {
+  .page-shell {
+    padding: 24px 16px 36px;
+  }
+
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .page-header__actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .page-header__actions .v-btn {
+    flex: 1 1 auto;
+  }
+}
