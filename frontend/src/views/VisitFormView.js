@@ -139,7 +139,7 @@ export default {
     };
   },
   template: `
-    <v-container class="py-8" style="max-width: 960px;">
+    <div class="page-shell" style="max-width: 1040px;">
       <v-btn variant="text" prepend-icon="mdi-arrow-left" to="/visits" class="mb-4">
         Visits
       </v-btn>
@@ -232,6 +232,6 @@ export default {
           </v-btn>
         </div>
       </v-form>
-    </v-container>
+    </div>
   `,
 };
