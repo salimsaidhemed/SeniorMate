@@ -49,6 +49,11 @@ class Patient(db.Model):
         back_populates="patient",
         cascade="all, delete-orphan",
     )
+    medical_records = db.relationship(
+        "MedicalRecord",
+        back_populates="patient",
+        cascade="all, delete-orphan",
+    )
 
     def to_dict(self):
         return {

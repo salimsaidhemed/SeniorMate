@@ -14,12 +14,13 @@ export async function parseResponse(response) {
 }
 
 export async function apiRequest(path, options = {}) {
+  const isFormData = options.body instanceof FormData;
   const response = await fetch(`${apiBaseUrl}${path}`, {
+    ...options,
     headers: {
-      "Content-Type": "application/json",
+      ...(!isFormData ? { "Content-Type": "application/json" } : {}),
       ...(options.headers || {}),
     },
-    ...options,
   });
 
   return parseResponse(response);
