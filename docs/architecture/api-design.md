@@ -291,6 +291,102 @@ Example response:
 }
 ```
 
+## Medical Records API
+
+Medical Records store patient document metadata in PostgreSQL and file bytes in a
+private MinIO bucket. The API never returns public object-store URLs. Downloads
+are streamed through the authenticated application boundary so the bucket can
+remain private.
+
+Supported uploads:
+
+- PDF (`.pdf`)
+- JPEG (`.jpg`, `.jpeg`)
+- PNG (`.png`)
+- Microsoft Word (`.doc`, `.docx`)
+
+The default upload limit is 10 MB and can be changed with
+`MEDICAL_RECORD_MAX_FILE_SIZE`.
+
+### Upload a Medical Record
+
+`POST /api/medical-records`
+
+Use `multipart/form-data` with:
+
+- `patient_id` (required)
+- `title` (required)
+- `file` (required)
+- `description` (optional)
+- `record_type` (optional)
+- `uploaded_by` (optional)
+
+Example response:
+
+```json
+{
+  "data": {
+    "id": 1,
+    "patient_id": 1,
+    "title": "Updated care plan",
+    "description": "Care plan approved by the clinical team.",
+    "record_type": "care_plan",
+    "file_name": "care-plan.pdf",
+    "file_mime_type": "application/pdf",
+    "file_size": 245760,
+    "storage_bucket": "seniormate-medical-records",
+    "storage_object_key": "patients/1/0f8c2f_care-plan.pdf",
+    "uploaded_by": "Jordan Lee",
+    "uploaded_at": "2026-06-09T10:00:00+00:00",
+    "created_at": "2026-06-09T10:00:00+00:00",
+    "updated_at": "2026-06-09T10:00:00+00:00"
+  },
+  "message": "Medical record uploaded successfully"
+}
+```
+
+### List Medical Records
+
+- `GET /api/medical-records`
+- `GET /api/patients/<patient_id>/medical-records`
+
+Both endpoints return medical record metadata only. They do not return file
+contents or public object URLs.
+
+### Retrieve and Update Metadata
+
+- `GET /api/medical-records/<id>`
+- `PUT /api/medical-records/<id>`
+
+The update endpoint accepts JSON fields for `title`, `description`,
+`record_type`, and `uploaded_by`. Replacing the stored file is intentionally not
+part of this first version.
+
+Example update:
+
+```json
+{
+  "title": "Signed care plan",
+  "record_type": "signed_care_plan",
+  "uploaded_by": "Taylor Morgan"
+}
+```
+
+### Download a Medical Record
+
+`GET /api/medical-records/<id>/download`
+
+The backend reads the private MinIO object and streams it as an attachment using
+the stored MIME type and file name.
+
+### Delete a Medical Record
+
+`DELETE /api/medical-records/<id>`
+
+Deletion removes the object from MinIO and then removes its PostgreSQL metadata.
+A missing object is handled gracefully so stale metadata can still be cleaned
+up.
+
 ## Visit API
 
 The Visit API records caregiver and nursing visits linked to patients.

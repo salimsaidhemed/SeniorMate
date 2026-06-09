@@ -298,6 +298,59 @@ dashboard_stats_properties = {
     },
 }
 
+medical_record_properties = {
+    "id": {"type": "integer", "example": 1},
+    "patient_id": {"type": "integer", "example": 1},
+    "title": {"type": "string", "example": "Updated care plan"},
+    "description": {
+        "type": "string",
+        "nullable": True,
+        "example": "Care plan approved by the clinical team.",
+    },
+    "record_type": {
+        "type": "string",
+        "nullable": True,
+        "example": "care_plan",
+    },
+    "file_name": {"type": "string", "example": "care-plan.pdf"},
+    "file_mime_type": {"type": "string", "example": "application/pdf"},
+    "file_size": {"type": "integer", "format": "int64", "example": 245760},
+    "storage_bucket": {
+        "type": "string",
+        "example": "seniormate-medical-records",
+    },
+    "storage_object_key": {
+        "type": "string",
+        "example": "patients/1/0f8c2f_care-plan.pdf",
+    },
+    "uploaded_by": {
+        "type": "string",
+        "nullable": True,
+        "example": "Jordan Lee",
+    },
+    "uploaded_at": {
+        "type": "string",
+        "format": "date-time",
+        "example": "2026-06-09T10:00:00+00:00",
+    },
+    "created_at": {
+        "type": "string",
+        "format": "date-time",
+        "example": "2026-06-09T10:00:00+00:00",
+    },
+    "updated_at": {
+        "type": "string",
+        "format": "date-time",
+        "example": "2026-06-09T10:00:00+00:00",
+    },
+}
+
+medical_record_update_properties = {
+    key: value
+    for key, value in medical_record_properties.items()
+    if key in {"title", "description", "record_type", "uploaded_by"}
+}
+
 swagger_config = {
     "headers": [],
     "specs": [
@@ -376,6 +429,14 @@ swagger_template = {
         "NurseNoteUpdate": {
             "type": "object",
             "properties": nurse_note_request_properties,
+        },
+        "MedicalRecord": {
+            "type": "object",
+            "properties": medical_record_properties,
+        },
+        "MedicalRecordUpdate": {
+            "type": "object",
+            "properties": medical_record_update_properties,
         },
         "DashboardGroupItem": {
             "type": "object",
@@ -502,6 +563,29 @@ swagger_template = {
                 "message": {
                     "type": "string",
                     "example": "Nurse notes retrieved successfully",
+                },
+            },
+        },
+        "MedicalRecordResponse": {
+            "type": "object",
+            "properties": {
+                "data": {"$ref": "#/definitions/MedicalRecord"},
+                "message": {
+                    "type": "string",
+                    "example": "Medical record retrieved successfully",
+                },
+            },
+        },
+        "MedicalRecordListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {"$ref": "#/definitions/MedicalRecord"},
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Medical records retrieved successfully",
                 },
             },
         },
@@ -1122,6 +1206,211 @@ visit_nurse_note_get_spec = {
         },
         404: {
             "description": "Visit or nurse note not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+medical_record_list_spec = {
+    "tags": ["Medical Records"],
+    "summary": "List medical records",
+    "responses": {
+        200: {
+            "description": "Medical records retrieved successfully.",
+            "schema": {"$ref": "#/definitions/MedicalRecordListResponse"},
+        }
+    },
+}
+
+medical_record_get_spec = {
+    "tags": ["Medical Records"],
+    "summary": "Retrieve medical record metadata",
+    "parameters": [
+        {
+            "name": "medical_record_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        }
+    ],
+    "responses": {
+        200: {
+            "description": "Medical record retrieved successfully.",
+            "schema": {"$ref": "#/definitions/MedicalRecordResponse"},
+        },
+        404: {
+            "description": "Medical record not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+medical_record_create_spec = {
+    "tags": ["Medical Records"],
+    "summary": "Upload a medical record",
+    "consumes": ["multipart/form-data"],
+    "parameters": [
+        {
+            "name": "patient_id",
+            "in": "formData",
+            "type": "integer",
+            "required": True,
+        },
+        {
+            "name": "title",
+            "in": "formData",
+            "type": "string",
+            "required": True,
+        },
+        {
+            "name": "file",
+            "in": "formData",
+            "type": "file",
+            "required": True,
+        },
+        {
+            "name": "description",
+            "in": "formData",
+            "type": "string",
+            "required": False,
+        },
+        {
+            "name": "record_type",
+            "in": "formData",
+            "type": "string",
+            "required": False,
+        },
+        {
+            "name": "uploaded_by",
+            "in": "formData",
+            "type": "string",
+            "required": False,
+        },
+    ],
+    "responses": {
+        201: {
+            "description": "Medical record uploaded successfully.",
+            "schema": {"$ref": "#/definitions/MedicalRecordResponse"},
+        },
+        400: {
+            "description": "Invalid medical record data.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+        502: {
+            "description": "Medical record storage is unavailable.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+medical_record_update_spec = {
+    "tags": ["Medical Records"],
+    "summary": "Update medical record metadata",
+    "parameters": [
+        {
+            "name": "medical_record_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        },
+        {
+            "name": "body",
+            "in": "body",
+            "required": True,
+            "schema": {"$ref": "#/definitions/MedicalRecordUpdate"},
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "Medical record updated successfully.",
+            "schema": {"$ref": "#/definitions/MedicalRecordResponse"},
+        },
+        400: {
+            "description": "Invalid medical record data.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+        404: {
+            "description": "Medical record not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+medical_record_delete_spec = {
+    "tags": ["Medical Records"],
+    "summary": "Delete a medical record and its private object",
+    "parameters": [
+        {
+            "name": "medical_record_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        }
+    ],
+    "responses": {
+        200: {
+            "description": "Medical record deleted successfully.",
+            "schema": {"$ref": "#/definitions/DeleteSuccessResponse"},
+        },
+        404: {
+            "description": "Medical record not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+patient_medical_records_list_spec = {
+    "tags": ["Medical Records"],
+    "summary": "List medical records for a patient",
+    "parameters": [
+        {
+            "name": "patient_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        }
+    ],
+    "responses": {
+        200: {
+            "description": "Patient medical records retrieved successfully.",
+            "schema": {"$ref": "#/definitions/MedicalRecordListResponse"},
+        },
+        404: {
+            "description": "Patient not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+medical_record_download_spec = {
+    "tags": ["Medical Records"],
+    "summary": "Download a private medical record file",
+    "produces": [
+        "application/pdf",
+        "image/jpeg",
+        "image/png",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ],
+    "parameters": [
+        {
+            "name": "medical_record_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        }
+    ],
+    "responses": {
+        200: {
+            "description": "The file is streamed through the backend as an attachment.",
+            "schema": {"type": "file"},
+        },
+        404: {
+            "description": "Medical record metadata or stored file not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+        502: {
+            "description": "Medical record storage is unavailable.",
             "schema": {"$ref": "#/definitions/ErrorResponse"},
         },
     },

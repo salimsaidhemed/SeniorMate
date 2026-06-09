@@ -6,11 +6,13 @@ from sqlalchemy import text
 from app.config import Config
 from app.extensions import db, migrate
 from app.models import AideNote as AideNote
+from app.models import MedicalRecord as MedicalRecord
 from app.models import NurseNote as NurseNote
 from app.models import Patient as Patient
 from app.models import Visit as Visit
 from app.routes.aide_notes import aide_notes_bp
 from app.routes.dashboard import dashboard_bp
+from app.routes.medical_records import medical_records_bp
 from app.routes.nurse_notes import nurse_notes_bp
 from app.routes.patients import patients_bp
 from app.routes.visits import visits_bp
@@ -27,6 +29,7 @@ def create_app(config_object=Config):
     migrate.init_app(app, db)
     app.register_blueprint(aide_notes_bp)
     app.register_blueprint(dashboard_bp)
+    app.register_blueprint(medical_records_bp)
     app.register_blueprint(nurse_notes_bp)
     app.register_blueprint(patients_bp)
     app.register_blueprint(visits_bp)

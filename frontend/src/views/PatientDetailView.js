@@ -1,9 +1,13 @@
 import { computed, onMounted, ref } from "vue";
 
+import MedicalRecordsSection from "../components/MedicalRecordsSection.js";
 import { getPatient } from "../services/patients.js";
 import { deleteVisit, listPatientVisits } from "../services/visits.js";
 
 export default {
+  components: {
+    MedicalRecordsSection,
+  },
   props: {
     id: {
       type: String,
@@ -153,6 +157,8 @@ export default {
             </v-card>
           </v-col>
         </v-row>
+
+        <MedicalRecordsSection :patient-id="patient.id" />
 
         <v-card>
           <v-card-title>Visits</v-card-title>
