@@ -125,7 +125,11 @@ export default {
         Patients
       </v-btn>
 
-      <h1 class="text-h4 font-weight-bold mb-5">{{ title }}</h1>
+      <PageHeader
+        :title="title"
+        subtitle="Patient identity, contact, emergency, and care information."
+        icon="mdi-account-edit-outline"
+      />
 
       <v-alert v-if="error" type="error" variant="tonal" class="mb-4">
         {{ error }}
@@ -134,9 +138,12 @@ export default {
       <v-skeleton-loader v-if="loading" type="heading, paragraph, card" />
 
       <v-form v-else @submit.prevent="submit">
-        <v-card class="mb-5">
-          <v-card-title>Demographics</v-card-title>
-          <v-card-text>
+        <SectionCard
+          title="Demographics"
+          subtitle="Required names and core patient contact details."
+          icon="mdi-card-account-details-outline"
+          class="mb-5"
+        >
             <v-row>
               <v-col cols="12" md="6">
                 <v-text-field
@@ -177,12 +184,14 @@ export default {
                 <v-textarea v-model="form.address" label="Address" rows="2" />
               </v-col>
             </v-row>
-          </v-card-text>
-        </v-card>
+        </SectionCard>
 
-        <v-card class="mb-5">
-          <v-card-title>Emergency and clinical details</v-card-title>
-          <v-card-text>
+        <SectionCard
+          title="Emergency and clinical details"
+          subtitle="Care context used across the patient record."
+          icon="mdi-heart-pulse"
+          class="mb-5"
+        >
             <v-row>
               <v-col cols="12" md="6">
                 <v-text-field v-model="form.emergency_contact_name" label="Emergency contact name" />
@@ -194,12 +203,11 @@ export default {
                 <v-textarea v-model="form.diagnosis_summary" label="Diagnosis summary" rows="3" />
               </v-col>
             </v-row>
-          </v-card-text>
-        </v-card>
+        </SectionCard>
 
-        <div class="d-flex justify-end ga-3">
+        <div class="form-actions">
           <v-btn variant="text" to="/patients">Cancel</v-btn>
-          <v-btn color="primary" type="submit" :loading="saving">
+          <v-btn color="primary" prepend-icon="mdi-content-save-outline" type="submit" :loading="saving">
             Save patient
           </v-btn>
         </div>

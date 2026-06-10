@@ -80,6 +80,69 @@ body {
   height: 100%;
 }
 
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  margin-bottom: 24px;
+  padding: 22px 24px;
+  background: #ffffff;
+  border: 1px solid rgba(31, 111, 104, 0.16);
+  border-left: 4px solid #1f6f68;
+  border-radius: 8px;
+}
+
+.detail-header__identity {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-width: 0;
+}
+
+.detail-header__copy {
+  min-width: 0;
+}
+
+.detail-header__eyebrow {
+  margin-bottom: 4px;
+  color: #647675;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.detail-header__title {
+  margin: 0;
+  color: #1f302f;
+  font-size: 1.7rem;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.detail-header__subtitle {
+  margin-top: 5px;
+  color: #647675;
+  font-size: 0.9rem;
+}
+
+.detail-header__meta,
+.detail-header__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.detail-header__meta {
+  margin-top: 10px;
+}
+
+.detail-header__actions {
+  justify-content: flex-end;
+  flex: 0 1 520px;
+}
+
 .page-shell .v-card-title {
   padding: 18px 20px;
   color: #263938;
@@ -129,8 +192,49 @@ body {
 }
 
 .metric-card {
-  min-height: 142px;
-  border-top: 3px solid rgb(var(--v-theme-primary));
+  min-height: 158px;
+  overflow: hidden;
+  position: relative;
+}
+
+.metric-card::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: rgb(var(--v-theme-primary));
+  content: "";
+}
+
+.metric-card--success::before {
+  background: rgb(var(--v-theme-success));
+}
+
+.metric-card--secondary::before {
+  background: rgb(var(--v-theme-secondary));
+}
+
+.metric-card--teal::before {
+  background: #32817a;
+}
+
+.metric-card--indigo::before {
+  background: #536a91;
+}
+
+.metric-card__topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.metric-card__icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  background: #eef5f4;
+  border-radius: 8px;
 }
 
 .metric-card__value {
@@ -138,6 +242,34 @@ body {
   font-size: 2rem;
   line-height: 1;
   font-weight: 700;
+}
+
+.metric-card__title {
+  color: #324543;
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+.metric-card__caption {
+  margin-top: 4px;
+  color: #71817f;
+  font-size: 0.75rem;
+}
+
+.chart-row {
+  margin-bottom: 18px;
+}
+
+.chart-row:last-child {
+  margin-bottom: 0;
+}
+
+.chart-row__label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 7px;
+  color: #405351;
+  font-size: 0.86rem;
 }
 
 .data-card .v-data-table-header__content {
@@ -156,6 +288,46 @@ body {
   align-items: center;
   gap: 2px;
   white-space: nowrap;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.record-tabs {
+  margin-bottom: 22px;
+  background: #ffffff;
+  border: 1px solid rgba(31, 111, 104, 0.14);
+  border-radius: 8px;
+}
+
+.record-tabs .v-tab {
+  min-width: 112px;
+  text-transform: none;
+}
+
+.detail-grid .v-list-item {
+  min-height: 58px;
+}
+
+.documentation-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.documentation-action {
+  min-height: 82px;
+  justify-content: flex-start;
+}
+
+.documentation-action .v-btn__content {
+  white-space: normal;
+  text-align: left;
 }
 
 .patient-avatar {
@@ -234,5 +406,39 @@ body {
 
   .page-header__actions .v-btn {
     flex: 1 1 auto;
+  }
+
+  .detail-header {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 18px;
+  }
+
+  .detail-header__actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .detail-header__actions .v-btn {
+    flex: 1 1 auto;
+  }
+
+  .detail-header__title {
+    font-size: 1.4rem;
+  }
+
+  .documentation-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+}
+
+@media (min-width: 701px) and (max-width: 1080px) {
+  .documentation-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

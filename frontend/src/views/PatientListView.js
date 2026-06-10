@@ -141,9 +141,9 @@ export default {
 
           <template #[\`item.actions\`]="{ item }">
             <div class="table-actions">
-              <v-btn icon="mdi-eye-outline" variant="text" :to="\`/patients/\${item.id}\`" aria-label="View patient" />
-              <v-btn icon="mdi-pencil-outline" variant="text" :to="\`/patients/\${item.id}/edit\`" aria-label="Edit patient" />
-              <v-btn icon="mdi-delete-outline" variant="text" color="error" aria-label="Delete patient" @click="askDelete(item)" />
+              <v-btn icon="mdi-eye-outline" variant="text" :to="\`/patients/\${item.id}\`" aria-label="View patient" title="View patient" />
+              <v-btn icon="mdi-pencil-outline" variant="text" :to="\`/patients/\${item.id}/edit\`" aria-label="Edit patient" title="Edit patient" />
+              <v-btn icon="mdi-delete-outline" variant="text" color="error" aria-label="Delete patient" title="Delete patient" @click="askDelete(item)" />
             </div>
           </template>
         </v-data-table>

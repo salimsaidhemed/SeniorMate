@@ -14,30 +14,35 @@ export default {
         value: stats.value?.total_patients ?? 0,
         icon: "mdi-account-heart-outline",
         color: "primary",
+        caption: `${stats.value?.inactive_patients ?? 0} inactive`,
       },
       {
         title: "Active Patients",
         value: stats.value?.active_patients ?? 0,
         icon: "mdi-account-check-outline",
         color: "success",
+        caption: "Currently receiving care",
       },
       {
         title: "Visits This Month",
         value: stats.value?.visits_this_month ?? 0,
         icon: "mdi-calendar-clock-outline",
         color: "secondary",
+        caption: `${stats.value?.total_visits ?? 0} visits overall`,
       },
       {
         title: "Aide Notes This Month",
         value: stats.value?.aide_notes_this_month ?? 0,
         icon: "mdi-clipboard-check-outline",
         color: "teal",
+        caption: "Home health aide records",
       },
       {
         title: "Nurse Notes This Month",
         value: stats.value?.nurse_notes_this_month ?? 0,
         icon: "mdi-clipboard-pulse-outline",
         color: "indigo",
+        caption: "Clinical progress records",
       },
     ]);
     const chartSections = computed(() => [
@@ -143,15 +148,18 @@ export default {
           class="mb-6"
         />
 
-        <v-row class="mb-7">
+        <v-row class="dashboard-metrics mb-7">
           <v-col v-for="card in cards" :key="card.title" cols="12" sm="6" lg>
-            <v-card class="metric-card">
+            <v-card class="metric-card" :class="\`metric-card--\${card.color}\`">
               <v-card-text class="pa-5">
-                <div class="d-flex align-center justify-space-between mb-4">
-                  <v-icon :icon="card.icon" :color="card.color" size="28" />
+                <div class="metric-card__topline">
+                  <div class="metric-card__icon">
+                    <v-icon :icon="card.icon" :color="card.color" size="24" />
+                  </div>
                   <div class="metric-card__value">{{ card.value }}</div>
                 </div>
-                <div class="text-body-2 font-weight-medium">{{ card.title }}</div>
+                <div class="metric-card__title">{{ card.title }}</div>
+                <div class="metric-card__caption">{{ card.caption }}</div>
               </v-card-text>
             </v-card>
           </v-col>
@@ -163,15 +171,15 @@ export default {
                 <div v-if="!section.items.length" class="text-medium-emphasis">
                   No data available.
                 </div>
-                <div v-for="item in section.items" :key="item.label" class="mb-4">
-                  <div class="d-flex justify-space-between mb-1">
+                <div v-for="item in section.items" :key="item.label" class="chart-row">
+                  <div class="chart-row__label">
                     <span>{{ item.label }}</span>
                     <strong>{{ item.count }}</strong>
                   </div>
                   <v-progress-linear
                     :model-value="percentage(item, section.items)"
                     :color="section.color"
-                    height="10"
+                    height="8"
                     rounded
                   />
                 </div>
@@ -209,7 +217,13 @@ export default {
 
               <template #[\`item.actions\`]="{ item }">
                 <div class="table-actions">
-                  <v-btn icon="mdi-eye-outline" variant="text" :to="\`/visits/\${item.id}\`" aria-label="View visit" />
+                  <v-btn
+                    icon="mdi-arrow-right"
+                    variant="text"
+                    :to="\`/visits/\${item.id}\`"
+                    aria-label="Open visit"
+                    title="Open visit"
+                  />
                 </div>
               </template>
             </v-data-table>

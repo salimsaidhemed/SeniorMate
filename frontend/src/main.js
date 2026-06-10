@@ -10,6 +10,7 @@ import { aliases, mdi } from "vuetify/iconsets/mdi";
 
 import App from "./views/App.js";
 import ConfirmDialog from "./components/ConfirmDialog.js";
+import DetailHeader from "./components/DetailHeader.js";
 import EmptyState from "./components/EmptyState.js";
 import ErrorAlert from "./components/ErrorAlert.js";
 import LoadingState from "./components/LoadingState.js";
@@ -78,6 +79,7 @@ const vuetify = createVuetify({
 
 createApp(App)
   .component("ConfirmDialog", ConfirmDialog)
+  .component("DetailHeader", DetailHeader)
   .component("EmptyState", EmptyState)
   .component("ErrorAlert", ErrorAlert)
   .component("LoadingState", LoadingState)

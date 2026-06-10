@@ -3,6 +3,8 @@ import { computed, onMounted, ref } from "vue";
 import MedicalRecordsSection from "../components/MedicalRecordsSection.js";
 import PatientAvatar from "../components/PatientAvatar.js";
 import PatientAssessmentsSection from "../components/PatientAssessmentsSection.js";
+import { getPatientAideNotes } from "../services/aideNotes.js";
+import { getPatientNurseNotes } from "../services/nurseNotes.js";
 import {
   deletePatientPhoto,
   getPatient,
@@ -26,6 +28,9 @@ export default {
   setup(props) {
     const patient = ref(null);
     const visits = ref([]);
+    const aideNotes = ref([]);
+    const nurseNotes = ref([]);
+    const activeTab = ref("overview");
     const loading = ref(true);
     const error = ref("");
     const success = ref("");
@@ -57,12 +62,21 @@ export default {
       error.value = "";
 
       try {
-        const [patientResponse, visitResponse] = await Promise.all([
+        const [
+          patientResponse,
+          visitResponse,
+          aideNoteResponse,
+          nurseNoteResponse,
+        ] = await Promise.all([
           getPatient(props.id),
           listPatientVisits(props.id),
+          getPatientAideNotes(props.id),
+          getPatientNurseNotes(props.id),
         ]);
         patient.value = patientResponse.data;
         visits.value = visitResponse.data;
+        aideNotes.value = aideNoteResponse.data;
+        nurseNotes.value = nurseNoteResponse.data;
       } catch (err) {
         error.value = err.message;
       } finally {
@@ -162,6 +176,8 @@ export default {
 
     return {
       error,
+      activeTab,
+      aideNotes,
       askDelete,
       confirmDelete,
       confirmPhotoDelete,
@@ -169,6 +185,7 @@ export default {
       deletingPhoto,
       fullName,
       loading,
+      nurseNotes,
       openPhotoDialog,
       patient,
       photoDialog,
@@ -201,29 +218,30 @@ export default {
       <v-skeleton-loader v-if="loading" type="heading, paragraph, card" />
 
       <template v-else-if="patient">
-        <v-row align="center" class="mb-5">
-          <v-col cols="12" md="8">
-            <div class="d-flex align-center ga-4">
-              <PatientAvatar :patient="patient" :size="88" show-verification />
-              <div>
-                <h1 class="text-h4 font-weight-bold mb-2">{{ fullName }}</h1>
-                <div class="d-flex flex-wrap align-center ga-2">
-                  <StatusChip :status="patient.status" />
-                  <v-chip
-                    v-if="patient.has_photo"
-                    :color="patient.photo_verified ? 'success' : 'warning'"
-                    size="small"
-                    variant="tonal"
-                    :prepend-icon="patient.photo_verified ? 'mdi-check-decagram' : 'mdi-alert-circle-outline'"
-                  >
-                    {{ patient.photo_verified ? 'Photo verified' : 'Photo not verified' }}
-                  </v-chip>
-                </div>
-              </div>
-            </div>
-          </v-col>
-          <v-col cols="12" md="4" class="text-md-right">
-            <div class="d-flex flex-wrap justify-md-end ga-2">
+        <DetailHeader
+          eyebrow="Patient record"
+          :title="fullName"
+          :subtitle="patient.phone || patient.email || 'Contact information not provided'"
+        >
+          <template #avatar>
+            <PatientAvatar :patient="patient" :size="84" show-verification />
+          </template>
+          <template #meta>
+            <StatusChip :status="patient.status" />
+            <v-chip
+              v-if="patient.has_photo"
+              :color="patient.photo_verified ? 'success' : 'warning'"
+              size="small"
+              variant="tonal"
+              :prepend-icon="patient.photo_verified ? 'mdi-check-decagram' : 'mdi-alert-circle-outline'"
+            >
+              {{ patient.photo_verified ? 'Photo verified' : 'Photo review needed' }}
+            </v-chip>
+            <v-chip size="small" variant="outlined" prepend-icon="mdi-calendar-clock-outline">
+              {{ visits.length }} {{ visits.length === 1 ? 'visit' : 'visits' }}
+            </v-chip>
+          </template>
+          <template #actions>
               <v-btn color="primary" prepend-icon="mdi-calendar-plus-outline" :to="\`/visits/new?patient_id=\${patient.id}\`">
                 New visit
               </v-btn>
@@ -251,69 +269,137 @@ export default {
               >
                 Delete photo
               </v-btn>
-            </div>
-          </v-col>
-        </v-row>
+          </template>
+        </DetailHeader>
 
-        <v-row class="mb-5">
-          <v-col cols="12" md="6">
-            <v-card>
-              <v-card-title>Demographics</v-card-title>
-              <v-list>
-                <v-list-item title="Date of birth" :subtitle="patient.date_of_birth || 'Not provided'" />
-                <v-list-item title="Gender" :subtitle="patient.gender || 'Not provided'" />
-                <v-list-item title="Phone" :subtitle="patient.phone || 'Not provided'" />
-                <v-list-item title="Email" :subtitle="patient.email || 'Not provided'" />
-                <v-list-item title="Address" :subtitle="patient.address || 'Not provided'" />
-              </v-list>
-            </v-card>
-          </v-col>
+        <v-tabs v-model="activeTab" color="primary" class="record-tabs" show-arrows>
+          <v-tab value="overview" prepend-icon="mdi-account-outline">Overview</v-tab>
+          <v-tab value="visits" prepend-icon="mdi-calendar-clock-outline">Visits</v-tab>
+          <v-tab value="records" prepend-icon="mdi-file-document-multiple-outline">Medical records</v-tab>
+          <v-tab value="assessments" prepend-icon="mdi-clipboard-text-search-outline">Assessments</v-tab>
+          <v-tab value="notes" prepend-icon="mdi-clipboard-pulse-outline">Care notes</v-tab>
+        </v-tabs>
 
-          <v-col cols="12" md="6">
-            <v-card>
-              <v-card-title>Emergency contact</v-card-title>
-              <v-list>
-                <v-list-item title="Name" :subtitle="patient.emergency_contact_name || 'Not provided'" />
-                <v-list-item title="Phone" :subtitle="patient.emergency_contact_phone || 'Not provided'" />
-              </v-list>
-              <v-divider />
-              <v-card-title>Diagnosis summary</v-card-title>
-              <v-card-text>{{ patient.diagnosis_summary || 'Not provided' }}</v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
+        <v-window v-model="activeTab">
+          <v-window-item value="overview">
+            <v-row class="detail-grid">
+              <v-col cols="12" md="6">
+                <SectionCard title="Demographics" icon="mdi-card-account-details-outline">
+                  <v-list>
+                    <v-list-item title="Date of birth" :subtitle="patient.date_of_birth || 'Not provided'" />
+                    <v-list-item title="Gender" :subtitle="patient.gender || 'Not provided'" />
+                    <v-list-item title="Phone" :subtitle="patient.phone || 'Not provided'" />
+                    <v-list-item title="Email" :subtitle="patient.email || 'Not provided'" />
+                    <v-list-item title="Address" :subtitle="patient.address || 'Not provided'" />
+                  </v-list>
+                </SectionCard>
+              </v-col>
 
-        <MedicalRecordsSection :patient-id="patient.id" />
-        <PatientAssessmentsSection :patient-id="patient.id" />
+              <v-col cols="12" md="6">
+                <SectionCard title="Care context" icon="mdi-heart-pulse">
+                  <v-list>
+                    <v-list-item title="Emergency contact" :subtitle="patient.emergency_contact_name || 'Not provided'" />
+                    <v-list-item title="Emergency phone" :subtitle="patient.emergency_contact_phone || 'Not provided'" />
+                  </v-list>
+                  <v-divider class="my-3" />
+                  <div class="text-subtitle-2 mb-2">Diagnosis summary</div>
+                  <div class="text-body-2 text-medium-emphasis">
+                    {{ patient.diagnosis_summary || 'Not provided' }}
+                  </div>
+                </SectionCard>
+              </v-col>
+            </v-row>
+          </v-window-item>
 
-        <v-card>
-          <v-card-title>Visits</v-card-title>
-          <v-data-table
-            :headers="visitHeaders"
-            :items="visits"
-            item-value="id"
-          >
-            <template #no-data>
-              <div class="pa-8 text-center">
-                <v-icon icon="mdi-calendar-clock-outline" size="40" class="mb-3" />
-                <div class="text-h6 mb-2">No visits yet</div>
-                <v-btn color="primary" variant="flat" :to="\`/visits/new?patient_id=\${patient.id}\`">Create visit</v-btn>
+          <v-window-item value="visits">
+            <SectionCard
+              title="Visits"
+              subtitle="Scheduled and completed care for this patient."
+              icon="mdi-calendar-clock-outline"
+              class="data-card"
+            >
+              <div class="d-flex justify-end mb-4">
+                <v-btn color="primary" prepend-icon="mdi-plus" :to="\`/visits/new?patient_id=\${patient.id}\`">
+                  New visit
+                </v-btn>
               </div>
-            </template>
+              <v-data-table :headers="visitHeaders" :items="visits" item-value="id">
+                <template #no-data>
+                  <EmptyState
+                    icon="mdi-calendar-plus-outline"
+                    title="No visits yet"
+                    description="Create the first visit for this patient."
+                    action-label="Create visit"
+                    :action-to="\`/visits/new?patient_id=\${patient.id}\`"
+                  />
+                </template>
+                <template #[\`item.status\`]="{ item }">
+                  <StatusChip :status="item.status" />
+                </template>
+                <template #[\`item.actions\`]="{ item }">
+                  <div class="table-actions">
+                    <v-btn icon="mdi-eye-outline" variant="text" :to="\`/visits/\${item.id}\`" aria-label="View visit" title="View visit" />
+                    <v-btn icon="mdi-pencil-outline" variant="text" :to="\`/visits/\${item.id}/edit\`" aria-label="Edit visit" title="Edit visit" />
+                    <v-btn icon="mdi-delete-outline" variant="text" color="error" aria-label="Delete visit" title="Delete visit" @click="askDelete(item)" />
+                  </div>
+                </template>
+              </v-data-table>
+            </SectionCard>
+          </v-window-item>
 
-            <template #[\`item.status\`]="{ item }">
-              <v-chip :color="item.status === 'completed' ? 'success' : item.status === 'cancelled' ? 'grey' : 'primary'" size="small">
-                {{ item.status }}
-              </v-chip>
-            </template>
+          <v-window-item value="records">
+            <MedicalRecordsSection :patient-id="patient.id" />
+          </v-window-item>
 
-            <template #[\`item.actions\`]="{ item }">
-              <v-btn icon="mdi-eye-outline" variant="text" :to="\`/visits/\${item.id}\`" aria-label="View visit" />
-              <v-btn icon="mdi-pencil-outline" variant="text" :to="\`/visits/\${item.id}/edit\`" aria-label="Edit visit" />
-              <v-btn icon="mdi-delete-outline" variant="text" color="error" aria-label="Delete visit" @click="askDelete(item)" />
-            </template>
-          </v-data-table>
-        </v-card>
+          <v-window-item value="assessments">
+            <PatientAssessmentsSection :patient-id="patient.id" />
+          </v-window-item>
+
+          <v-window-item value="notes">
+            <v-row>
+              <v-col cols="12" md="6">
+                <SectionCard title="Aide notes" icon="mdi-clipboard-check-outline">
+                  <EmptyState
+                    v-if="!aideNotes.length"
+                    icon="mdi-clipboard-text-outline"
+                    title="No aide notes"
+                    description="Aide notes linked to patient visits will appear here."
+                  />
+                  <v-list v-else lines="two">
+                    <v-list-item
+                      v-for="note in aideNotes"
+                      :key="note.id"
+                      :title="note.aide_name || 'Aide note'"
+                      :subtitle="note.signature_date || 'Signature date not provided'"
+                      :to="\`/aide-notes/\${note.id}\`"
+                      append-icon="mdi-chevron-right"
+                    />
+                  </v-list>
+                </SectionCard>
+              </v-col>
+              <v-col cols="12" md="6">
+                <SectionCard title="Nurse notes" icon="mdi-clipboard-pulse-outline">
+                  <EmptyState
+                    v-if="!nurseNotes.length"
+                    icon="mdi-clipboard-text-outline"
+                    title="No nurse notes"
+                    description="Nurse notes linked to patient visits will appear here."
+                  />
+                  <v-list v-else lines="two">
+                    <v-list-item
+                      v-for="note in nurseNotes"
+                      :key="note.id"
+                      :title="note.diagnosis || 'Nurse note'"
+                      :subtitle="note.signature_date || 'Signature date not provided'"
+                      :to="\`/nurse-notes/\${note.id}\`"
+                      append-icon="mdi-chevron-right"
+                    />
+                  </v-list>
+                </SectionCard>
+              </v-col>
+            </v-row>
+          </v-window-item>
+        </v-window>
       </template>
 
       <v-dialog v-model="photoDialog" max-width="560">

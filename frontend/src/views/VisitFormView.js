@@ -144,7 +144,11 @@ export default {
         Visits
       </v-btn>
 
-      <h1 class="text-h4 font-weight-bold mb-5">{{ title }}</h1>
+      <PageHeader
+        :title="title"
+        subtitle="Schedule care, assign staff, and capture visit timing."
+        icon="mdi-calendar-edit-outline"
+      />
 
       <v-alert v-if="error" type="error" variant="tonal" class="mb-4">
         {{ error }}
@@ -153,9 +157,12 @@ export default {
       <v-skeleton-loader v-if="loading" type="heading, paragraph, card" />
 
       <v-form v-else @submit.prevent="submit">
-        <v-card class="mb-5">
-          <v-card-title>Visit details</v-card-title>
-          <v-card-text>
+        <SectionCard
+          title="Visit details"
+          subtitle="Patient, date, service type, and current status."
+          icon="mdi-calendar-text-outline"
+          class="mb-5"
+        >
             <v-row>
               <v-col cols="12" md="6">
                 <v-select
@@ -194,12 +201,14 @@ export default {
                 />
               </v-col>
             </v-row>
-          </v-card-text>
-        </v-card>
+        </SectionCard>
 
-        <v-card class="mb-5">
-          <v-card-title>Staff and time</v-card-title>
-          <v-card-text>
+        <SectionCard
+          title="Staff and time"
+          subtitle="Caregiver assignment, visit window, and operational notes."
+          icon="mdi-account-clock-outline"
+          class="mb-5"
+        >
             <v-row>
               <v-col cols="12" md="6">
                 <v-text-field v-model="form.staff_name" label="Staff name" />
@@ -222,12 +231,11 @@ export default {
                 <v-textarea v-model="form.notes" label="Notes" rows="4" />
               </v-col>
             </v-row>
-          </v-card-text>
-        </v-card>
+        </SectionCard>
 
-        <div class="d-flex justify-end ga-3">
+        <div class="form-actions">
           <v-btn variant="text" to="/visits">Cancel</v-btn>
-          <v-btn color="primary" type="submit" :loading="saving">
+          <v-btn color="primary" prepend-icon="mdi-content-save-outline" type="submit" :loading="saving">
             Save visit
           </v-btn>
         </div>
