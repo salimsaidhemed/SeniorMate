@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Added patient assessments with optional visit linkage, structured JSON findings, CRUD APIs, Swagger documentation, backend tests, and patient/visit frontend workflows.
 - Added private MinIO-backed patient profile photos with upload, preview, verification, deletion, safe API metadata, and initials fallback across patient and visit screens.
 - Added patient Medical Records with private MinIO file storage, PostgreSQL metadata, upload/download CRUD APIs, Swagger documentation, tests, and Patient Detail UI integration.
 - Added a reusable frontend UI foundation with a SeniorMate Vuetify theme, shared page and feedback components, standardized tables, responsive spacing, and UI guidelines.

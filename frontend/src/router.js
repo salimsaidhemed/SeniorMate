@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import DashboardView from "./views/DashboardView.js";
+import AssessmentDetailView from "./views/AssessmentDetailView.js";
+import AssessmentFormView from "./views/AssessmentFormView.js";
 import AideNoteDetailView from "./views/AideNoteDetailView.js";
 import AideNoteFormView from "./views/AideNoteFormView.js";
 import AideNoteListView from "./views/AideNoteListView.js";
@@ -41,6 +43,24 @@ const routes = [
     path: "/patients/:id/edit",
     name: "patient-edit",
     component: PatientFormView,
+    props: { mode: "edit" },
+  },
+  {
+    path: "/assessments/new",
+    name: "assessment-create",
+    component: AssessmentFormView,
+    props: { mode: "create" },
+  },
+  {
+    path: "/assessments/:id",
+    name: "assessment-detail",
+    component: AssessmentDetailView,
+    props: true,
+  },
+  {
+    path: "/assessments/:id/edit",
+    name: "assessment-edit",
+    component: AssessmentFormView,
     props: { mode: "edit" },
   },
   {
