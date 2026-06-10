@@ -24,6 +24,8 @@ ROLE_PERMISSIONS = {
         "patient_photos.verify",
         "dashboard.read",
         "reports.read",
+        "branding.read",
+        "branding.write",
     },
     "nurse": {
         "patients.read",
@@ -39,6 +41,7 @@ ROLE_PERMISSIONS = {
         "patient_photos.read",
         "dashboard.read",
         "reports.read",
+        "branding.read",
     },
     "caregiver": {
         "patients.read",
@@ -50,6 +53,7 @@ ROLE_PERMISSIONS = {
         "medical_records.read",
         "patient_photos.read",
         "reports.read",
+        "branding.read",
     },
     "viewer": {
         "patients.read",
@@ -61,6 +65,7 @@ ROLE_PERMISSIONS = {
         "patient_photos.read",
         "dashboard.read",
         "reports.read",
+        "branding.read",
     },
 }
 
@@ -153,6 +158,8 @@ def authenticate_request():
 
 
 def _resource_for_path(path):
+    if path.startswith("/api/settings/branding"):
+        return "branding"
     if path.startswith("/api/dashboard"):
         return "dashboard"
     if "/medical-records" in path:
@@ -194,7 +201,11 @@ def user_has_permission(user, permission):
 def protect_api_request():
     if not request.path.startswith("/api/"):
         return None
-    if request.method == "OPTIONS" or request.path in PUBLIC_API_PATHS:
+    if (
+        request.method == "OPTIONS"
+        or request.path in PUBLIC_API_PATHS
+        or request.path.startswith("/api/public/branding")
+    ):
         return None
 
     error = authenticate_request()

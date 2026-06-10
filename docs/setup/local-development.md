@@ -82,6 +82,8 @@ Medical Record storage settings:
   `10485760` (10 MB)
 - `PATIENT_PHOTO_MAX_FILE_SIZE`: maximum profile photo size in bytes; defaults
   to `5242880` (5 MB)
+- `BRANDING_LOGO_MAX_FILE_SIZE`: maximum organization logo size in bytes;
+  defaults to `2097152` (2 MB)
 
 Supported uploads are PDF, JPEG, PNG, DOC, and DOCX files. PostgreSQL stores
 metadata and MinIO stores the file bytes.
@@ -89,6 +91,10 @@ metadata and MinIO stores the file bytes.
 Patient profile photos reuse the same private bucket and MinIO credentials.
 Photo objects are stored under `patients/<patient_id>/profile/` and support JPEG
 and PNG images only.
+
+Organization logos also reuse the private bucket. Logo objects are stored under
+`branding/default/logo/` and support validated SVG, PNG, and JPEG files. The
+backend streams the configured logo through a safe public preview endpoint.
 
 ## Backend Setup
 
