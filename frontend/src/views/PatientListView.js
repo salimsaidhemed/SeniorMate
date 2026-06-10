@@ -1,8 +1,12 @@
 import { computed, onMounted, ref } from "vue";
 
+import PatientAvatar from "../components/PatientAvatar.js";
 import { deletePatient, listPatients } from "../services/patients.js";
 
 export default {
+  components: {
+    PatientAvatar,
+  },
   setup() {
     const patients = ref([]);
     const loading = ref(true);
@@ -126,6 +130,13 @@ export default {
 
           <template #[\`item.status\`]="{ item }">
             <StatusChip :status="item.status" />
+          </template>
+
+          <template #[\`item.full_name\`]="{ item }">
+            <div class="d-flex align-center ga-3 py-1">
+              <PatientAvatar :patient="item" :size="38" />
+              <span class="font-weight-medium">{{ item.full_name }}</span>
+            </div>
           </template>
 
           <template #[\`item.actions\`]="{ item }">

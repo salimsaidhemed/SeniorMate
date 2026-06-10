@@ -23,6 +23,12 @@ class Patient(db.Model):
     emergency_contact_phone = db.Column(db.String(50), nullable=True)
     diagnosis_summary = db.Column(db.Text, nullable=True)
     status = db.Column(db.String(20), nullable=False, default="active")
+    photo_object_key = db.Column(db.String(1024), nullable=True, unique=True)
+    photo_file_name = db.Column(db.String(255), nullable=True)
+    photo_mime_type = db.Column(db.String(100), nullable=True)
+    photo_file_size = db.Column(db.BigInteger, nullable=True)
+    photo_uploaded_at = db.Column(db.DateTime(timezone=True), nullable=True)
+    photo_verified = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(
         db.DateTime(timezone=True),
         nullable=False,
@@ -71,6 +77,12 @@ class Patient(db.Model):
             "emergency_contact_phone": self.emergency_contact_phone,
             "diagnosis_summary": self.diagnosis_summary,
             "status": self.status,
+            "has_photo": bool(self.photo_object_key),
+            "photo_verified": self.photo_verified,
+            "photo_file_name": self.photo_file_name,
+            "photo_uploaded_at": self.photo_uploaded_at.isoformat()
+            if self.photo_uploaded_at
+            else None,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }

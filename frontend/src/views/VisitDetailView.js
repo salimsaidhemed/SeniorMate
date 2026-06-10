@@ -1,11 +1,15 @@
 import { computed, onMounted, ref } from "vue";
 
+import PatientAvatar from "../components/PatientAvatar.js";
 import { getVisitAideNote } from "../services/aideNotes.js";
 import { getVisitNurseNote } from "../services/nurseNotes.js";
 import { listPatients } from "../services/patients.js";
 import { getVisit } from "../services/visits.js";
 
 export default {
+  components: {
+    PatientAvatar,
+  },
   props: {
     id: {
       type: String,
@@ -96,11 +100,16 @@ export default {
       <template v-else-if="visit">
         <v-row align="center" class="mb-5">
           <v-col cols="12" md="8">
-            <h1 class="text-h4 font-weight-bold mb-2">{{ visit.visit_type }}</h1>
-            <div class="text-body-1 text-medium-emphasis mb-2">{{ visit.visit_date }} · {{ patientName }}</div>
-            <v-chip :color="visit.status === 'completed' ? 'success' : visit.status === 'cancelled' ? 'grey' : 'primary'" size="small">
-              {{ visit.status }}
-            </v-chip>
+            <div class="d-flex align-center ga-4">
+              <PatientAvatar v-if="patient" :patient="patient" :size="60" show-verification />
+              <div>
+                <h1 class="text-h4 font-weight-bold mb-2">{{ visit.visit_type }}</h1>
+                <div class="text-body-1 text-medium-emphasis mb-2">{{ visit.visit_date }} · {{ patientName }}</div>
+                <v-chip :color="visit.status === 'completed' ? 'success' : visit.status === 'cancelled' ? 'grey' : 'primary'" size="small">
+                  {{ visit.status }}
+                </v-chip>
+              </div>
+            </div>
           </v-col>
           <v-col cols="12" md="4">
             <div class="d-flex flex-wrap justify-md-end ga-2">

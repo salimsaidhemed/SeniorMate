@@ -5,11 +5,11 @@ from minio import Minio
 from minio.error import S3Error
 
 
-class MedicalRecordStorageError(Exception):
+class PrivateObjectStorageError(Exception):
     pass
 
 
-class MinioMedicalRecordStorage:
+class MinioPrivateObjectStorage:
     def __init__(self, client, bucket):
         self.client = client
         self.bucket = bucket
@@ -19,7 +19,7 @@ class MinioMedicalRecordStorage:
             if not self.client.bucket_exists(self.bucket):
                 self.client.make_bucket(self.bucket)
         except Exception as exc:
-            raise MedicalRecordStorageError("Medical record storage is unavailable.") from exc
+            raise PrivateObjectStorageError("Private file storage is unavailable.") from exc
 
     def upload(self, object_key, stream, length, content_type):
         self.ensure_bucket()
@@ -32,7 +32,7 @@ class MinioMedicalRecordStorage:
                 content_type=content_type,
             )
         except Exception as exc:
-            raise MedicalRecordStorageError("Medical record upload failed.") from exc
+            raise PrivateObjectStorageError("Private file upload failed.") from exc
 
     def open(self, object_key):
         try:
@@ -40,21 +40,21 @@ class MinioMedicalRecordStorage:
         except S3Error as exc:
             if exc.code in {"NoSuchKey", "NoSuchObject"}:
                 raise FileNotFoundError(object_key) from exc
-            raise MedicalRecordStorageError("Medical record download failed.") from exc
+            raise PrivateObjectStorageError("Private file download failed.") from exc
         except Exception as exc:
-            raise MedicalRecordStorageError("Medical record download failed.") from exc
+            raise PrivateObjectStorageError("Private file download failed.") from exc
 
     def delete(self, object_key):
         try:
             self.client.remove_object(self.bucket, object_key)
         except S3Error as exc:
             if exc.code not in {"NoSuchKey", "NoSuchObject"}:
-                raise MedicalRecordStorageError(
-                    "Medical record storage cleanup failed."
+                raise PrivateObjectStorageError(
+                    "Private file storage cleanup failed."
                 ) from exc
         except Exception as exc:
-            raise MedicalRecordStorageError(
-                "Medical record storage cleanup failed."
+            raise PrivateObjectStorageError(
+                "Private file storage cleanup failed."
             ) from exc
 
 
@@ -70,7 +70,7 @@ def build_minio_storage():
         secret_key=current_app.config["MINIO_SECRET_KEY"],
         secure=secure,
     )
-    return MinioMedicalRecordStorage(client, current_app.config["MINIO_BUCKET"])
+    return MinioPrivateObjectStorage(client, current_app.config["MINIO_BUCKET"])
 
 
 def get_medical_record_storage():
@@ -78,4 +78,12 @@ def get_medical_record_storage():
     if storage is None:
         storage = build_minio_storage()
         current_app.extensions["medical_record_storage"] = storage
+    return storage
+
+
+def get_patient_photo_storage():
+    storage = current_app.extensions.get("patient_photo_storage")
+    if storage is None:
+        storage = build_minio_storage()
+        current_app.extensions["patient_photo_storage"] = storage
     return storage

@@ -7,7 +7,7 @@ from werkzeug.utils import secure_filename
 
 from app.extensions import db
 from app.models import MedicalRecord, Patient
-from app.storage import MedicalRecordStorageError, get_medical_record_storage
+from app.storage import PrivateObjectStorageError, get_medical_record_storage
 from app.swagger import (
     medical_record_create_spec,
     medical_record_delete_spec,
@@ -201,7 +201,7 @@ def create_medical_record():
             data["file_size"],
             data["upload"].mimetype,
         )
-    except MedicalRecordStorageError as exc:
+    except PrivateObjectStorageError as exc:
         return error_response(str(exc), 502)
 
     record = MedicalRecord(
@@ -262,7 +262,7 @@ def delete_medical_record(medical_record_id):
 
     try:
         get_medical_record_storage().delete(record.storage_object_key)
-    except MedicalRecordStorageError as exc:
+    except PrivateObjectStorageError as exc:
         return error_response(str(exc), 502)
 
     db.session.delete(record)
@@ -302,7 +302,7 @@ def download_medical_record(medical_record_id):
         source = get_medical_record_storage().open(record.storage_object_key)
     except FileNotFoundError:
         return error_response("Stored medical record file not found", 404)
-    except MedicalRecordStorageError as exc:
+    except PrivateObjectStorageError as exc:
         return error_response(str(exc), 502)
 
     @stream_with_context

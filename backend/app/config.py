@@ -17,4 +17,7 @@ class Config:
     MEDICAL_RECORD_MAX_FILE_SIZE = int(
         os.getenv("MEDICAL_RECORD_MAX_FILE_SIZE", str(10 * 1024 * 1024))
     )
+    PATIENT_PHOTO_MAX_FILE_SIZE = int(
+        os.getenv("PATIENT_PHOTO_MAX_FILE_SIZE", str(5 * 1024 * 1024))
+    )
     CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")

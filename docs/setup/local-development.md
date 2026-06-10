@@ -80,9 +80,15 @@ Medical Record storage settings:
 - `MINIO_SECURE`: set to `true` when the MinIO endpoint uses TLS
 - `MEDICAL_RECORD_MAX_FILE_SIZE`: maximum upload size in bytes; defaults to
   `10485760` (10 MB)
+- `PATIENT_PHOTO_MAX_FILE_SIZE`: maximum profile photo size in bytes; defaults
+  to `5242880` (5 MB)
 
 Supported uploads are PDF, JPEG, PNG, DOC, and DOCX files. PostgreSQL stores
 metadata and MinIO stores the file bytes.
+
+Patient profile photos reuse the same private bucket and MinIO credentials.
+Photo objects are stored under `patients/<patient_id>/profile/` and support JPEG
+and PNG images only.
 
 ## Backend Setup
 

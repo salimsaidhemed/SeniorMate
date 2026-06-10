@@ -37,6 +37,8 @@ def test_openapi_json_includes_health_and_patient_endpoints(client):
     assert "/api/medical-records/{medical_record_id}" in paths
     assert "/api/patients/{patient_id}/medical-records" in paths
     assert "/api/medical-records/{medical_record_id}/download" in paths
+    assert "/api/patients/{patient_id}/photo" in paths
+    assert "/api/patients/{patient_id}/photo/verify" in paths
     assert "get" in paths["/api/health"]
     assert "get" in paths["/api/dashboard/stats"]
     assert {"get", "post"} <= set(paths["/api/patients"].keys())
@@ -64,6 +66,10 @@ def test_openapi_json_includes_health_and_patient_endpoints(client):
     )
     assert "get" in paths["/api/patients/{patient_id}/medical-records"]
     assert "get" in paths["/api/medical-records/{medical_record_id}/download"]
+    assert {"get", "post", "delete"} <= set(
+        paths["/api/patients/{patient_id}/photo"].keys()
+    )
+    assert "patch" in paths["/api/patients/{patient_id}/photo/verify"]
 
 
 def test_openapi_json_includes_patient_schemas(client):
@@ -99,3 +105,4 @@ def test_openapi_json_includes_patient_schemas(client):
     assert "MedicalRecordUpdate" in definitions
     assert "MedicalRecordResponse" in definitions
     assert "MedicalRecordListResponse" in definitions
+    assert "PatientPhotoVerification" in definitions

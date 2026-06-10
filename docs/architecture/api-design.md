@@ -291,6 +291,63 @@ Example response:
 }
 ```
 
+## Patient Photos
+
+Patient profile photos are stored as private MinIO objects. PostgreSQL stores
+only the object key and safe metadata. Standard patient responses include:
+
+- `has_photo`
+- `photo_verified`
+- `photo_file_name`
+- `photo_uploaded_at`
+
+Raw object keys, MinIO credentials, and private object URLs are not returned.
+JPEG and PNG images are supported. The default limit is 5 MB and can be changed
+with `PATIENT_PHOTO_MAX_FILE_SIZE`.
+
+### Upload or Replace a Photo
+
+`POST /api/patients/<patient_id>/photo`
+
+Use `multipart/form-data` with a required `file` field. The backend validates the
+extension, MIME type, file signature, and configured size limit. New and
+replacement photos start with `photo_verified` set to `false`.
+
+Objects use the private path:
+
+```text
+patients/<patient_id>/profile/<generated-file-name>
+```
+
+### Preview a Photo
+
+`GET /api/patients/<patient_id>/photo`
+
+The backend streams the private JPEG or PNG inline. The MinIO bucket remains
+private and the frontend falls back to patient initials if no image exists or
+the preview cannot load.
+
+### Verify a Photo
+
+`PATCH /api/patients/<patient_id>/photo/verify`
+
+Example request:
+
+```json
+{
+  "verified": true
+}
+```
+
+The endpoint also accepts `false` to mark a photo unverified.
+
+### Delete a Photo
+
+`DELETE /api/patients/<patient_id>/photo`
+
+The object is removed from MinIO and all photo metadata is cleared from the
+patient. `photo_verified` is reset to `false`.
+
 ## Medical Records API
 
 Medical Records store patient document metadata in PostgreSQL and file bytes in a
