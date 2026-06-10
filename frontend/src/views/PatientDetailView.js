@@ -3,6 +3,13 @@ import { computed, onMounted, ref } from "vue";
 import MedicalRecordsSection from "../components/MedicalRecordsSection.js";
 import PatientAvatar from "../components/PatientAvatar.js";
 import PatientAssessmentsSection from "../components/PatientAssessmentsSection.js";
+import {
+  canEditPatient,
+  canManagePatientPhotos,
+  canManageVisits,
+  canVerifyPatientPhoto,
+  canViewReports,
+} from "../permissions.js";
 import { getPatientAideNotes } from "../services/aideNotes.js";
 import { getPatientNurseNotes } from "../services/nurseNotes.js";
 import {
@@ -181,6 +188,11 @@ export default {
       askDelete,
       confirmDelete,
       confirmPhotoDelete,
+      canEditPatient,
+      canManagePatientPhotos,
+      canManageVisits,
+      canVerifyPatientPhoto,
+      canViewReports,
       deleting,
       deletingPhoto,
       fullName,
@@ -242,20 +254,20 @@ export default {
             </v-chip>
           </template>
           <template #actions>
-              <v-btn color="primary" prepend-icon="mdi-calendar-plus-outline" :to="\`/visits/new?patient_id=\${patient.id}\`">
+              <v-btn v-if="canManageVisits()" color="primary" prepend-icon="mdi-calendar-plus-outline" :to="\`/visits/new?patient_id=\${patient.id}\`">
                 New visit
               </v-btn>
-              <v-btn color="primary" variant="tonal" prepend-icon="mdi-pencil-outline" :to="\`/patients/\${patient.id}/edit\`">
+              <v-btn v-if="canEditPatient()" color="primary" variant="tonal" prepend-icon="mdi-pencil-outline" :to="\`/patients/\${patient.id}/edit\`">
                 Edit patient
               </v-btn>
-              <v-btn variant="outlined" prepend-icon="mdi-printer-outline" :to="\`/patients/\${patient.id}/print\`">
+              <v-btn v-if="canViewReports()" variant="outlined" prepend-icon="mdi-printer-outline" :to="\`/patients/\${patient.id}/print\`">
                 Print summary
               </v-btn>
-              <v-btn variant="outlined" prepend-icon="mdi-camera-outline" @click="openPhotoDialog">
+              <v-btn v-if="canManagePatientPhotos()" variant="outlined" prepend-icon="mdi-camera-outline" @click="openPhotoDialog">
                 {{ patient.has_photo ? 'Replace photo' : 'Upload photo' }}
               </v-btn>
               <v-btn
-                v-if="patient.has_photo"
+                v-if="patient.has_photo && canVerifyPatientPhoto()"
                 variant="outlined"
                 :prepend-icon="patient.photo_verified ? 'mdi-shield-off-outline' : 'mdi-check-decagram-outline'"
                 :loading="updatingVerification"
@@ -264,7 +276,7 @@ export default {
                 {{ patient.photo_verified ? 'Mark unverified' : 'Mark verified' }}
               </v-btn>
               <v-btn
-                v-if="patient.has_photo"
+                v-if="patient.has_photo && canManagePatientPhotos()"
                 color="error"
                 variant="text"
                 prepend-icon="mdi-delete-outline"
@@ -321,7 +333,7 @@ export default {
               icon="mdi-calendar-clock-outline"
               class="data-card"
             >
-              <div class="d-flex justify-end mb-4">
+              <div v-if="canManageVisits()" class="d-flex justify-end mb-4">
                 <v-btn color="primary" prepend-icon="mdi-plus" :to="\`/visits/new?patient_id=\${patient.id}\`">
                   New visit
                 </v-btn>
@@ -332,8 +344,8 @@ export default {
                     icon="mdi-calendar-plus-outline"
                     title="No visits yet"
                     description="Create the first visit for this patient."
-                    action-label="Create visit"
-                    :action-to="\`/visits/new?patient_id=\${patient.id}\`"
+                    :action-label="canManageVisits() ? 'Create visit' : ''"
+                    :action-to="canManageVisits() ? \`/visits/new?patient_id=\${patient.id}\` : ''"
                   />
                 </template>
                 <template #[\`item.status\`]="{ item }">
@@ -342,8 +354,8 @@ export default {
                 <template #[\`item.actions\`]="{ item }">
                   <div class="table-actions">
                     <v-btn icon="mdi-eye-outline" variant="text" :to="\`/visits/\${item.id}\`" aria-label="View visit" title="View visit" />
-                    <v-btn icon="mdi-pencil-outline" variant="text" :to="\`/visits/\${item.id}/edit\`" aria-label="Edit visit" title="Edit visit" />
-                    <v-btn icon="mdi-delete-outline" variant="text" color="error" aria-label="Delete visit" title="Delete visit" @click="askDelete(item)" />
+                    <v-btn v-if="canManageVisits()" icon="mdi-pencil-outline" variant="text" :to="\`/visits/\${item.id}/edit\`" aria-label="Edit visit" title="Edit visit" />
+                    <v-btn v-if="canManageVisits()" icon="mdi-delete-outline" variant="text" color="error" aria-label="Delete visit" title="Delete visit" @click="askDelete(item)" />
                   </div>
                 </template>
               </v-data-table>
@@ -405,7 +417,7 @@ export default {
         </v-window>
       </template>
 
-      <v-dialog v-model="photoDialog" max-width="560">
+      <v-dialog v-if="canManagePatientPhotos()" v-model="photoDialog" max-width="560">
         <v-card>
           <v-card-title class="d-flex align-center ga-2">
             <v-icon icon="mdi-camera-outline" color="primary" />
@@ -433,6 +445,7 @@ export default {
       </v-dialog>
 
       <ConfirmDialog
+        v-if="canManagePatientPhotos()"
         v-model="confirmPhotoDelete"
         title="Delete patient photo"
         message="Delete this patient profile photo? The private stored image will also be removed."
@@ -441,6 +454,7 @@ export default {
       />
 
       <ConfirmDialog
+        v-if="canManageVisits()"
         v-model="confirmDelete"
         title="Delete visit"
         :message="\`Delete \${selectedVisit?.visit_type || 'this visit'} from \${selectedVisit?.visit_date || 'the patient record'}?\`"

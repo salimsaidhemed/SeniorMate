@@ -2,6 +2,7 @@ import { computed, onMounted, ref } from "vue";
 
 import { listPatients } from "../services/patients.js";
 import { deleteVisit, listVisits } from "../services/visits.js";
+import { canManageVisits } from "../permissions.js";
 
 export default {
   setup() {
@@ -132,6 +133,7 @@ export default {
       changePage,
       clearFilters,
       confirmDelete,
+      canManageVisits,
       deleting,
       error,
       filters,
@@ -153,7 +155,7 @@ export default {
         icon="mdi-calendar-clock-outline"
       >
         <template #actions>
-          <v-btn color="primary" prepend-icon="mdi-plus" to="/visits/new">
+          <v-btn v-if="canManageVisits()" color="primary" prepend-icon="mdi-plus" to="/visits/new">
             New visit
           </v-btn>
         </template>
@@ -216,8 +218,8 @@ export default {
               icon="mdi-calendar-plus-outline"
               title="No visits yet"
               description="Schedule the first patient visit to begin tracking care activity."
-              action-label="Create visit"
-              action-to="/visits/new"
+              :action-label="canManageVisits() ? 'Create visit' : ''"
+              :action-to="canManageVisits() ? '/visits/new' : ''"
             />
           </template>
 
@@ -232,8 +234,8 @@ export default {
           <template #[\`item.actions\`]="{ item }">
             <div class="table-actions">
               <v-btn icon="mdi-eye-outline" variant="text" :to="\`/visits/\${item.id}\`" aria-label="View visit" title="View visit" />
-              <v-btn icon="mdi-pencil-outline" variant="text" :to="\`/visits/\${item.id}/edit\`" aria-label="Edit visit" title="Edit visit" />
-              <v-btn icon="mdi-delete-outline" variant="text" color="error" aria-label="Delete visit" title="Delete visit" @click="askDelete(item)" />
+              <v-btn v-if="canManageVisits()" icon="mdi-pencil-outline" variant="text" :to="\`/visits/\${item.id}/edit\`" aria-label="Edit visit" title="Edit visit" />
+              <v-btn v-if="canManageVisits()" icon="mdi-delete-outline" variant="text" color="error" aria-label="Delete visit" title="Delete visit" @click="askDelete(item)" />
             </div>
           </template>
         </v-data-table>

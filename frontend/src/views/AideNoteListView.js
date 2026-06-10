@@ -1,6 +1,7 @@
 import { computed, onMounted, ref } from "vue";
 
 import { deleteAideNote, listAideNotes } from "../services/aideNotes.js";
+import { canCreateAideNote } from "../permissions.js";
 import { listPatients } from "../services/patients.js";
 import { listVisits } from "../services/visits.js";
 
@@ -138,6 +139,7 @@ export default {
       changePage,
       clearFilters,
       confirmDelete,
+      canCreateAideNote,
       deleting,
       error,
       filters,
@@ -216,8 +218,8 @@ export default {
           <template #[\`item.actions\`]="{ item }">
             <div class="table-actions">
               <v-btn icon="mdi-eye-outline" variant="text" :to="\`/aide-notes/\${item.id}\`" aria-label="View aide note" title="View aide note" />
-              <v-btn icon="mdi-pencil-outline" variant="text" :to="\`/aide-notes/\${item.id}/edit\`" aria-label="Edit aide note" title="Edit aide note" />
-              <v-btn icon="mdi-delete-outline" variant="text" color="error" aria-label="Delete aide note" title="Delete aide note" @click="askDelete(item)" />
+              <v-btn v-if="canCreateAideNote()" icon="mdi-pencil-outline" variant="text" :to="\`/aide-notes/\${item.id}/edit\`" aria-label="Edit aide note" title="Edit aide note" />
+              <v-btn v-if="canCreateAideNote()" icon="mdi-delete-outline" variant="text" color="error" aria-label="Delete aide note" title="Delete aide note" @click="askDelete(item)" />
             </div>
           </template>
         </v-data-table>

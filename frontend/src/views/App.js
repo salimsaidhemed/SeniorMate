@@ -5,13 +5,43 @@ import {
   defaultLogoUrl,
   useDefaultLogo,
 } from "../branding.js";
+import {
+  can,
+  canManageBranding,
+  canManageUsers,
+} from "../permissions.js";
 
 const navItems = [
-  { title: "Dashboard", icon: "mdi-view-dashboard-outline", to: "/" },
-  { title: "Patients", icon: "mdi-account-heart-outline", to: "/patients" },
-  { title: "Visits", icon: "mdi-calendar-clock-outline", to: "/visits" },
-  { title: "Aide Notes", icon: "mdi-clipboard-check-outline", to: "/aide-notes" },
-  { title: "Nurse Notes", icon: "mdi-clipboard-pulse-outline", to: "/nurse-notes" },
+  {
+    title: "Dashboard",
+    icon: "mdi-view-dashboard-outline",
+    to: "/",
+    permission: "dashboard.read",
+  },
+  {
+    title: "Patients",
+    icon: "mdi-account-heart-outline",
+    to: "/patients",
+    permission: "patients.read",
+  },
+  {
+    title: "Visits",
+    icon: "mdi-calendar-clock-outline",
+    to: "/visits",
+    permission: "visits.read",
+  },
+  {
+    title: "Aide Notes",
+    icon: "mdi-clipboard-check-outline",
+    to: "/aide-notes",
+    permission: "aide_notes.read",
+  },
+  {
+    title: "Nurse Notes",
+    icon: "mdi-clipboard-pulse-outline",
+    to: "/nurse-notes",
+    permission: "nurse_notes.read",
+  },
 ];
 
 export default {
@@ -30,14 +60,11 @@ export default {
           .toUpperCase() || "SM"
       );
     });
-    const canManageBranding = computed(
-      () =>
-        !authState.enabled ||
-        authState.roles.some((role) => ["admin", "manager"].includes(role)),
+    const visibleNavItems = computed(() =>
+      navItems.filter((item) => can(item.permission)),
     );
-    const canManageUsers = computed(
-      () => !authState.enabled || authState.roles.includes("admin"),
-    );
+    const showBrandingSettings = computed(() => canManageBranding());
+    const showUserManagement = computed(() => canManageUsers());
     const sidebarTextColor = computed(() => {
       const hex = brandingState.sidebar_color.replace("#", "");
       const [red, green, blue] = [0, 2, 4].map((index) =>
@@ -51,17 +78,17 @@ export default {
     return {
       authState,
       brandingState,
-      canManageBranding,
-      canManageUsers,
       defaultLogoUrl,
       displayRole,
       drawer,
       login,
       logout,
-      navItems,
+      showBrandingSettings,
+      showUserManagement,
       sidebarTextColor,
       useDefaultLogo,
       userInitials,
+      visibleNavItems,
     };
   },
   template: `
@@ -94,7 +121,7 @@ export default {
         <v-list density="comfortable" nav class="px-3 pt-4">
           <v-list-subheader>Workspace</v-list-subheader>
           <v-list-item
-            v-for="item in navItems"
+            v-for="item in visibleNavItems"
             :key="item.to"
             :prepend-icon="item.icon"
             :title="item.title"
@@ -106,14 +133,14 @@ export default {
         </v-list>
 
         <v-list
-          v-if="canManageUsers || canManageBranding"
+          v-if="showUserManagement || showBrandingSettings"
           density="comfortable"
           nav
           class="px-3"
         >
           <v-list-subheader>Settings</v-list-subheader>
           <v-list-item
-            v-if="canManageUsers"
+            v-if="showUserManagement"
             prepend-icon="mdi-account-cog-outline"
             title="Users"
             to="/admin/users"
@@ -121,7 +148,7 @@ export default {
             rounded="lg"
           />
           <v-list-item
-            v-if="canManageBranding"
+            v-if="showBrandingSettings"
             prepend-icon="mdi-palette-outline"
             title="Branding"
             to="/settings/branding"

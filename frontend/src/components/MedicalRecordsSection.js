@@ -7,6 +7,7 @@ import {
   updateMedicalRecord,
   uploadMedicalRecord,
 } from "../services/medicalRecords.js";
+import { canManageMedicalRecords } from "../permissions.js";
 
 
 const emptyUploadForm = () => ({
@@ -213,6 +214,7 @@ export default {
 
     return {
       askDelete,
+      canManageMedicalRecords,
       confirmDelete,
       deleting,
       downloadRecord,
@@ -251,7 +253,7 @@ export default {
           <div class="text-body-2 text-medium-emphasis">
             PDFs, images, Word documents, care plans, prescriptions, and assessments.
           </div>
-          <v-btn color="primary" prepend-icon="mdi-upload-outline" @click="openUpload">
+          <v-btn v-if="canManageMedicalRecords()" color="primary" prepend-icon="mdi-upload-outline" @click="openUpload">
             Upload record
           </v-btn>
         </div>
@@ -313,12 +315,14 @@ export default {
                 @click="downloadRecord(item)"
               />
               <v-btn
+                v-if="canManageMedicalRecords()"
                 icon="mdi-pencil-outline"
                 variant="text"
                 aria-label="Edit medical record details"
                 @click="openEdit(item)"
               />
               <v-btn
+                v-if="canManageMedicalRecords()"
                 icon="mdi-delete-outline"
                 variant="text"
                 color="error"
@@ -331,7 +335,7 @@ export default {
       </template>
     </SectionCard>
 
-    <v-dialog v-model="uploadDialog" max-width="680">
+    <v-dialog v-if="canManageMedicalRecords()" v-model="uploadDialog" max-width="680">
       <v-card>
         <v-card-title class="d-flex align-center ga-2">
           <v-icon icon="mdi-upload-outline" color="primary" />
@@ -385,7 +389,7 @@ export default {
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="editDialog" max-width="640">
+    <v-dialog v-if="canManageMedicalRecords()" v-model="editDialog" max-width="640">
       <v-card>
         <v-card-title class="d-flex align-center ga-2">
           <v-icon icon="mdi-file-edit-outline" color="primary" />
@@ -423,6 +427,7 @@ export default {
     </v-dialog>
 
     <ConfirmDialog
+      v-if="canManageMedicalRecords()"
       v-model="confirmDelete"
       title="Delete medical record"
       :message="\`Delete \${selectedRecord?.title || 'this medical record'} and its stored file? This cannot be undone.\`"

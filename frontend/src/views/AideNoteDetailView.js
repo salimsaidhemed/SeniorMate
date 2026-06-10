@@ -1,6 +1,7 @@
 import { computed, onMounted, ref } from "vue";
 
 import { getAideNote } from "../services/aideNotes.js";
+import { canCreateAideNote, canViewReports } from "../permissions.js";
 import { listPatients } from "../services/patients.js";
 import { listVisits } from "../services/visits.js";
 
@@ -81,6 +82,8 @@ export default {
 
     return {
       aideNote,
+      canCreateAideNote,
+      canViewReports,
       checklistSections,
       error,
       formatChecklist,
@@ -111,10 +114,10 @@ export default {
           </v-col>
           <v-col cols="12" md="4" class="text-md-right">
             <div class="d-flex flex-wrap justify-md-end ga-2">
-              <v-btn variant="outlined" prepend-icon="mdi-printer-outline" :to="\`/aide-notes/\${aideNote.id}/print\`">
+              <v-btn v-if="canViewReports()" variant="outlined" prepend-icon="mdi-printer-outline" :to="\`/aide-notes/\${aideNote.id}/print\`">
                 Print note
               </v-btn>
-              <v-btn color="primary" prepend-icon="mdi-pencil-outline" :to="\`/aide-notes/\${aideNote.id}/edit\`">
+              <v-btn v-if="canCreateAideNote()" color="primary" prepend-icon="mdi-pencil-outline" :to="\`/aide-notes/\${aideNote.id}/edit\`">
                 Edit aide note
               </v-btn>
             </div>

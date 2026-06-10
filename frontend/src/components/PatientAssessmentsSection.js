@@ -4,6 +4,7 @@ import {
   deleteAssessment,
   getPatientAssessments,
 } from "../services/assessments.js";
+import { canManageAssessments } from "../permissions.js";
 
 
 const assessmentLabels = {
@@ -85,6 +86,7 @@ export default {
       assessmentLabel,
       assessments,
       askDelete,
+      canManageAssessments,
       confirmDelete,
       deleting,
       error,
@@ -102,7 +104,7 @@ export default {
       icon="mdi-clipboard-text-search-outline"
       class="data-card mb-6"
     >
-      <div class="d-flex flex-wrap justify-end ga-3 mb-4">
+      <div v-if="canManageAssessments()" class="d-flex flex-wrap justify-end ga-3 mb-4">
         <v-btn
           color="primary"
           prepend-icon="mdi-clipboard-plus-outline"
@@ -132,6 +134,7 @@ export default {
             message="Create the first structured assessment for this patient."
           >
             <v-btn
+              v-if="canManageAssessments()"
               color="primary"
               :to="\`/assessments/new?patient_id=\${patientId}\`"
             >
@@ -160,12 +163,14 @@ export default {
             aria-label="View assessment"
           />
           <v-btn
+            v-if="canManageAssessments()"
             icon="mdi-pencil-outline"
             variant="text"
             :to="\`/assessments/\${item.id}/edit\`"
             aria-label="Edit assessment"
           />
           <v-btn
+            v-if="canManageAssessments()"
             icon="mdi-delete-outline"
             variant="text"
             color="error"
@@ -176,6 +181,7 @@ export default {
       </v-data-table>
 
       <ConfirmDialog
+        v-if="canManageAssessments()"
         v-model="confirmDelete"
         title="Delete assessment"
         :message="\`Delete this \${assessmentLabel(selectedAssessment?.assessment_type || '')} assessment?\`"

@@ -1,6 +1,7 @@
 import { computed, onMounted, ref } from "vue";
 
 import { getAssessment } from "../services/assessments.js";
+import { canManageAssessments, canViewReports } from "../permissions.js";
 import { getPatient } from "../services/patients.js";
 import { getVisit } from "../services/visits.js";
 
@@ -77,6 +78,8 @@ export default {
 
     return {
       assessment,
+      canManageAssessments,
+      canViewReports,
       error,
       findingRows,
       loading,
@@ -107,6 +110,7 @@ export default {
         >
           <template #actions>
             <v-btn
+              v-if="canViewReports()"
               variant="outlined"
               prepend-icon="mdi-printer-outline"
               :to="\`/assessments/\${assessment.id}/print\`"
@@ -114,6 +118,7 @@ export default {
               Print assessment
             </v-btn>
             <v-btn
+              v-if="canManageAssessments()"
               color="primary"
               prepend-icon="mdi-pencil-outline"
               :to="\`/assessments/\${assessment.id}/edit\`"
