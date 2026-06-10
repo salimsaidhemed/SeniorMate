@@ -1,0 +1,175 @@
+{
+  "realm": "seniormate",
+  "displayName": "SeniorMate",
+  "enabled": true,
+  "registrationAllowed": false,
+  "resetPasswordAllowed": true,
+  "rememberMe": true,
+  "roles": {
+    "realm": [
+      { "name": "admin", "description": "Full SeniorMate access" },
+      { "name": "manager", "description": "Operational record management" },
+      { "name": "nurse", "description": "Clinical care workflows" },
+      { "name": "caregiver", "description": "Aide care workflows" },
+      { "name": "viewer", "description": "Read-only access" }
+    ]
+  },
+  "groups": [
+    {
+      "name": "seniormate-admins",
+      "realmRoles": ["admin"]
+    },
+    {
+      "name": "orgs",
+      "subGroups": [
+        {
+          "name": "default",
+          "subGroups": [
+            { "name": "admins", "realmRoles": ["admin"] },
+            { "name": "managers", "realmRoles": ["manager"] },
+            { "name": "nurses", "realmRoles": ["nurse"] },
+            { "name": "caregivers", "realmRoles": ["caregiver"] },
+            { "name": "viewers", "realmRoles": ["viewer"] }
+          ]
+        }
+      ]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "seniormate-frontend",
+      "name": "SeniorMate Frontend",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": ["http://localhost:5173/*"],
+      "webOrigins": ["http://localhost:5173"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:5173/*"
+      },
+      "protocolMappers": [
+        {
+          "name": "seniormate-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "seniormate-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        },
+        {
+          "name": "groups",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-group-membership-mapper",
+          "consentRequired": false,
+          "config": {
+            "full.path": "true",
+            "claim.name": "groups",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "seniormate-api",
+      "name": "SeniorMate API",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "bearerOnly": true
+    }
+  ],
+  "users": [
+    {
+      "username": "admin.demo",
+      "firstName": "Admin",
+      "lastName": "Demo",
+      "email": "admin.demo@example.test",
+      "emailVerified": true,
+      "enabled": true,
+      "realmRoles": ["admin"],
+      "groups": ["/seniormate-admins", "/orgs/default/admins"],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "change-me-local-only",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "manager.demo",
+      "firstName": "Manager",
+      "lastName": "Demo",
+      "email": "manager.demo@example.test",
+      "emailVerified": true,
+      "enabled": true,
+      "realmRoles": ["manager"],
+      "groups": ["/orgs/default/managers"],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "change-me-local-only",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "nurse.demo",
+      "firstName": "Nurse",
+      "lastName": "Demo",
+      "email": "nurse.demo@example.test",
+      "emailVerified": true,
+      "enabled": true,
+      "realmRoles": ["nurse"],
+      "groups": ["/orgs/default/nurses"],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "change-me-local-only",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "caregiver.demo",
+      "firstName": "Caregiver",
+      "lastName": "Demo",
+      "email": "caregiver.demo@example.test",
+      "emailVerified": true,
+      "enabled": true,
+      "realmRoles": ["caregiver"],
+      "groups": ["/orgs/default/caregivers"],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "change-me-local-only",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "viewer.demo",
+      "firstName": "Viewer",
+      "lastName": "Demo",
+      "email": "viewer.demo@example.test",
+      "emailVerified": true,
+      "enabled": true,
+      "realmRoles": ["viewer"],
+      "groups": ["/orgs/default/viewers"],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "change-me-local-only",
+          "temporary": false
+        }
+      ]
+    }
+  ]
+}

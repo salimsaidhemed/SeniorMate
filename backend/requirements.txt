@@ -6,3 +6,4 @@ flasgger==0.9.7b2
 gunicorn==23.0.0
 minio==7.2.20
 psycopg[binary]==3.2.9
+PyJWT[crypto]==2.10.1

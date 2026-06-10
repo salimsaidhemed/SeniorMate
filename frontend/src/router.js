@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { authState, hasAnyRole, login } from "./auth.js";
 
 import DashboardView from "./views/DashboardView.js";
 import AssessmentDetailView from "./views/AssessmentDetailView.js";
@@ -26,6 +27,7 @@ const routes = [
     path: "/",
     name: "dashboard",
     component: DashboardView,
+    meta: { roles: ["admin", "manager", "nurse", "viewer"] },
   },
   {
     path: "/patients",
@@ -37,6 +39,7 @@ const routes = [
     name: "patient-create",
     component: PatientFormView,
     props: { mode: "create" },
+    meta: { roles: ["admin", "manager"] },
   },
   {
     path: "/patients/:id",
@@ -49,6 +52,7 @@ const routes = [
     name: "patient-edit",
     component: PatientFormView,
     props: { mode: "edit" },
+    meta: { roles: ["admin", "manager"] },
   },
   {
     path: "/patients/:id/print",
@@ -61,6 +65,7 @@ const routes = [
     name: "assessment-create",
     component: AssessmentFormView,
     props: { mode: "create" },
+    meta: { roles: ["admin", "manager", "nurse"] },
   },
   {
     path: "/assessments/:id",
@@ -73,6 +78,7 @@ const routes = [
     name: "assessment-edit",
     component: AssessmentFormView,
     props: { mode: "edit" },
+    meta: { roles: ["admin", "manager", "nurse"] },
   },
   {
     path: "/assessments/:id/print",
@@ -90,6 +96,7 @@ const routes = [
     name: "visit-create",
     component: VisitFormView,
     props: { mode: "create" },
+    meta: { roles: ["admin", "manager", "nurse"] },
   },
   {
     path: "/visits/:id",
@@ -102,6 +109,7 @@ const routes = [
     name: "visit-edit",
     component: VisitFormView,
     props: { mode: "edit" },
+    meta: { roles: ["admin", "manager", "nurse"] },
   },
   {
     path: "/visits/:id/print",
@@ -119,6 +127,7 @@ const routes = [
     name: "aide-note-create",
     component: AideNoteFormView,
     props: { mode: "create" },
+    meta: { roles: ["admin", "manager", "caregiver"] },
   },
   {
     path: "/aide-notes/:id",
@@ -131,6 +140,7 @@ const routes = [
     name: "aide-note-edit",
     component: AideNoteFormView,
     props: { mode: "edit" },
+    meta: { roles: ["admin", "manager", "caregiver"] },
   },
   {
     path: "/aide-notes/:id/print",
@@ -148,6 +158,7 @@ const routes = [
     name: "nurse-note-create",
     component: NurseNoteFormView,
     props: { mode: "create" },
+    meta: { roles: ["admin", "manager", "nurse"] },
   },
   {
     path: "/nurse-notes/:id",
@@ -160,6 +171,7 @@ const routes = [
     name: "nurse-note-edit",
     component: NurseNoteFormView,
     props: { mode: "edit" },
+    meta: { roles: ["admin", "manager", "nurse"] },
   },
   {
     path: "/nurse-notes/:id/print",
@@ -172,6 +184,22 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+router.beforeEach(async (to) => {
+  if (authState.error) {
+    return true;
+  }
+  if (!authState.authenticated) {
+    await login();
+    return false;
+  }
+  if (!hasAnyRole(to.meta.roles || [])) {
+    return to.name === "dashboard"
+      ? { name: "patients" }
+      : { name: "dashboard" };
+  }
+  return true;
 });
 
 export default router;

@@ -22,7 +22,7 @@ import PrintSection from "./components/PrintSection.js";
 import SectionCard from "./components/SectionCard.js";
 import SignatureBlock from "./components/SignatureBlock.js";
 import StatusChip from "./components/StatusChip.js";
-import router from "./router.js";
+import { initializeAuth } from "./auth.js";
 
 const vuetify = createVuetify({
   components,
@@ -82,20 +82,31 @@ const vuetify = createVuetify({
   },
 });
 
-createApp(App)
-  .component("ChecklistSummary", ChecklistSummary)
-  .component("ConfirmDialog", ConfirmDialog)
-  .component("DetailHeader", DetailHeader)
-  .component("EmptyState", EmptyState)
-  .component("ErrorAlert", ErrorAlert)
-  .component("LoadingState", LoadingState)
-  .component("PageHeader", PageHeader)
-  .component("PrintField", PrintField)
-  .component("PrintPageLayout", PrintPageLayout)
-  .component("PrintSection", PrintSection)
-  .component("SectionCard", SectionCard)
-  .component("SignatureBlock", SignatureBlock)
-  .component("StatusChip", StatusChip)
-  .use(router)
-  .use(vuetify)
-  .mount("#app");
+async function bootstrap() {
+  try {
+    await initializeAuth();
+  } catch (error) {
+    console.error("SeniorMate authentication initialization failed.", error);
+  }
+  const { default: router } = await import("./router.js");
+
+  createApp(App)
+    .component("ChecklistSummary", ChecklistSummary)
+    .component("ConfirmDialog", ConfirmDialog)
+    .component("DetailHeader", DetailHeader)
+    .component("EmptyState", EmptyState)
+    .component("ErrorAlert", ErrorAlert)
+    .component("LoadingState", LoadingState)
+    .component("PageHeader", PageHeader)
+    .component("PrintField", PrintField)
+    .component("PrintPageLayout", PrintPageLayout)
+    .component("PrintSection", PrintSection)
+    .component("SectionCard", SectionCard)
+    .component("SignatureBlock", SignatureBlock)
+    .component("StatusChip", StatusChip)
+    .use(router)
+    .use(vuetify)
+    .mount("#app");
+}
+
+bootstrap();

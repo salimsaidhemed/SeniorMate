@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Added Keycloak/OIDC authentication with local realm configuration, frontend login/logout and token refresh, backend JWT validation, role-based API permissions, protected routes, Swagger bearer authorization, tests, and setup documentation.
 - Added authentication, authorization, organization branding, and default product identity design documentation with four original SeniorMate SVG logo concepts.
 - Added search, filtering, and pagination for patient, visit, aide note, and nurse note list workflows.
 - Added print-friendly patient, visit, aide note, nurse note, and assessment reports with reusable report components and browser print/PDF styling.
