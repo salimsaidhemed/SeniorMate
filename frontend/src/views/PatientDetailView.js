@@ -2,6 +2,7 @@ import { computed, onMounted, ref } from "vue";
 
 import MedicalRecordsSection from "../components/MedicalRecordsSection.js";
 import PatientAvatar from "../components/PatientAvatar.js";
+import PatientAssessmentsSection from "../components/PatientAssessmentsSection.js";
 import {
   deletePatientPhoto,
   getPatient,
@@ -14,6 +15,7 @@ export default {
   components: {
     MedicalRecordsSection,
     PatientAvatar,
+    PatientAssessmentsSection,
   },
   props: {
     id: {
@@ -282,6 +284,7 @@ export default {
         </v-row>
 
         <MedicalRecordsSection :patient-id="patient.id" />
+        <PatientAssessmentsSection :patient-id="patient.id" />
 
         <v-card>
           <v-card-title>Visits</v-card-title>

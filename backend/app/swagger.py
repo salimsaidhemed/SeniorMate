@@ -272,6 +272,68 @@ nurse_note_request_properties = {
     if key not in {"id", "created_at", "updated_at"}
 }
 
+assessment_findings_schema = {
+    "nullable": True,
+    "description": "Flexible JSON object or array containing assessment findings.",
+    "example": {
+        "risk_level": "moderate",
+        "observations": ["Uses walker", "Needs standby assistance"],
+    },
+}
+
+patient_assessment_properties = {
+    "id": {"type": "integer", "example": 1},
+    "patient_id": {"type": "integer", "example": 1},
+    "visit_id": {"type": "integer", "nullable": True, "example": 2},
+    "assessment_type": {
+        "type": "string",
+        "enum": ["fall_risk", "nutrition", "mobility", "cognitive", "general"],
+        "example": "fall_risk",
+    },
+    "assessment_date": {
+        "type": "string",
+        "format": "date",
+        "example": "2026-06-10",
+    },
+    "performed_by": {
+        "type": "string",
+        "nullable": True,
+        "example": "Jordan Lee, RN",
+    },
+    "summary": {
+        "type": "string",
+        "nullable": True,
+        "example": "Moderate fall risk identified during home visit.",
+    },
+    "findings": assessment_findings_schema,
+    "recommendations": {
+        "type": "string",
+        "nullable": True,
+        "example": "Continue walker use and clear the hallway.",
+    },
+    "status": {
+        "type": "string",
+        "enum": ["draft", "completed"],
+        "example": "completed",
+    },
+    "created_at": {
+        "type": "string",
+        "format": "date-time",
+        "example": "2026-06-10T10:00:00+00:00",
+    },
+    "updated_at": {
+        "type": "string",
+        "format": "date-time",
+        "example": "2026-06-10T10:00:00+00:00",
+    },
+}
+
+patient_assessment_request_properties = {
+    key: value
+    for key, value in patient_assessment_properties.items()
+    if key not in {"id", "created_at", "updated_at"}
+}
+
 dashboard_group_item_properties = {
     "label": {"type": "string", "example": "active"},
     "count": {"type": "integer", "example": 4},
@@ -462,6 +524,19 @@ swagger_template = {
             "type": "object",
             "properties": nurse_note_request_properties,
         },
+        "PatientAssessment": {
+            "type": "object",
+            "properties": patient_assessment_properties,
+        },
+        "PatientAssessmentCreate": {
+            "type": "object",
+            "required": ["patient_id", "assessment_type", "assessment_date"],
+            "properties": patient_assessment_request_properties,
+        },
+        "PatientAssessmentUpdate": {
+            "type": "object",
+            "properties": patient_assessment_request_properties,
+        },
         "MedicalRecord": {
             "type": "object",
             "properties": medical_record_properties,
@@ -595,6 +670,29 @@ swagger_template = {
                 "message": {
                     "type": "string",
                     "example": "Nurse notes retrieved successfully",
+                },
+            },
+        },
+        "PatientAssessmentResponse": {
+            "type": "object",
+            "properties": {
+                "data": {"$ref": "#/definitions/PatientAssessment"},
+                "message": {
+                    "type": "string",
+                    "example": "Assessment retrieved successfully",
+                },
+            },
+        },
+        "PatientAssessmentListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {"$ref": "#/definitions/PatientAssessment"},
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Assessments retrieved successfully",
                 },
             },
         },
@@ -1570,6 +1668,165 @@ medical_record_download_spec = {
         },
         502: {
             "description": "Medical record storage is unavailable.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+assessment_list_spec = {
+    "tags": ["Patient Assessments"],
+    "summary": "List patient assessments",
+    "responses": {
+        200: {
+            "description": "Assessments retrieved successfully.",
+            "schema": {"$ref": "#/definitions/PatientAssessmentListResponse"},
+        }
+    },
+}
+
+assessment_get_spec = {
+    "tags": ["Patient Assessments"],
+    "summary": "Retrieve a patient assessment",
+    "parameters": [
+        {
+            "name": "assessment_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        }
+    ],
+    "responses": {
+        200: {
+            "description": "Assessment retrieved successfully.",
+            "schema": {"$ref": "#/definitions/PatientAssessmentResponse"},
+        },
+        404: {
+            "description": "Assessment not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+assessment_create_spec = {
+    "tags": ["Patient Assessments"],
+    "summary": "Create a patient assessment",
+    "parameters": [
+        {
+            "name": "body",
+            "in": "body",
+            "required": True,
+            "schema": {"$ref": "#/definitions/PatientAssessmentCreate"},
+        }
+    ],
+    "responses": {
+        201: {
+            "description": "Assessment created successfully.",
+            "schema": {"$ref": "#/definitions/PatientAssessmentResponse"},
+        },
+        400: {
+            "description": "Invalid assessment data.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+assessment_update_spec = {
+    "tags": ["Patient Assessments"],
+    "summary": "Update a patient assessment",
+    "parameters": [
+        {
+            "name": "assessment_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        },
+        {
+            "name": "body",
+            "in": "body",
+            "required": True,
+            "schema": {"$ref": "#/definitions/PatientAssessmentUpdate"},
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "Assessment updated successfully.",
+            "schema": {"$ref": "#/definitions/PatientAssessmentResponse"},
+        },
+        400: {
+            "description": "Invalid assessment data.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+        404: {
+            "description": "Assessment not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+assessment_delete_spec = {
+    "tags": ["Patient Assessments"],
+    "summary": "Delete a patient assessment",
+    "parameters": [
+        {
+            "name": "assessment_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        }
+    ],
+    "responses": {
+        200: {
+            "description": "Assessment deleted successfully.",
+            "schema": {"$ref": "#/definitions/DeleteSuccessResponse"},
+        },
+        404: {
+            "description": "Assessment not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+patient_assessments_list_spec = {
+    "tags": ["Patient Assessments"],
+    "summary": "List assessments for a patient",
+    "parameters": [
+        {
+            "name": "patient_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        }
+    ],
+    "responses": {
+        200: {
+            "description": "Patient assessments retrieved successfully.",
+            "schema": {"$ref": "#/definitions/PatientAssessmentListResponse"},
+        },
+        404: {
+            "description": "Patient not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+visit_assessments_list_spec = {
+    "tags": ["Patient Assessments"],
+    "summary": "List assessments for a visit",
+    "parameters": [
+        {
+            "name": "visit_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        }
+    ],
+    "responses": {
+        200: {
+            "description": "Visit assessments retrieved successfully.",
+            "schema": {"$ref": "#/definitions/PatientAssessmentListResponse"},
+        },
+        404: {
+            "description": "Visit not found.",
             "schema": {"$ref": "#/definitions/ErrorResponse"},
         },
     },

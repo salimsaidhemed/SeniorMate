@@ -1295,3 +1295,112 @@ Example response:
   "message": "Nurse note deleted successfully"
 }
 ```
+
+## Patient Assessments
+
+Patient assessments capture structured care findings for a patient and may
+optionally be linked to a visit. Supported assessment types are:
+
+- `fall_risk`
+- `nutrition`
+- `mobility`
+- `cognitive`
+- `general`
+
+Assessment status is `draft` by default and may be changed to `completed`.
+The `findings` field is stored as JSON so each assessment type can evolve
+without requiring a new database column for every observation.
+
+### Assessment Endpoints
+
+- `GET /api/assessments`
+- `GET /api/assessments/<id>`
+- `POST /api/assessments`
+- `PUT /api/assessments/<id>`
+- `DELETE /api/assessments/<id>`
+- `GET /api/patients/<patient_id>/assessments`
+- `GET /api/visits/<visit_id>/assessments`
+
+### Create an Assessment
+
+`POST /api/assessments`
+
+Example request:
+
+```json
+{
+  "patient_id": 1,
+  "visit_id": 4,
+  "assessment_type": "fall_risk",
+  "assessment_date": "2026-06-10",
+  "performed_by": "Jordan Lee, RN",
+  "summary": "Moderate fall risk identified during the home visit.",
+  "findings": {
+    "risk_level": "moderate",
+    "observations": [
+      "Uses walker",
+      "Needs standby assistance"
+    ]
+  },
+  "recommendations": "Continue walker use and clear the hallway.",
+  "status": "completed"
+}
+```
+
+Example response:
+
+```json
+{
+  "data": {
+    "id": 1,
+    "patient_id": 1,
+    "visit_id": 4,
+    "assessment_type": "fall_risk",
+    "assessment_date": "2026-06-10",
+    "performed_by": "Jordan Lee, RN",
+    "summary": "Moderate fall risk identified during the home visit.",
+    "findings": {
+      "risk_level": "moderate",
+      "observations": [
+        "Uses walker",
+        "Needs standby assistance"
+      ]
+    },
+    "recommendations": "Continue walker use and clear the hallway.",
+    "status": "completed",
+    "created_at": "2026-06-10T10:00:00+00:00",
+    "updated_at": "2026-06-10T10:00:00+00:00"
+  },
+  "message": "Assessment created successfully"
+}
+```
+
+`patient_id`, `assessment_type`, and `assessment_date` are required. When a
+`visit_id` is supplied, the visit must exist and belong to the selected
+patient.
+
+### Update an Assessment
+
+`PUT /api/assessments/<id>`
+
+Example request:
+
+```json
+{
+  "summary": "Fall risk reduced after environmental changes.",
+  "status": "completed"
+}
+```
+
+### List Assessments for a Patient
+
+`GET /api/patients/<patient_id>/assessments`
+
+Assessments are returned newest assessment date first.
+
+### List Assessments for a Visit
+
+`GET /api/visits/<visit_id>/assessments`
+
+This endpoint returns all assessments linked to the visit. A visit can have
+multiple assessment types.
