@@ -36,11 +36,25 @@ The file `keycloak/seniormate-realm.json` creates:
 - Realm: `seniormate`
 - Public PKCE client: `seniormate-frontend`
 - Bearer-only API audience: `seniormate-api`
+- Confidential admin service client: `seniormate-admin-api`
 - Roles: `admin`, `manager`, `nurse`, `caregiver`, `viewer`
 - Groups under `/seniormate-admins` and `/orgs/default/*`
 
 The frontend client adds `seniormate-api` to access-token audiences and includes
 group membership in tokens. It has no client secret.
+
+The backend service client uses the client-credentials flow and receives only
+the realm-management roles needed to view and manage users. Configure it with:
+
+```bash
+KEYCLOAK_BASE_URL=http://keycloak:8080
+KEYCLOAK_REALM=seniormate
+KEYCLOAK_ADMIN_CLIENT_ID=seniormate-admin-api
+KEYCLOAK_ADMIN_CLIENT_SECRET=change-me-local-only
+```
+
+The checked-in value is a local placeholder. Use a secret manager and rotate
+the client secret outside local development.
 
 ## Development Users
 
@@ -66,6 +80,8 @@ Delete or replace these users in any non-local environment.
   authoritative.
 - With `AUTH_ENABLED=false`, the backend uses a local development identity and
   existing tests do not contact Keycloak.
+- Admin users can manage realm users at `http://localhost:5173/admin/users`.
+  Other SeniorMate roles cannot access the navigation item or backend routes.
 
 ## Swagger Authorization
 

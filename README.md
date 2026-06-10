@@ -102,6 +102,7 @@ Docker Compose is the recommended way to run the local SeniorMate stack. It star
    - Visits UI: `http://localhost:5173/visits`
    - Aide Notes UI: `http://localhost:5173/aide-notes`
    - Nurse Notes UI: `http://localhost:5173/nurse-notes`
+   - Admin user management: `http://localhost:5173/admin/users`
    - Branding settings: `http://localhost:5173/settings/branding`
    - Backend health: `http://localhost:5001/api/health`
    - Swagger UI: `http://localhost:5001/api/docs`
@@ -126,6 +127,12 @@ the imported realm, local demo users, roles, and Swagger testing workflow.
 Administrators and managers can customize the app and organization names,
 logo, theme colors, banner text, and footer text from `Settings → Branding`.
 Custom logos remain private in MinIO and are delivered through the backend.
+
+When authentication is enabled, administrators can manage Keycloak users,
+temporary password resets, enabled status, and SeniorMate roles from
+`Admin → Users`. See
+[docs/user-guide/admin-user-management.md](docs/user-guide/admin-user-management.md)
+for the workflow and safety constraints.
 
 ## CI Checks
 

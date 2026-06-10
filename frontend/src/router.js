@@ -9,6 +9,7 @@ import AideNoteDetailView from "./views/AideNoteDetailView.js";
 import AideNoteFormView from "./views/AideNoteFormView.js";
 import AideNoteListView from "./views/AideNoteListView.js";
 import AideNotePrintView from "./views/AideNotePrintView.js";
+import AdminUsersView from "./views/AdminUsersView.js";
 import BrandingSettingsView from "./views/BrandingSettingsView.js";
 import NurseNotePrintView from "./views/NurseNotePrintView.js";
 import PatientDetailView from "./views/PatientDetailView.js";
@@ -179,6 +180,12 @@ const routes = [
     name: "nurse-note-print",
     component: NurseNotePrintView,
     props: true,
+  },
+  {
+    path: "/admin/users",
+    name: "admin-users",
+    component: AdminUsersView,
+    meta: { roles: ["admin"] },
   },
   {
     path: "/settings/branding",

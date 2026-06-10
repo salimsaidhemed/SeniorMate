@@ -35,6 +35,9 @@ export default {
         !authState.enabled ||
         authState.roles.some((role) => ["admin", "manager"].includes(role)),
     );
+    const canManageUsers = computed(
+      () => !authState.enabled || authState.roles.includes("admin"),
+    );
     const sidebarTextColor = computed(() => {
       const hex = brandingState.sidebar_color.replace("#", "");
       const [red, green, blue] = [0, 2, 4].map((index) =>
@@ -49,6 +52,7 @@ export default {
       authState,
       brandingState,
       canManageBranding,
+      canManageUsers,
       defaultLogoUrl,
       displayRole,
       drawer,
@@ -101,9 +105,23 @@ export default {
           />
         </v-list>
 
-        <v-list v-if="canManageBranding" density="comfortable" nav class="px-3">
+        <v-list
+          v-if="canManageUsers || canManageBranding"
+          density="comfortable"
+          nav
+          class="px-3"
+        >
           <v-list-subheader>Settings</v-list-subheader>
           <v-list-item
+            v-if="canManageUsers"
+            prepend-icon="mdi-account-cog-outline"
+            title="Users"
+            to="/admin/users"
+            color="primary"
+            rounded="lg"
+          />
+          <v-list-item
+            v-if="canManageBranding"
             prepend-icon="mdi-palette-outline"
             title="Branding"
             to="/settings/branding"
