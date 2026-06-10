@@ -19,6 +19,16 @@ class Config:
         f"{KEYCLOAK_ISSUER}/protocol/openid-connect/certs",
     )
     KEYCLOAK_AUDIENCE = os.getenv("KEYCLOAK_AUDIENCE", "seniormate-api")
+    KEYCLOAK_BASE_URL = os.getenv("KEYCLOAK_BASE_URL", "http://localhost:8080")
+    KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM", "seniormate")
+    KEYCLOAK_ADMIN_CLIENT_ID = os.getenv(
+        "KEYCLOAK_ADMIN_CLIENT_ID",
+        "seniormate-admin-api",
+    )
+    KEYCLOAK_ADMIN_CLIENT_SECRET = os.getenv(
+        "KEYCLOAK_ADMIN_CLIENT_SECRET",
+        "change-me-local-only",
+    )
     MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT", "http://localhost:9000")
     MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY", "local-access-key")
     MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY", "change-me-local-only")

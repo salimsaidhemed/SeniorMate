@@ -447,6 +447,32 @@ medical_record_update_properties = {
     if key in {"title", "description", "record_type", "uploaded_by"}
 }
 
+admin_user_properties = {
+    "id": {"type": "string", "example": "6f909abd-7f3f-4cf4-9819-190ca38b5978"},
+    "username": {"type": "string", "example": "alex.morgan"},
+    "email": {
+        "type": "string",
+        "format": "email",
+        "example": "alex.morgan@example.test",
+    },
+    "first_name": {"type": "string", "nullable": True, "example": "Alex"},
+    "last_name": {"type": "string", "nullable": True, "example": "Morgan"},
+    "enabled": {"type": "boolean", "example": True},
+    "email_verified": {"type": "boolean", "example": False},
+    "roles": {
+        "type": "array",
+        "items": {
+            "type": "string",
+            "enum": ["admin", "manager", "nurse", "caregiver", "viewer"],
+        },
+        "example": ["caregiver"],
+    },
+}
+
+admin_user_update_properties = {
+    key: value for key, value in admin_user_properties.items() if key != "id"
+}
+
 swagger_config = {
     "headers": [],
     "specs": [
@@ -811,6 +837,84 @@ swagger_template = {
                 },
             },
         },
+        "AdminUser": {
+            "type": "object",
+            "properties": admin_user_properties,
+        },
+        "AdminUserCreate": {
+            "type": "object",
+            "required": ["username", "email", "password"],
+            "properties": {
+                **admin_user_update_properties,
+                "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "change-me-on-first-login",
+                },
+                "temporary_password": {
+                    "type": "boolean",
+                    "default": True,
+                },
+            },
+        },
+        "AdminUserUpdate": {
+            "type": "object",
+            "properties": admin_user_update_properties,
+        },
+        "AdminUserEnabled": {
+            "type": "object",
+            "required": ["enabled"],
+            "properties": {"enabled": {"type": "boolean"}},
+        },
+        "AdminUserRoles": {
+            "type": "object",
+            "required": ["roles"],
+            "properties": {"roles": admin_user_properties["roles"]},
+        },
+        "AdminPasswordReset": {
+            "type": "object",
+            "required": ["password"],
+            "properties": {
+                "password": {"type": "string", "format": "password"},
+                "temporary": {"type": "boolean", "default": True},
+            },
+        },
+        "AdminUserResponse": {
+            "type": "object",
+            "properties": {
+                "data": {"$ref": "#/definitions/AdminUser"},
+                "message": {"type": "string"},
+            },
+        },
+        "AdminUserListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {"$ref": "#/definitions/AdminUser"},
+                },
+                "message": {"type": "string"},
+            },
+        },
+        "AdminRoleListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "admin",
+                            "manager",
+                            "nurse",
+                            "caregiver",
+                            "viewer",
+                        ],
+                    },
+                },
+                "message": {"type": "string"},
+            },
+        },
         "DeleteSuccessResponse": {
             "type": "object",
             "properties": {
@@ -823,6 +927,194 @@ swagger_template = {
                     "example": "Patient deleted successfully",
                 },
             },
+        },
+    },
+}
+
+admin_user_list_spec = {
+    "tags": ["Admin Users"],
+    "summary": "List Keycloak users",
+    "description": "Requires the SeniorMate admin role.",
+    "responses": {
+        200: {
+            "description": "Users retrieved successfully.",
+            "schema": {"$ref": "#/definitions/AdminUserListResponse"},
+        },
+        403: {
+            "description": "Admin role required.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+        502: {
+            "description": "Keycloak Admin API unavailable.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+admin_user_get_spec = {
+    "tags": ["Admin Users"],
+    "summary": "Retrieve a Keycloak user",
+    "description": "Requires the SeniorMate admin role.",
+    "parameters": [
+        {"name": "user_id", "in": "path", "type": "string", "required": True}
+    ],
+    "responses": {
+        200: {
+            "description": "User retrieved successfully.",
+            "schema": {"$ref": "#/definitions/AdminUserResponse"},
+        },
+        404: {
+            "description": "User not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+admin_user_create_spec = {
+    "tags": ["Admin Users"],
+    "summary": "Create a Keycloak user",
+    "description": "Requires the SeniorMate admin role.",
+    "parameters": [
+        {
+            "name": "body",
+            "in": "body",
+            "required": True,
+            "schema": {"$ref": "#/definitions/AdminUserCreate"},
+        }
+    ],
+    "responses": {
+        201: {
+            "description": "User created successfully.",
+            "schema": {"$ref": "#/definitions/AdminUserResponse"},
+        },
+        400: {
+            "description": "Invalid user data.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+        409: {
+            "description": "Username or email already exists.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+admin_user_update_spec = {
+    "tags": ["Admin Users"],
+    "summary": "Update a Keycloak user",
+    "description": "Requires the SeniorMate admin role.",
+    "parameters": [
+        {"name": "user_id", "in": "path", "type": "string", "required": True},
+        {
+            "name": "body",
+            "in": "body",
+            "required": True,
+            "schema": {"$ref": "#/definitions/AdminUserUpdate"},
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "User updated successfully.",
+            "schema": {"$ref": "#/definitions/AdminUserResponse"},
+        },
+        400: {
+            "description": "Invalid user data.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+admin_user_enabled_spec = {
+    "tags": ["Admin Users"],
+    "summary": "Enable or disable a Keycloak user",
+    "description": "Requires the SeniorMate admin role.",
+    "parameters": [
+        {"name": "user_id", "in": "path", "type": "string", "required": True},
+        {
+            "name": "body",
+            "in": "body",
+            "required": True,
+            "schema": {"$ref": "#/definitions/AdminUserEnabled"},
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "User enabled state updated.",
+            "schema": {"$ref": "#/definitions/AdminUserResponse"},
+        }
+    },
+}
+
+admin_user_delete_spec = {
+    "tags": ["Admin Users"],
+    "summary": "Delete a Keycloak user",
+    "description": "Requires the SeniorMate admin role.",
+    "parameters": [
+        {"name": "user_id", "in": "path", "type": "string", "required": True}
+    ],
+    "responses": {
+        200: {"description": "User deleted successfully."},
+        404: {
+            "description": "User not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+admin_user_reset_password_spec = {
+    "tags": ["Admin Users"],
+    "summary": "Set a temporary Keycloak user password",
+    "description": "Requires the SeniorMate admin role. Passwords are never read.",
+    "parameters": [
+        {"name": "user_id", "in": "path", "type": "string", "required": True},
+        {
+            "name": "body",
+            "in": "body",
+            "required": True,
+            "schema": {"$ref": "#/definitions/AdminPasswordReset"},
+        },
+    ],
+    "responses": {
+        200: {"description": "Password reset successfully."},
+        400: {
+            "description": "Password is required.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+admin_role_list_spec = {
+    "tags": ["Admin Users"],
+    "summary": "List assignable SeniorMate roles",
+    "description": "Requires the SeniorMate admin role.",
+    "responses": {
+        200: {
+            "description": "Roles retrieved successfully.",
+            "schema": {"$ref": "#/definitions/AdminRoleListResponse"},
+        }
+    },
+}
+
+admin_user_roles_spec = {
+    "tags": ["Admin Users"],
+    "summary": "Replace a user's SeniorMate roles",
+    "description": "Requires the SeniorMate admin role.",
+    "parameters": [
+        {"name": "user_id", "in": "path", "type": "string", "required": True},
+        {
+            "name": "body",
+            "in": "body",
+            "required": True,
+            "schema": {"$ref": "#/definitions/AdminUserRoles"},
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "User roles updated successfully.",
+            "schema": {"$ref": "#/definitions/AdminUserResponse"},
+        },
+        400: {
+            "description": "Invalid SeniorMate role.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
         },
     },
 }

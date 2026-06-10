@@ -14,6 +14,7 @@ from app.models import Patient as Patient
 from app.models import PatientAssessment as PatientAssessment
 from app.models import Visit as Visit
 from app.routes.assessments import assessments_bp
+from app.routes.admin_users import admin_users_bp
 from app.routes.aide_notes import aide_notes_bp
 from app.routes.dashboard import dashboard_bp
 from app.routes.branding import branding_bp
@@ -34,6 +35,7 @@ def create_app(config_object=Config):
     migrate.init_app(app, db)
     app.before_request(protect_api_request)
     app.register_blueprint(assessments_bp)
+    app.register_blueprint(admin_users_bp)
     app.register_blueprint(aide_notes_bp)
     app.register_blueprint(branding_bp)
     app.register_blueprint(dashboard_bp)

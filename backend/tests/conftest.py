@@ -5,6 +5,7 @@ import pytest
 from app import create_app
 from app.config import Config
 from app.extensions import db
+from tests.test_admin_users import FakeKeycloakAdminClient
 
 
 class TestConfig(Config):
@@ -45,6 +46,7 @@ def app():
     app.extensions["medical_record_storage"] = storage
     app.extensions["patient_photo_storage"] = storage
     app.extensions["branding_logo_storage"] = storage
+    app.extensions["keycloak_admin_client"] = FakeKeycloakAdminClient()
 
     with app.app_context():
         db.create_all()
@@ -71,3 +73,8 @@ def patient_photo_storage(app):
 @pytest.fixture()
 def branding_logo_storage(app):
     return app.extensions["branding_logo_storage"]
+
+
+@pytest.fixture()
+def keycloak_admin_client(app):
+    return app.extensions["keycloak_admin_client"]

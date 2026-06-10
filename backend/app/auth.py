@@ -158,6 +158,8 @@ def authenticate_request():
 
 
 def _resource_for_path(path):
+    if path.startswith("/api/admin/users") or path.startswith("/api/admin/roles"):
+        return "user_admin"
     if path.startswith("/api/settings/branding"):
         return "branding"
     if path.startswith("/api/dashboard"):
@@ -183,6 +185,8 @@ def _required_permission(path, method):
     resource = _resource_for_path(path)
     if not resource:
         return None
+    if resource == "user_admin":
+        return "user_admin.manage"
     if resource == "patient_photos" and path.endswith("/verify"):
         return "patient_photos.verify"
     action = "read" if method in {"GET", "HEAD"} else "write"

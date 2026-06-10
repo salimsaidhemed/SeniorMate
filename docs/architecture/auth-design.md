@@ -47,6 +47,7 @@ Use one realm for the SeniorMate product initially. Separate environments should
 | --- | --- | --- |
 | `seniormate-frontend` | Public OIDC client | Vue browser application using Authorization Code with PKCE. |
 | `seniormate-api` | API audience/client | Represents the Flask API and expected access-token audience. |
+| `seniormate-admin-api` | Confidential service client | Allows the Flask backend to manage realm users through the Keycloak Admin API. |
 
 The frontend client must not contain a client secret. The API should reject tokens that do not include the expected issuer and audience.
 
@@ -159,6 +160,20 @@ testing real authentication.
 Branding settings are readable by authenticated roles. Only `admin` and
 `manager` roles receive `branding.write`; the public branding and logo preview
 endpoints remain unauthenticated so identity can resolve before login.
+
+## Admin User Management
+
+SeniorMate exposes an admin-only application interface over the Keycloak Admin
+API. The backend authenticates with the confidential
+`seniormate-admin-api` service account and keeps its client secret server-side.
+The browser never calls Keycloak Admin API directly.
+
+- Only the `admin` SeniorMate role receives `user_admin.manage`.
+- Managers and other roles receive `403` from all `/api/admin/*` endpoints.
+- `AUTH_ENABLED=false` preserves the explicit local development bypass.
+- Passwords are write-only: SeniorMate sends new temporary credentials to
+  Keycloak and never stores or retrieves them.
+- User identities and role mappings remain owned by Keycloak.
 
 ## Multi-Organization Direction
 

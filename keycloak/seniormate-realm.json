@@ -83,9 +83,33 @@
       "enabled": true,
       "protocol": "openid-connect",
       "bearerOnly": true
+    },
+    {
+      "clientId": "seniormate-admin-api",
+      "name": "SeniorMate Keycloak Admin Service",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "change-me-local-only",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false
     }
   ],
   "users": [
+    {
+      "username": "service-account-seniormate-admin-api",
+      "enabled": true,
+      "serviceAccountClientId": "seniormate-admin-api",
+      "clientRoles": {
+        "realm-management": [
+          "manage-users",
+          "query-users",
+          "view-users",
+          "view-realm"
+        ]
+      }
+    },
     {
       "username": "admin.demo",
       "firstName": "Admin",
