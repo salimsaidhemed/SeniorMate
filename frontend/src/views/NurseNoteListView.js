@@ -42,6 +42,12 @@ export default {
         ])
       )
     );
+    const patientOptions = computed(() =>
+      patients.value.map((patient) => ({
+        title: `${patient.first_name} ${patient.last_name}`,
+        value: patient.id,
+      }))
+    );
     const visitDates = computed(() =>
       Object.fromEntries(visits.value.map((visit) => [visit.id, visit.visit_date]))
     );
@@ -136,6 +142,7 @@ export default {
       headers,
       loading,
       pagination,
+      patientOptions,
       removeNurseNote,
       rows,
       selectedNote,
@@ -165,7 +172,7 @@ export default {
               <v-select
                 v-model="filters.patient_id"
                 label="Patient"
-                :items="patients.map((patient) => ({ title: patient.first_name + ' ' + patient.last_name, value: patient.id }))"
+                :items="patientOptions"
                 item-title="title"
                 item-value="value"
                 clearable
