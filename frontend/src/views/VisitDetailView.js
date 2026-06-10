@@ -134,6 +134,9 @@ export default {
             <v-btn variant="outlined" prepend-icon="mdi-account-outline" :to="\`/patients/\${visit.patient_id}\`">
               Patient
             </v-btn>
+            <v-btn variant="outlined" prepend-icon="mdi-printer-outline" :to="\`/visits/\${visit.id}/print\`">
+              Print summary
+            </v-btn>
             <v-btn color="primary" prepend-icon="mdi-pencil-outline" :to="\`/visits/\${visit.id}/edit\`">
               Edit visit
             </v-btn>

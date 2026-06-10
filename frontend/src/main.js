@@ -9,13 +9,18 @@ import * as directives from "vuetify/directives";
 import { aliases, mdi } from "vuetify/iconsets/mdi";
 
 import App from "./views/App.js";
+import ChecklistSummary from "./components/ChecklistSummary.js";
 import ConfirmDialog from "./components/ConfirmDialog.js";
 import DetailHeader from "./components/DetailHeader.js";
 import EmptyState from "./components/EmptyState.js";
 import ErrorAlert from "./components/ErrorAlert.js";
 import LoadingState from "./components/LoadingState.js";
 import PageHeader from "./components/PageHeader.js";
+import PrintField from "./components/PrintField.js";
+import PrintPageLayout from "./components/PrintPageLayout.js";
+import PrintSection from "./components/PrintSection.js";
 import SectionCard from "./components/SectionCard.js";
+import SignatureBlock from "./components/SignatureBlock.js";
 import StatusChip from "./components/StatusChip.js";
 import router from "./router.js";
 
@@ -78,13 +83,18 @@ const vuetify = createVuetify({
 });
 
 createApp(App)
+  .component("ChecklistSummary", ChecklistSummary)
   .component("ConfirmDialog", ConfirmDialog)
   .component("DetailHeader", DetailHeader)
   .component("EmptyState", EmptyState)
   .component("ErrorAlert", ErrorAlert)
   .component("LoadingState", LoadingState)
   .component("PageHeader", PageHeader)
+  .component("PrintField", PrintField)
+  .component("PrintPageLayout", PrintPageLayout)
+  .component("PrintSection", PrintSection)
   .component("SectionCard", SectionCard)
+  .component("SignatureBlock", SignatureBlock)
   .component("StatusChip", StatusChip)
   .use(router)
   .use(vuetify)
