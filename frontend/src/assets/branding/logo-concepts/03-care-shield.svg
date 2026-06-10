@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="112" viewBox="0 0 420 112" role="img" aria-labelledby="title desc">
+  <title id="title">SeniorMate Care Shield</title>
+  <desc id="desc">A blue green shield with a centered healthcare cross beside the SeniorMate name.</desc>
+  <rect width="420" height="112" fill="#ffffff"/>
+  <path d="M56 14 91 27v24c0 23-14 39-35 48C35 90 21 74 21 51V27L56 14Z" fill="#3e7188"/>
+  <path d="M56 25 80 34v17c0 16-9 28-24 36-15-8-24-20-24-36V34l24-9Z" fill="#e8f1f3"/>
+  <rect x="51" y="38" width="10" height="34" rx="4" fill="#1f6f68"/>
+  <rect x="39" y="50" width="34" height="10" rx="4" fill="#1f6f68"/>
+  <text x="120" y="58" fill="#20302f" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="700">SeniorMate</text>
+  <text x="121" y="81" fill="#657775" font-family="Inter, Arial, sans-serif" font-size="13">trusted records for dependable care</text>
+</svg>

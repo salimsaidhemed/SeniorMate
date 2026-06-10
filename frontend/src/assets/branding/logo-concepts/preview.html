@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SeniorMate Logo Concepts</title>
+    <style>
+      :root {
+        color: #20302f;
+        background: #eef3f2;
+        font-family: Inter, Arial, sans-serif;
+      }
+
+      body {
+        margin: 0;
+        padding: 32px;
+      }
+
+      main {
+        width: min(960px, 100%);
+        margin: 0 auto;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 28px;
+      }
+
+      .intro {
+        margin: 8px 0 26px;
+        color: #657775;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      figure {
+        margin: 0;
+        overflow: hidden;
+        background: #ffffff;
+        border: 1px solid #cbd7d5;
+        border-radius: 8px;
+      }
+
+      img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      figcaption {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 14px;
+        border-top: 1px solid #e0e8e6;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .recommended {
+        padding: 4px 7px;
+        color: #1f6f68;
+        background: #e4f1ef;
+        border-radius: 4px;
+        font-size: 11px;
+        text-transform: uppercase;
+      }
+
+      @media (max-width: 680px) {
+        body {
+          padding: 20px;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>SeniorMate Logo Concepts</h1>
+      <p class="intro">Original vector directions for maintainer review. No concept is active in the application.</p>
+      <div class="grid">
+        <figure>
+          <img src="01-care-cross-wordmark.svg" alt="Care Cross Wordmark concept" />
+          <figcaption>
+            <span>01. Care Cross Wordmark</span>
+            <span class="recommended">Recommended</span>
+          </figcaption>
+        </figure>
+        <figure>
+          <img src="02-sm-path-monogram.svg" alt="SM Path Monogram concept" />
+          <figcaption>02. SM Path Monogram</figcaption>
+        </figure>
+        <figure>
+          <img src="03-care-shield.svg" alt="Care Shield concept" />
+          <figcaption>03. Care Shield</figcaption>
+        </figure>
+        <figure>
+          <img src="04-heart-at-home.svg" alt="Heart at Home concept" />
+          <figcaption>04. Heart at Home</figcaption>
+        </figure>
+      </div>
+    </main>
+  </body>
+</html>

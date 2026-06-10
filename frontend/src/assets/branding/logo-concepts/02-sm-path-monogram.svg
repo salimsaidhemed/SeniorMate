@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="112" viewBox="0 0 420 112" role="img" aria-labelledby="title desc">
+  <title id="title">SeniorMate SM Path Monogram</title>
+  <desc id="desc">An SM monogram formed by a continuous care path in a rounded square.</desc>
+  <rect width="420" height="112" fill="#ffffff"/>
+  <rect x="16" y="16" width="80" height="80" rx="16" fill="#244f59"/>
+  <path d="M34 43c0-8 7-13 16-13h12c8 0 14 5 14 12 0 8-6 12-14 12H49c-9 0-15 5-15 13 0 9 7 14 16 14h10"
+        fill="none" stroke="#dcefeb" stroke-width="8" stroke-linecap="round"/>
+  <path d="M61 81V48l10 15 10-15v33" fill="none" stroke="#62b6aa" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="34" cy="43" r="4" fill="#ffffff"/>
+  <text x="120" y="58" fill="#20302f" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="700">SeniorMate</text>
+  <text x="121" y="81" fill="#657775" font-family="Inter, Arial, sans-serif" font-size="13">connected care, one clear path</text>
+</svg>
