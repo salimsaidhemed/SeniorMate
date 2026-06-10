@@ -119,7 +119,7 @@ export default {
     };
   },
   template: `
-    <v-container class="py-8" style="max-width: 1120px;">
+    <div class="page-shell">
       <v-btn variant="text" prepend-icon="mdi-arrow-left" to="/nurse-notes" class="mb-4">
         Nurse Notes
       </v-btn>
@@ -139,9 +139,14 @@ export default {
             </div>
           </v-col>
           <v-col cols="12" md="4" class="text-md-right">
-            <v-btn color="primary" prepend-icon="mdi-pencil-outline" :to="\`/nurse-notes/\${nurseNote.id}/edit\`">
-              Edit nurse note
-            </v-btn>
+            <div class="d-flex flex-wrap justify-md-end ga-2">
+              <v-btn variant="outlined" prepend-icon="mdi-printer-outline" :to="\`/nurse-notes/\${nurseNote.id}/print\`">
+                Print note
+              </v-btn>
+              <v-btn color="primary" prepend-icon="mdi-pencil-outline" :to="\`/nurse-notes/\${nurseNote.id}/edit\`">
+                Edit nurse note
+              </v-btn>
+            </div>
           </v-col>
         </v-row>
 
@@ -190,6 +195,6 @@ export default {
           <v-card-text>{{ nurseNote[section.key] || 'Not provided' }}</v-card-text>
         </v-card>
       </template>
-    </v-container>
+    </div>
   `,
 };

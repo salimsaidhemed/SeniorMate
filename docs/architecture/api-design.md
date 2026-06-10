@@ -314,6 +314,159 @@ Example response:
 }
 ```
 
+## Patient Photos
+
+Patient profile photos are stored as private MinIO objects. PostgreSQL stores
+only the object key and safe metadata. Standard patient responses include:
+
+- `has_photo`
+- `photo_verified`
+- `photo_file_name`
+- `photo_uploaded_at`
+
+Raw object keys, MinIO credentials, and private object URLs are not returned.
+JPEG and PNG images are supported. The default limit is 5 MB and can be changed
+with `PATIENT_PHOTO_MAX_FILE_SIZE`.
+
+### Upload or Replace a Photo
+
+`POST /api/patients/<patient_id>/photo`
+
+Use `multipart/form-data` with a required `file` field. The backend validates the
+extension, MIME type, file signature, and configured size limit. New and
+replacement photos start with `photo_verified` set to `false`.
+
+Objects use the private path:
+
+```text
+patients/<patient_id>/profile/<generated-file-name>
+```
+
+### Preview a Photo
+
+`GET /api/patients/<patient_id>/photo`
+
+The backend streams the private JPEG or PNG inline. The MinIO bucket remains
+private and the frontend falls back to patient initials if no image exists or
+the preview cannot load.
+
+### Verify a Photo
+
+`PATCH /api/patients/<patient_id>/photo/verify`
+
+Example request:
+
+```json
+{
+  "verified": true
+}
+```
+
+The endpoint also accepts `false` to mark a photo unverified.
+
+### Delete a Photo
+
+`DELETE /api/patients/<patient_id>/photo`
+
+The object is removed from MinIO and all photo metadata is cleared from the
+patient. `photo_verified` is reset to `false`.
+
+## Medical Records API
+
+Medical Records store patient document metadata in PostgreSQL and file bytes in a
+private MinIO bucket. The API never returns public object-store URLs. Downloads
+are streamed through the authenticated application boundary so the bucket can
+remain private.
+
+Supported uploads:
+
+- PDF (`.pdf`)
+- JPEG (`.jpg`, `.jpeg`)
+- PNG (`.png`)
+- Microsoft Word (`.doc`, `.docx`)
+
+The default upload limit is 10 MB and can be changed with
+`MEDICAL_RECORD_MAX_FILE_SIZE`.
+
+### Upload a Medical Record
+
+`POST /api/medical-records`
+
+Use `multipart/form-data` with:
+
+- `patient_id` (required)
+- `title` (required)
+- `file` (required)
+- `description` (optional)
+- `record_type` (optional)
+- `uploaded_by` (optional)
+
+Example response:
+
+```json
+{
+  "data": {
+    "id": 1,
+    "patient_id": 1,
+    "title": "Updated care plan",
+    "description": "Care plan approved by the clinical team.",
+    "record_type": "care_plan",
+    "file_name": "care-plan.pdf",
+    "file_mime_type": "application/pdf",
+    "file_size": 245760,
+    "storage_bucket": "seniormate-medical-records",
+    "storage_object_key": "patients/1/0f8c2f_care-plan.pdf",
+    "uploaded_by": "Jordan Lee",
+    "uploaded_at": "2026-06-09T10:00:00+00:00",
+    "created_at": "2026-06-09T10:00:00+00:00",
+    "updated_at": "2026-06-09T10:00:00+00:00"
+  },
+  "message": "Medical record uploaded successfully"
+}
+```
+
+### List Medical Records
+
+- `GET /api/medical-records`
+- `GET /api/patients/<patient_id>/medical-records`
+
+Both endpoints return medical record metadata only. They do not return file
+contents or public object URLs.
+
+### Retrieve and Update Metadata
+
+- `GET /api/medical-records/<id>`
+- `PUT /api/medical-records/<id>`
+
+The update endpoint accepts JSON fields for `title`, `description`,
+`record_type`, and `uploaded_by`. Replacing the stored file is intentionally not
+part of this first version.
+
+Example update:
+
+```json
+{
+  "title": "Signed care plan",
+  "record_type": "signed_care_plan",
+  "uploaded_by": "Taylor Morgan"
+}
+```
+
+### Download a Medical Record
+
+`GET /api/medical-records/<id>/download`
+
+The backend reads the private MinIO object and streams it as an attachment using
+the stored MIME type and file name.
+
+### Delete a Medical Record
+
+`DELETE /api/medical-records/<id>`
+
+Deletion removes the object from MinIO and then removes its PostgreSQL metadata.
+A missing object is handled gracefully so stale metadata can still be cleaned
+up.
+
 ## Visit API
 
 The Visit API records caregiver and nursing visits linked to patients.
@@ -1197,3 +1350,112 @@ Example response:
   "message": "Nurse note deleted successfully"
 }
 ```
+
+## Patient Assessments
+
+Patient assessments capture structured care findings for a patient and may
+optionally be linked to a visit. Supported assessment types are:
+
+- `fall_risk`
+- `nutrition`
+- `mobility`
+- `cognitive`
+- `general`
+
+Assessment status is `draft` by default and may be changed to `completed`.
+The `findings` field is stored as JSON so each assessment type can evolve
+without requiring a new database column for every observation.
+
+### Assessment Endpoints
+
+- `GET /api/assessments`
+- `GET /api/assessments/<id>`
+- `POST /api/assessments`
+- `PUT /api/assessments/<id>`
+- `DELETE /api/assessments/<id>`
+- `GET /api/patients/<patient_id>/assessments`
+- `GET /api/visits/<visit_id>/assessments`
+
+### Create an Assessment
+
+`POST /api/assessments`
+
+Example request:
+
+```json
+{
+  "patient_id": 1,
+  "visit_id": 4,
+  "assessment_type": "fall_risk",
+  "assessment_date": "2026-06-10",
+  "performed_by": "Jordan Lee, RN",
+  "summary": "Moderate fall risk identified during the home visit.",
+  "findings": {
+    "risk_level": "moderate",
+    "observations": [
+      "Uses walker",
+      "Needs standby assistance"
+    ]
+  },
+  "recommendations": "Continue walker use and clear the hallway.",
+  "status": "completed"
+}
+```
+
+Example response:
+
+```json
+{
+  "data": {
+    "id": 1,
+    "patient_id": 1,
+    "visit_id": 4,
+    "assessment_type": "fall_risk",
+    "assessment_date": "2026-06-10",
+    "performed_by": "Jordan Lee, RN",
+    "summary": "Moderate fall risk identified during the home visit.",
+    "findings": {
+      "risk_level": "moderate",
+      "observations": [
+        "Uses walker",
+        "Needs standby assistance"
+      ]
+    },
+    "recommendations": "Continue walker use and clear the hallway.",
+    "status": "completed",
+    "created_at": "2026-06-10T10:00:00+00:00",
+    "updated_at": "2026-06-10T10:00:00+00:00"
+  },
+  "message": "Assessment created successfully"
+}
+```
+
+`patient_id`, `assessment_type`, and `assessment_date` are required. When a
+`visit_id` is supplied, the visit must exist and belong to the selected
+patient.
+
+### Update an Assessment
+
+`PUT /api/assessments/<id>`
+
+Example request:
+
+```json
+{
+  "summary": "Fall risk reduced after environmental changes.",
+  "status": "completed"
+}
+```
+
+### List Assessments for a Patient
+
+`GET /api/patients/<patient_id>/assessments`
+
+Assessments are returned newest assessment date first.
+
+### List Assessments for a Visit
+
+`GET /api/visits/<visit_id>/assessments`
+
+This endpoint returns all assessments linked to the visit. A visit can have
+multiple assessment types.

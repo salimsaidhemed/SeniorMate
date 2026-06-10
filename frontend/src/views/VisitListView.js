@@ -146,22 +146,20 @@ export default {
     };
   },
   template: `
-    <v-container class="py-8" style="max-width: 1440px;">
-      <v-row align="center" class="mb-5">
-        <v-col cols="12" md="8">
-          <h1 class="text-h4 font-weight-bold mb-1">Visits</h1>
-          <p class="text-body-2 text-medium-emphasis mb-0">Track caregiver and nursing visits for active patients.</p>
-        </v-col>
-        <v-col cols="12" md="4" class="text-md-right">
+    <div class="page-shell">
+      <PageHeader
+        title="Visits"
+        subtitle="Track caregiver and nursing visits for active patients."
+        icon="mdi-calendar-clock-outline"
+      >
+        <template #actions>
           <v-btn color="primary" prepend-icon="mdi-plus" to="/visits/new">
             New visit
           </v-btn>
-        </v-col>
-      </v-row>
+        </template>
+      </PageHeader>
 
-      <v-alert v-if="error" type="error" variant="tonal" class="mb-4">
-        {{ error }}
-      </v-alert>
+      <ErrorAlert :message="error" />
       <v-alert v-if="success" type="success" variant="tonal" class="mb-4">
         {{ success }}
       </v-alert>
@@ -202,7 +200,7 @@ export default {
         </v-card-text>
       </v-card>
 
-      <v-card>
+      <v-card class="data-card">
         <v-data-table
           :headers="headers"
           :items="rows"
@@ -210,15 +208,17 @@ export default {
           item-value="id"
         >
           <template #loading>
-            <v-skeleton-loader type="table-row@5" />
+            <LoadingState />
           </template>
 
           <template #no-data>
-            <div class="pa-8 text-center">
-              <v-icon icon="mdi-calendar-clock-outline" size="40" class="mb-3" />
-              <div class="text-h6 mb-2">No visits yet</div>
-              <v-btn color="primary" variant="flat" to="/visits/new">Create visit</v-btn>
-            </div>
+            <EmptyState
+              icon="mdi-calendar-plus-outline"
+              title="No visits yet"
+              description="Schedule the first patient visit to begin tracking care activity."
+              action-label="Create visit"
+              action-to="/visits/new"
+            />
           </template>
 
           <template #[\`item.patient_name\`]="{ item }">
@@ -226,15 +226,15 @@ export default {
           </template>
 
           <template #[\`item.status\`]="{ item }">
-            <v-chip :color="item.status === 'completed' ? 'success' : item.status === 'cancelled' ? 'grey' : 'primary'" size="small">
-              {{ item.status }}
-            </v-chip>
+            <StatusChip :status="item.status" />
           </template>
 
           <template #[\`item.actions\`]="{ item }">
-            <v-btn icon="mdi-eye-outline" variant="text" :to="\`/visits/\${item.id}\`" aria-label="View visit" />
-            <v-btn icon="mdi-pencil-outline" variant="text" :to="\`/visits/\${item.id}/edit\`" aria-label="Edit visit" />
-            <v-btn icon="mdi-delete-outline" variant="text" color="error" aria-label="Delete visit" @click="askDelete(item)" />
+            <div class="table-actions">
+              <v-btn icon="mdi-eye-outline" variant="text" :to="\`/visits/\${item.id}\`" aria-label="View visit" />
+              <v-btn icon="mdi-pencil-outline" variant="text" :to="\`/visits/\${item.id}/edit\`" aria-label="Edit visit" />
+              <v-btn icon="mdi-delete-outline" variant="text" color="error" aria-label="Delete visit" @click="askDelete(item)" />
+            </div>
           </template>
         </v-data-table>
       </v-card>
@@ -248,21 +248,13 @@ export default {
         />
       </div>
 
-      <v-dialog v-model="confirmDelete" max-width="440">
-        <v-card>
-          <v-card-title>Delete visit</v-card-title>
-          <v-card-text>
-            Delete {{ selectedVisit?.visit_type }} for {{ selectedVisit?.patient_name }}?
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn variant="text" @click="confirmDelete = false">Cancel</v-btn>
-            <v-btn color="error" variant="flat" :loading="deleting" @click="removeVisit">
-              Delete
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-container>
+      <ConfirmDialog
+        v-model="confirmDelete"
+        title="Delete visit"
+        :message="\`Delete \${selectedVisit?.visit_type || 'this visit'} for \${selectedVisit?.patient_name || 'this patient'}?\`"
+        :loading="deleting"
+        @confirm="removeVisit"
+      />
+    </div>
   `,
 };

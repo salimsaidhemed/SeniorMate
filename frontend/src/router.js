@@ -1,18 +1,25 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import DashboardView from "./views/DashboardView.js";
+import AssessmentDetailView from "./views/AssessmentDetailView.js";
+import AssessmentFormView from "./views/AssessmentFormView.js";
+import AssessmentPrintView from "./views/AssessmentPrintView.js";
 import AideNoteDetailView from "./views/AideNoteDetailView.js";
 import AideNoteFormView from "./views/AideNoteFormView.js";
 import AideNoteListView from "./views/AideNoteListView.js";
+import AideNotePrintView from "./views/AideNotePrintView.js";
+import NurseNotePrintView from "./views/NurseNotePrintView.js";
 import PatientDetailView from "./views/PatientDetailView.js";
 import PatientFormView from "./views/PatientFormView.js";
 import PatientListView from "./views/PatientListView.js";
+import PatientPrintView from "./views/PatientPrintView.js";
 import NurseNoteDetailView from "./views/NurseNoteDetailView.js";
 import NurseNoteFormView from "./views/NurseNoteFormView.js";
 import NurseNoteListView from "./views/NurseNoteListView.js";
 import VisitDetailView from "./views/VisitDetailView.js";
 import VisitFormView from "./views/VisitFormView.js";
 import VisitListView from "./views/VisitListView.js";
+import VisitPrintView from "./views/VisitPrintView.js";
 
 const routes = [
   {
@@ -44,6 +51,36 @@ const routes = [
     props: { mode: "edit" },
   },
   {
+    path: "/patients/:id/print",
+    name: "patient-print",
+    component: PatientPrintView,
+    props: true,
+  },
+  {
+    path: "/assessments/new",
+    name: "assessment-create",
+    component: AssessmentFormView,
+    props: { mode: "create" },
+  },
+  {
+    path: "/assessments/:id",
+    name: "assessment-detail",
+    component: AssessmentDetailView,
+    props: true,
+  },
+  {
+    path: "/assessments/:id/edit",
+    name: "assessment-edit",
+    component: AssessmentFormView,
+    props: { mode: "edit" },
+  },
+  {
+    path: "/assessments/:id/print",
+    name: "assessment-print",
+    component: AssessmentPrintView,
+    props: true,
+  },
+  {
     path: "/visits",
     name: "visits",
     component: VisitListView,
@@ -65,6 +102,12 @@ const routes = [
     name: "visit-edit",
     component: VisitFormView,
     props: { mode: "edit" },
+  },
+  {
+    path: "/visits/:id/print",
+    name: "visit-print",
+    component: VisitPrintView,
+    props: true,
   },
   {
     path: "/aide-notes",
@@ -90,6 +133,12 @@ const routes = [
     props: { mode: "edit" },
   },
   {
+    path: "/aide-notes/:id/print",
+    name: "aide-note-print",
+    component: AideNotePrintView,
+    props: true,
+  },
+  {
     path: "/nurse-notes",
     name: "nurse-notes",
     component: NurseNoteListView,
@@ -111,6 +160,12 @@ const routes = [
     name: "nurse-note-edit",
     component: NurseNoteFormView,
     props: { mode: "edit" },
+  },
+  {
+    path: "/nurse-notes/:id/print",
+    name: "nurse-note-print",
+    component: NurseNotePrintView,
+    props: true,
   },
 ];
 

@@ -143,17 +143,14 @@ export default {
     };
   },
   template: `
-    <v-container class="py-8" style="max-width: 1280px;">
-      <v-row align="center" class="mb-5">
-        <v-col cols="12" md="8">
-          <h1 class="text-h4 font-weight-bold mb-1">Nurse Notes</h1>
-          <p class="text-body-2 text-medium-emphasis mb-0">Review Nurses Progress Notes linked to clinical visits.</p>
-        </v-col>
-      </v-row>
+    <div class="page-shell">
+      <PageHeader
+        title="Nurse Notes"
+        subtitle="Review Nurses Progress Notes linked to clinical visits."
+        icon="mdi-clipboard-pulse-outline"
+      />
 
-      <v-alert v-if="error" type="error" variant="tonal" class="mb-4">
-        {{ error }}
-      </v-alert>
+      <ErrorAlert :message="error" />
       <v-alert v-if="success" type="success" variant="tonal" class="mb-4">
         {{ success }}
       </v-alert>
@@ -189,17 +186,18 @@ export default {
         </v-card-text>
       </v-card>
 
-      <v-card>
+      <v-card class="data-card">
         <v-data-table :headers="headers" :items="rows" :loading="loading" item-value="id">
           <template #loading>
-            <v-skeleton-loader type="table-row@5" />
+            <LoadingState />
           </template>
 
           <template #no-data>
-            <div class="pa-8 text-center">
-              <v-icon icon="mdi-clipboard-pulse-outline" size="40" class="mb-3" />
-              <div class="text-h6 mb-2">No nurse notes yet</div>
-            </div>
+            <EmptyState
+              icon="mdi-clipboard-text-outline"
+              title="No nurse notes yet"
+              description="Nurse notes created from visit details will appear here."
+            />
           </template>
 
           <template #[\`item.patient_name\`]="{ item }">
@@ -207,9 +205,11 @@ export default {
           </template>
 
           <template #[\`item.actions\`]="{ item }">
-            <v-btn icon="mdi-eye-outline" variant="text" :to="\`/nurse-notes/\${item.id}\`" aria-label="View nurse note" />
-            <v-btn icon="mdi-pencil-outline" variant="text" :to="\`/nurse-notes/\${item.id}/edit\`" aria-label="Edit nurse note" />
-            <v-btn icon="mdi-delete-outline" variant="text" color="error" aria-label="Delete nurse note" @click="askDelete(item)" />
+            <div class="table-actions">
+              <v-btn icon="mdi-eye-outline" variant="text" :to="\`/nurse-notes/\${item.id}\`" aria-label="View nurse note" />
+              <v-btn icon="mdi-pencil-outline" variant="text" :to="\`/nurse-notes/\${item.id}/edit\`" aria-label="Edit nurse note" />
+              <v-btn icon="mdi-delete-outline" variant="text" color="error" aria-label="Delete nurse note" @click="askDelete(item)" />
+            </div>
           </template>
         </v-data-table>
       </v-card>
@@ -223,21 +223,13 @@ export default {
         />
       </div>
 
-      <v-dialog v-model="confirmDelete" max-width="440">
-        <v-card>
-          <v-card-title>Delete nurse note</v-card-title>
-          <v-card-text>
-            Delete nurse note for {{ selectedNote?.patient_name }}?
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn variant="text" @click="confirmDelete = false">Cancel</v-btn>
-            <v-btn color="error" variant="flat" :loading="deleting" @click="removeNurseNote">
-              Delete
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-container>
+      <ConfirmDialog
+        v-model="confirmDelete"
+        title="Delete nurse note"
+        :message="\`Delete the nurse note for \${selectedNote?.patient_name || 'this patient'}?\`"
+        :loading="deleting"
+        @confirm="removeNurseNote"
+      />
+    </div>
   `,
 };

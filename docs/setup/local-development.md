@@ -66,6 +66,29 @@ Default local MinIO console values:
 
 - User: `local-access-key`
 - Password: `change-me-local-only`
+- Private medical-record bucket: `seniormate-medical-records`
+
+The backend creates the medical-record bucket automatically on the first upload
+if it does not exist. The bucket is not configured for public access.
+
+Medical Record storage settings:
+
+- `MINIO_ENDPOINT`: backend connection URL for MinIO
+- `MINIO_ACCESS_KEY`: application access key
+- `MINIO_SECRET_KEY`: application secret key
+- `MINIO_BUCKET`: private bucket used for patient documents
+- `MINIO_SECURE`: set to `true` when the MinIO endpoint uses TLS
+- `MEDICAL_RECORD_MAX_FILE_SIZE`: maximum upload size in bytes; defaults to
+  `10485760` (10 MB)
+- `PATIENT_PHOTO_MAX_FILE_SIZE`: maximum profile photo size in bytes; defaults
+  to `5242880` (5 MB)
+
+Supported uploads are PDF, JPEG, PNG, DOC, and DOCX files. PostgreSQL stores
+metadata and MinIO stores the file bytes.
+
+Patient profile photos reuse the same private bucket and MinIO credentials.
+Photo objects are stored under `patients/<patient_id>/profile/` and support JPEG
+and PNG images only.
 
 ## Backend Setup
 
@@ -126,6 +149,9 @@ The main app remains usable without login for now.
 - If ports are already in use, adjust `BACKEND_PORT`, `FRONTEND_PORT`, `POSTGRES_PORT`, `MINIO_API_PORT`, or `MINIO_CONSOLE_PORT` in `.env`.
 - If the backend health endpoint reports `database: unavailable`, wait for PostgreSQL to finish starting or restart the backend container.
 - If frontend dependencies behave oddly, rebuild the frontend container with `docker compose build frontend`.
+- If medical record uploads fail, confirm MinIO is running and that the backend
+  `MINIO_ACCESS_KEY` and `MINIO_SECRET_KEY` match the local MinIO root
+  credentials.
 - If local data needs to be reset, run `docker compose down -v`.
 
 ## Validation Before Pull Requests

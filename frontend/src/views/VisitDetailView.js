@@ -1,11 +1,24 @@
 import { computed, onMounted, ref } from "vue";
 
+import PatientAvatar from "../components/PatientAvatar.js";
+import { getVisitAssessments } from "../services/assessments.js";
 import { getVisitAideNote } from "../services/aideNotes.js";
 import { getVisitNurseNote } from "../services/nurseNotes.js";
 import { listPatients } from "../services/patients.js";
 import { getVisit } from "../services/visits.js";
 
+const assessmentLabels = {
+  fall_risk: "Fall risk",
+  nutrition: "Nutrition",
+  mobility: "Mobility",
+  cognitive: "Cognitive",
+  general: "General",
+};
+
 export default {
+  components: {
+    PatientAvatar,
+  },
   props: {
     id: {
       type: String,
@@ -16,6 +29,7 @@ export default {
     const visit = ref(null);
     const aideNote = ref(null);
     const nurseNote = ref(null);
+    const assessments = ref([]);
     const patients = ref([]);
     const loading = ref(true);
     const error = ref("");
@@ -36,12 +50,15 @@ export default {
       error.value = "";
 
       try {
-        const [visitResponse, patientResponse] = await Promise.all([
+        const [visitResponse, patientResponse, assessmentResponse] =
+          await Promise.all([
           getVisit(props.id),
           listPatients(),
+          getVisitAssessments(props.id),
         ]);
         visit.value = visitResponse.data;
         patients.value = patientResponse.data;
+        assessments.value = assessmentResponse.data;
 
         try {
           const aideNoteResponse = await getVisitAideNote(props.id);
@@ -73,6 +90,8 @@ export default {
 
     return {
       aideNote,
+      assessments,
+      assessmentLabels,
       error,
       loading,
       nurseNote,
@@ -82,7 +101,7 @@ export default {
     };
   },
   template: `
-    <v-container class="py-8" style="max-width: 1120px;">
+    <div class="page-shell">
       <v-btn variant="text" prepend-icon="mdi-arrow-left" to="/visits" class="mb-4">
         Visits
       </v-btn>
@@ -96,11 +115,16 @@ export default {
       <template v-else-if="visit">
         <v-row align="center" class="mb-5">
           <v-col cols="12" md="8">
-            <h1 class="text-h4 font-weight-bold mb-2">{{ visit.visit_type }}</h1>
-            <div class="text-body-1 text-medium-emphasis mb-2">{{ visit.visit_date }} · {{ patientName }}</div>
-            <v-chip :color="visit.status === 'completed' ? 'success' : visit.status === 'cancelled' ? 'grey' : 'primary'" size="small">
-              {{ visit.status }}
-            </v-chip>
+            <div class="d-flex align-center ga-4">
+              <PatientAvatar v-if="patient" :patient="patient" :size="60" show-verification />
+              <div>
+                <h1 class="text-h4 font-weight-bold mb-2">{{ visit.visit_type }}</h1>
+                <div class="text-body-1 text-medium-emphasis mb-2">{{ visit.visit_date }} · {{ patientName }}</div>
+                <v-chip :color="visit.status === 'completed' ? 'success' : visit.status === 'cancelled' ? 'grey' : 'primary'" size="small">
+                  {{ visit.status }}
+                </v-chip>
+              </div>
+            </div>
           </v-col>
           <v-col cols="12" md="4">
             <div class="d-flex flex-wrap justify-md-end ga-2">
@@ -154,8 +178,19 @@ export default {
             >
               Edit Nurse Note
             </v-btn>
+            <v-btn
+              color="secondary"
+              variant="tonal"
+              prepend-icon="mdi-clipboard-text-search-outline"
+              :to="\`/assessments/new?visit_id=\${visit.id}\`"
+            >
+              New assessment
+            </v-btn>
             <v-btn color="primary" prepend-icon="mdi-pencil-outline" :to="\`/visits/\${visit.id}/edit\`">
               Edit visit
+            </v-btn>
+            <v-btn variant="outlined" prepend-icon="mdi-printer-outline" :to="\`/visits/\${visit.id}/print\`">
+              Print summary
             </v-btn>
             </div>
           </v-col>
@@ -205,7 +240,41 @@ export default {
             </v-card>
           </v-col>
         </v-row>
+
+        <SectionCard
+          title="Visit assessments"
+          subtitle="Assessments linked directly to this visit."
+          icon="mdi-clipboard-text-search-outline"
+          class="mt-5"
+        >
+          <EmptyState
+            v-if="!assessments.length"
+            icon="mdi-clipboard-text-outline"
+            title="No linked assessments"
+            message="Create an assessment with this patient and visit already selected."
+          >
+            <v-btn
+              color="primary"
+              :to="\`/assessments/new?visit_id=\${visit.id}\`"
+            >
+              Create assessment
+            </v-btn>
+          </EmptyState>
+          <v-list v-else lines="two">
+            <v-list-item
+              v-for="assessment in assessments"
+              :key="assessment.id"
+              :title="assessmentLabels[assessment.assessment_type] || assessment.assessment_type"
+              :subtitle="\`\${assessment.assessment_date} · \${assessment.performed_by || 'Performer not provided'}\`"
+              :to="\`/assessments/\${assessment.id}\`"
+            >
+              <template #append>
+                <StatusChip :status="assessment.status" />
+              </template>
+            </v-list-item>
+          </v-list>
+        </SectionCard>
       </template>
-    </v-container>
+    </div>
   `,
 };

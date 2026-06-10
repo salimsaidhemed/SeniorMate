@@ -45,7 +45,12 @@ services:
       BACKEND_PORT: 5000
       DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://seniormate:change-me-local-only@postgres:5432/seniormate}
       MINIO_ENDPOINT: ${MINIO_ENDPOINT:-http://minio:9000}
-      MINIO_BUCKET: ${MINIO_BUCKET:-seniormate-local}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-local-access-key}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-change-me-local-only}
+      MINIO_BUCKET: ${MINIO_BUCKET:-seniormate-medical-records}
+      MINIO_SECURE: ${MINIO_SECURE:-false}
+      MEDICAL_RECORD_MAX_FILE_SIZE: ${MEDICAL_RECORD_MAX_FILE_SIZE:-10485760}
+      PATIENT_PHOTO_MAX_FILE_SIZE: ${PATIENT_PHOTO_MAX_FILE_SIZE:-5242880}
     ports:
       - "${BACKEND_PORT:-5001}:5000"
     volumes:

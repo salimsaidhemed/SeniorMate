@@ -9,6 +9,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Added
 
 - Added search, filtering, and pagination for patient, visit, aide note, and nurse note list workflows.
+- Added print-friendly patient, visit, aide note, nurse note, and assessment reports with reusable report components and browser print/PDF styling.
+- Added patient assessments with optional visit linkage, structured JSON findings, CRUD APIs, Swagger documentation, backend tests, and patient/visit frontend workflows.
+- Added private MinIO-backed patient profile photos with upload, preview, verification, deletion, safe API metadata, and initials fallback across patient and visit screens.
+- Added patient Medical Records with private MinIO file storage, PostgreSQL metadata, upload/download CRUD APIs, Swagger documentation, tests, and Patient Detail UI integration.
+- Added a reusable frontend UI foundation with a SeniorMate Vuetify theme, shared page and feedback components, standardized tables, responsive spacing, and UI guidelines.
 - Added the dashboard API and frontend dashboard with patient, visit, care-note, chart, and recent visit activity summaries.
 - Added the Nurses Progress Note frontend with visit detail integration, grouped clinical form, read-only detail view, edit workflow, and API service functions.
 - Added the Nurses Progress Note API with patient/visit-linked clinical records, JSON clinical section storage, duplicate visit-note prevention, Swagger documentation, tests, and API documentation.

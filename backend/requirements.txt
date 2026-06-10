@@ -4,4 +4,5 @@ Flask-Migrate==4.1.0
 Flask-SQLAlchemy==3.1.1
 flasgger==0.9.7b2
 gunicorn==23.0.0
+minio==7.2.20
 psycopg[binary]==3.2.9
