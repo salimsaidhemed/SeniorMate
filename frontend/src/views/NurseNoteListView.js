@@ -15,6 +15,16 @@ export default {
     const deleting = ref(false);
     const selectedNote = ref(null);
     const confirmDelete = ref(false);
+    const filters = ref({
+      patient_id: "",
+      visit_id: "",
+      diagnosis: "",
+      start_date: "",
+      end_date: "",
+      page: 1,
+      per_page: 10,
+    });
+    const pagination = ref({ page: 1, per_page: 10, total: 0, pages: 0 });
 
     const headers = [
       { title: "Patient", key: "patient_name" },
@@ -49,11 +59,12 @@ export default {
 
       try {
         const [noteResponse, patientResponse, visitResponse] = await Promise.all([
-          listNurseNotes(),
-          listPatients(),
-          listVisits(),
+          listNurseNotes(filters.value),
+          listPatients({ per_page: 100 }),
+          listVisits({ per_page: 100 }),
         ]);
         nurseNotes.value = noteResponse.data;
+        pagination.value = noteResponse.pagination || pagination.value;
         patients.value = patientResponse.data;
         visits.value = visitResponse.data;
       } catch (err) {
@@ -61,6 +72,29 @@ export default {
       } finally {
         loading.value = false;
       }
+    }
+
+    async function applyFilters() {
+      filters.value.page = 1;
+      await loadNurseNotes();
+    }
+
+    async function clearFilters() {
+      filters.value = {
+        patient_id: "",
+        visit_id: "",
+        diagnosis: "",
+        start_date: "",
+        end_date: "",
+        page: 1,
+        per_page: 10,
+      };
+      await loadNurseNotes();
+    }
+
+    async function changePage(page) {
+      filters.value.page = page;
+      await loadNurseNotes();
     }
 
     function askDelete(note) {
@@ -92,11 +126,16 @@ export default {
 
     return {
       askDelete,
+      applyFilters,
+      changePage,
+      clearFilters,
       confirmDelete,
       deleting,
       error,
+      filters,
       headers,
       loading,
+      pagination,
       removeNurseNote,
       rows,
       selectedNote,
@@ -115,6 +154,37 @@ export default {
       <v-alert v-if="success" type="success" variant="tonal" class="mb-4">
         {{ success }}
       </v-alert>
+
+      <v-card class="mb-4">
+        <v-card-text>
+          <v-row align="center">
+            <v-col cols="12" md="3">
+              <v-text-field v-model="filters.diagnosis" label="Diagnosis" prepend-inner-icon="mdi-magnify" clearable hide-details @keyup.enter="applyFilters" />
+            </v-col>
+            <v-col cols="12" md="3">
+              <v-select
+                v-model="filters.patient_id"
+                label="Patient"
+                :items="patients.map((patient) => ({ title: patient.first_name + ' ' + patient.last_name, value: patient.id }))"
+                item-title="title"
+                item-value="value"
+                clearable
+                hide-details
+              />
+            </v-col>
+            <v-col cols="12" md="2">
+              <v-text-field v-model="filters.start_date" label="Start date" type="date" hide-details />
+            </v-col>
+            <v-col cols="12" md="2">
+              <v-text-field v-model="filters.end_date" label="End date" type="date" hide-details />
+            </v-col>
+            <v-col cols="12" md="2" class="d-flex ga-2 justify-md-end">
+              <v-btn color="primary" :loading="loading" @click="applyFilters">Apply</v-btn>
+              <v-btn variant="text" @click="clearFilters">Clear</v-btn>
+            </v-col>
+          </v-row>
+        </v-card-text>
+      </v-card>
 
       <v-card class="data-card">
         <v-data-table :headers="headers" :items="rows" :loading="loading" item-value="id">
@@ -143,6 +213,15 @@ export default {
           </template>
         </v-data-table>
       </v-card>
+
+      <div class="d-flex justify-end mt-4" v-if="pagination.pages > 1">
+        <v-pagination
+          :model-value="pagination.page"
+          :length="pagination.pages"
+          total-visible="5"
+          @update:model-value="changePage"
+        />
+      </div>
 
       <ConfirmDialog
         v-model="confirmDelete"

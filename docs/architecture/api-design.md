@@ -20,6 +20,21 @@ Validation and not-found responses include a clear message and, when applicable,
 }
 ```
 
+List endpoints support simple pagination with `page` and `per_page` query parameters. Paginated responses keep the existing `data` array and add metadata:
+
+```json
+{
+  "data": [],
+  "message": "Records retrieved successfully",
+  "pagination": {
+    "page": 1,
+    "per_page": 10,
+    "total": 25,
+    "pages": 3
+  }
+}
+```
+
 ## Interactive API Documentation
 
 SeniorMate exposes browser-based Swagger documentation for local API testing:
@@ -139,6 +154,14 @@ The Patient API is available under `/api/patients`.
 ### List Patients
 
 `GET /api/patients`
+
+Supported query parameters:
+
+- `search`: matches first name, last name, phone, email, or diagnosis summary
+- `status`: filters by `active` or `inactive`
+- `gender`: filters by gender value
+- `page`
+- `per_page`
 
 Example response:
 
@@ -469,6 +492,18 @@ The Visit API records caregiver and nursing visits linked to patients.
 
 `GET /api/visits`
 
+Supported query parameters:
+
+- `search`: matches patient name, staff name, visit type, or notes
+- `patient_id`
+- `visit_type`
+- `staff_role`
+- `status`
+- `start_date`: filters visits on or after `YYYY-MM-DD`
+- `end_date`: filters visits on or before `YYYY-MM-DD`
+- `page`
+- `per_page`
+
 Example response:
 
 ```json
@@ -669,6 +704,16 @@ The Aide Note API records Home Health Aide visit documentation linked to both a 
 ### List Aide Notes
 
 `GET /api/aide-notes`
+
+Supported query parameters:
+
+- `patient_id`
+- `visit_id`
+- `aide_name`: partial match
+- `start_date`: filters notes created on or after `YYYY-MM-DD`
+- `end_date`: filters notes created on or before `YYYY-MM-DD`
+- `page`
+- `per_page`
 
 Example response:
 
@@ -1016,6 +1061,16 @@ The frontend Nurse Notes UI is available at `http://localhost:5173/nurse-notes` 
 ### List Nurse Notes
 
 `GET /api/nurse-notes`
+
+Supported query parameters:
+
+- `patient_id`
+- `visit_id`
+- `diagnosis`: partial match
+- `start_date`: filters notes created on or after `YYYY-MM-DD`
+- `end_date`: filters notes created on or before `YYYY-MM-DD`
+- `page`
+- `per_page`
 
 Example response:
 

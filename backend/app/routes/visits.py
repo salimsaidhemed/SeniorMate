@@ -2,9 +2,11 @@ from datetime import date, time
 
 from flasgger import swag_from
 from flask import Blueprint, jsonify, request
+from sqlalchemy import or_
 
 from app.extensions import db
 from app.models import Patient, Visit
+from app.routes.query_utils import paginated_response, parse_iso_date
 from app.swagger import (
     patient_visits_list_spec,
     visit_create_spec,
@@ -125,10 +127,48 @@ def parse_visit_payload(payload, partial=False):
 @visits_bp.get("/visits")
 @swag_from(visit_list_spec)
 def list_visits():
-    visits = Visit.query.order_by(Visit.visit_date.desc(), Visit.id.desc()).all()
+    query = Visit.query.join(Patient)
+    search = request.args.get("search", "").strip()
+    patient_id = request.args.get("patient_id", "").strip()
+    visit_type = request.args.get("visit_type", "").strip()
+    staff_role = request.args.get("staff_role", "").strip()
+    status = request.args.get("status", "").strip()
+    start_date = parse_iso_date(request.args.get("start_date"))
+    end_date = parse_iso_date(request.args.get("end_date"))
 
-    return success_response(
-        [visit.to_dict() for visit in visits],
+    if search:
+        pattern = f"%{search}%"
+        query = query.filter(
+            or_(
+                Patient.first_name.ilike(pattern),
+                Patient.last_name.ilike(pattern),
+                Visit.staff_name.ilike(pattern),
+                Visit.visit_type.ilike(pattern),
+                Visit.notes.ilike(pattern),
+            )
+        )
+
+    if patient_id:
+        query = query.filter(Visit.patient_id == int(patient_id))
+
+    if visit_type:
+        query = query.filter(Visit.visit_type == visit_type)
+
+    if staff_role:
+        query = query.filter(Visit.staff_role == staff_role)
+
+    if status:
+        query = query.filter(Visit.status == status)
+
+    if start_date:
+        query = query.filter(Visit.visit_date >= start_date)
+
+    if end_date:
+        query = query.filter(Visit.visit_date <= end_date)
+
+    return paginated_response(
+        query.order_by(Visit.visit_date.desc(), Visit.id.desc()),
+        lambda visit: visit.to_dict(),
         "Visits retrieved successfully",
     )
 

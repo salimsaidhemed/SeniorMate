@@ -382,6 +382,18 @@ dashboard_stats_properties = {
     },
 }
 
+pagination_properties = {
+    "page": {"type": "integer", "example": 1},
+    "per_page": {"type": "integer", "example": 10},
+    "total": {"type": "integer", "example": 42},
+    "pages": {"type": "integer", "example": 5},
+}
+
+pagination_parameters = [
+    {"name": "page", "in": "query", "type": "integer", "required": False},
+    {"name": "per_page", "in": "query", "type": "integer", "required": False},
+]
+
 medical_record_properties = {
     "id": {"type": "integer", "example": 1},
     "patient_id": {"type": "integer", "example": 1},
@@ -567,6 +579,10 @@ swagger_template = {
                 },
             },
         },
+        "PaginationMeta": {
+            "type": "object",
+            "properties": pagination_properties,
+        },
         "ErrorResponse": {
             "type": "object",
             "properties": {
@@ -598,6 +614,7 @@ swagger_template = {
                     "type": "array",
                     "items": {"$ref": "#/definitions/Patient"},
                 },
+                "pagination": {"$ref": "#/definitions/PaginationMeta"},
                 "message": {
                     "type": "string",
                     "example": "Patients retrieved successfully",
@@ -621,6 +638,7 @@ swagger_template = {
                     "type": "array",
                     "items": {"$ref": "#/definitions/Visit"},
                 },
+                "pagination": {"$ref": "#/definitions/PaginationMeta"},
                 "message": {
                     "type": "string",
                     "example": "Visits retrieved successfully",
@@ -644,6 +662,7 @@ swagger_template = {
                     "type": "array",
                     "items": {"$ref": "#/definitions/AideNote"},
                 },
+                "pagination": {"$ref": "#/definitions/PaginationMeta"},
                 "message": {
                     "type": "string",
                     "example": "Aide notes retrieved successfully",
@@ -667,6 +686,7 @@ swagger_template = {
                     "type": "array",
                     "items": {"$ref": "#/definitions/NurseNote"},
                 },
+                "pagination": {"$ref": "#/definitions/PaginationMeta"},
                 "message": {
                     "type": "string",
                     "example": "Nurse notes retrieved successfully",
@@ -777,6 +797,12 @@ dashboard_stats_spec = {
 patient_list_spec = {
     "tags": ["Patients"],
     "summary": "List patients",
+    "parameters": [
+        {"name": "search", "in": "query", "type": "string", "required": False},
+        {"name": "status", "in": "query", "type": "string", "required": False},
+        {"name": "gender", "in": "query", "type": "string", "required": False},
+        *pagination_parameters,
+    ],
     "responses": {
         200: {
             "description": "Patients retrieved successfully.",
@@ -1017,6 +1043,28 @@ patient_photo_delete_spec = {
 visit_list_spec = {
     "tags": ["Visits"],
     "summary": "List visits",
+    "parameters": [
+        {"name": "search", "in": "query", "type": "string", "required": False},
+        {"name": "patient_id", "in": "query", "type": "integer", "required": False},
+        {"name": "visit_type", "in": "query", "type": "string", "required": False},
+        {"name": "staff_role", "in": "query", "type": "string", "required": False},
+        {"name": "status", "in": "query", "type": "string", "required": False},
+        {
+            "name": "start_date",
+            "in": "query",
+            "type": "string",
+            "format": "date",
+            "required": False,
+        },
+        {
+            "name": "end_date",
+            "in": "query",
+            "type": "string",
+            "format": "date",
+            "required": False,
+        },
+        *pagination_parameters,
+    ],
     "responses": {
         200: {
             "description": "Visits retrieved successfully.",
@@ -1153,6 +1201,26 @@ patient_visits_list_spec = {
 aide_note_list_spec = {
     "tags": ["Aide Notes"],
     "summary": "List aide notes",
+    "parameters": [
+        {"name": "patient_id", "in": "query", "type": "integer", "required": False},
+        {"name": "visit_id", "in": "query", "type": "integer", "required": False},
+        {"name": "aide_name", "in": "query", "type": "string", "required": False},
+        {
+            "name": "start_date",
+            "in": "query",
+            "type": "string",
+            "format": "date",
+            "required": False,
+        },
+        {
+            "name": "end_date",
+            "in": "query",
+            "type": "string",
+            "format": "date",
+            "required": False,
+        },
+        *pagination_parameters,
+    ],
     "responses": {
         200: {
             "description": "Aide notes retrieved successfully.",
@@ -1312,6 +1380,26 @@ visit_aide_note_get_spec = {
 nurse_note_list_spec = {
     "tags": ["Nurse Notes"],
     "summary": "List nurse notes",
+    "parameters": [
+        {"name": "patient_id", "in": "query", "type": "integer", "required": False},
+        {"name": "visit_id", "in": "query", "type": "integer", "required": False},
+        {"name": "diagnosis", "in": "query", "type": "string", "required": False},
+        {
+            "name": "start_date",
+            "in": "query",
+            "type": "string",
+            "format": "date",
+            "required": False,
+        },
+        {
+            "name": "end_date",
+            "in": "query",
+            "type": "string",
+            "format": "date",
+            "required": False,
+        },
+        *pagination_parameters,
+    ],
     "responses": {
         200: {
             "description": "Nurse notes retrieved successfully.",

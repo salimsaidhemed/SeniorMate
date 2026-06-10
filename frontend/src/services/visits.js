@@ -1,7 +1,8 @@
 import { apiRequest } from "./http.js";
+import { withQuery } from "./query.js";
 
-export async function listVisits() {
-  return apiRequest("/visits");
+export async function listVisits(params = {}) {
+  return apiRequest(withQuery("/visits", params));
 }
 
 export async function getVisit(id) {

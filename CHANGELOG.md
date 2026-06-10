@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Added search, filtering, and pagination for patient, visit, aide note, and nurse note list workflows.
 - Added print-friendly patient, visit, aide note, nurse note, and assessment reports with reusable report components and browser print/PDF styling.
 - Added patient assessments with optional visit linkage, structured JSON findings, CRUD APIs, Swagger documentation, backend tests, and patient/visit frontend workflows.
 - Added private MinIO-backed patient profile photos with upload, preview, verification, deletion, safe API metadata, and initials fallback across patient and visit screens.

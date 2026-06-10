@@ -1,7 +1,8 @@
 import { apiRequest } from "./http.js";
+import { withQuery } from "./query.js";
 
-export async function listAideNotes() {
-  return apiRequest("/aide-notes");
+export async function listAideNotes(params = {}) {
+  return apiRequest(withQuery("/aide-notes", params));
 }
 
 export async function getAideNote(id) {

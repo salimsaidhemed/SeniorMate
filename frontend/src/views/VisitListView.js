@@ -13,6 +13,17 @@ export default {
     const deleting = ref(false);
     const selectedVisit = ref(null);
     const confirmDelete = ref(false);
+    const filters = ref({
+      search: "",
+      visit_type: "",
+      staff_role: "",
+      status: "",
+      start_date: "",
+      end_date: "",
+      page: 1,
+      per_page: 10,
+    });
+    const pagination = ref({ page: 1, per_page: 10, total: 0, pages: 0 });
 
     const headers = [
       { title: "Patient", key: "patient_name" },
@@ -41,6 +52,9 @@ export default {
         patient_name: patientNames.value[visit.patient_id] || `Patient #${visit.patient_id}`,
       }))
     );
+    const visitTypes = computed(() =>
+      [...new Set(visits.value.map((visit) => visit.visit_type).filter(Boolean))]
+    );
 
     async function loadVisits() {
       loading.value = true;
@@ -48,16 +62,41 @@ export default {
 
       try {
         const [visitResponse, patientResponse] = await Promise.all([
-          listVisits(),
-          listPatients(),
+          listVisits(filters.value),
+          listPatients({ per_page: 100 }),
         ]);
         visits.value = visitResponse.data;
+        pagination.value = visitResponse.pagination || pagination.value;
         patients.value = patientResponse.data;
       } catch (err) {
         error.value = err.message;
       } finally {
         loading.value = false;
       }
+    }
+
+    async function applyFilters() {
+      filters.value.page = 1;
+      await loadVisits();
+    }
+
+    async function clearFilters() {
+      filters.value = {
+        search: "",
+        visit_type: "",
+        staff_role: "",
+        status: "",
+        start_date: "",
+        end_date: "",
+        page: 1,
+        per_page: 10,
+      };
+      await loadVisits();
+    }
+
+    async function changePage(page) {
+      filters.value.page = page;
+      await loadVisits();
     }
 
     function askDelete(visit) {
@@ -89,15 +128,21 @@ export default {
 
     return {
       askDelete,
+      applyFilters,
+      changePage,
+      clearFilters,
       confirmDelete,
       deleting,
       error,
+      filters,
       headers,
       loading,
+      pagination,
       removeVisit,
       rows,
       selectedVisit,
       success,
+      visitTypes,
     };
   },
   template: `
@@ -118,6 +163,42 @@ export default {
       <v-alert v-if="success" type="success" variant="tonal" class="mb-4">
         {{ success }}
       </v-alert>
+
+      <v-card class="mb-4">
+        <v-card-text>
+          <v-row align="center">
+            <v-col cols="12" md="4">
+              <v-text-field
+                v-model="filters.search"
+                label="Search visits"
+                prepend-inner-icon="mdi-magnify"
+                clearable
+                hide-details
+                @keyup.enter="applyFilters"
+              />
+            </v-col>
+            <v-col cols="12" md="2">
+              <v-select v-model="filters.visit_type" label="Visit type" :items="visitTypes" clearable hide-details />
+            </v-col>
+            <v-col cols="12" md="2">
+              <v-select v-model="filters.staff_role" label="Staff role" :items="['aide', 'nurse']" clearable hide-details />
+            </v-col>
+            <v-col cols="12" md="2">
+              <v-select v-model="filters.status" label="Status" :items="['scheduled', 'completed', 'cancelled']" clearable hide-details />
+            </v-col>
+            <v-col cols="12" md="2">
+              <v-text-field v-model="filters.start_date" label="Start date" type="date" hide-details />
+            </v-col>
+            <v-col cols="12" md="2">
+              <v-text-field v-model="filters.end_date" label="End date" type="date" hide-details />
+            </v-col>
+            <v-col cols="12" md="10" class="d-flex ga-2 justify-md-end">
+              <v-btn color="primary" :loading="loading" @click="applyFilters">Apply</v-btn>
+              <v-btn variant="text" @click="clearFilters">Clear</v-btn>
+            </v-col>
+          </v-row>
+        </v-card-text>
+      </v-card>
 
       <v-card class="data-card">
         <v-data-table
@@ -157,6 +238,15 @@ export default {
           </template>
         </v-data-table>
       </v-card>
+
+      <div class="d-flex justify-end mt-4" v-if="pagination.pages > 1">
+        <v-pagination
+          :model-value="pagination.page"
+          :length="pagination.pages"
+          total-visible="5"
+          @update:model-value="changePage"
+        />
+      </div>
 
       <ConfirmDialog
         v-model="confirmDelete"
