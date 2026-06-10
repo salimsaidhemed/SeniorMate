@@ -37,6 +37,19 @@ patient_properties = {
         "enum": ["active", "inactive"],
         "example": "active",
     },
+    "has_photo": {"type": "boolean", "example": True},
+    "photo_verified": {"type": "boolean", "example": False},
+    "photo_file_name": {
+        "type": "string",
+        "nullable": True,
+        "example": "maria-santos.png",
+    },
+    "photo_uploaded_at": {
+        "type": "string",
+        "format": "date-time",
+        "nullable": True,
+        "example": "2026-06-10T10:00:00+00:00",
+    },
     "created_at": {
         "type": "string",
         "format": "date-time",
@@ -52,7 +65,16 @@ patient_properties = {
 patient_request_properties = {
     key: value
     for key, value in patient_properties.items()
-    if key not in {"id", "created_at", "updated_at"}
+    if key
+    not in {
+        "id",
+        "has_photo",
+        "photo_verified",
+        "photo_file_name",
+        "photo_uploaded_at",
+        "created_at",
+        "updated_at",
+    }
 }
 
 visit_properties = {
@@ -390,6 +412,16 @@ swagger_template = {
         "PatientUpdate": {
             "type": "object",
             "properties": patient_request_properties,
+        },
+        "PatientPhotoVerification": {
+            "type": "object",
+            "required": ["verified"],
+            "properties": {
+                "verified": {
+                    "type": "boolean",
+                    "example": True,
+                }
+            },
         },
         "Visit": {
             "type": "object",
@@ -752,6 +784,133 @@ patient_delete_spec = {
         },
         404: {
             "description": "Patient not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+patient_photo_upload_spec = {
+    "tags": ["Patients"],
+    "summary": "Upload or replace a patient profile photo",
+    "consumes": ["multipart/form-data"],
+    "parameters": [
+        {
+            "name": "patient_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        },
+        {
+            "name": "file",
+            "in": "formData",
+            "type": "file",
+            "required": True,
+            "description": "JPEG or PNG image.",
+        },
+    ],
+    "responses": {
+        201: {
+            "description": "Patient photo uploaded successfully.",
+            "schema": {"$ref": "#/definitions/PatientSuccessResponse"},
+        },
+        400: {
+            "description": "Missing, unsupported, oversized, or invalid image.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+        404: {
+            "description": "Patient not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+        502: {
+            "description": "Private file storage is unavailable.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+patient_photo_get_spec = {
+    "tags": ["Patients"],
+    "summary": "Preview a private patient profile photo",
+    "produces": ["image/jpeg", "image/png"],
+    "parameters": [
+        {
+            "name": "patient_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        }
+    ],
+    "responses": {
+        200: {
+            "description": "The image is streamed inline through the backend.",
+            "schema": {"type": "file"},
+        },
+        404: {
+            "description": "Patient or patient photo not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+        502: {
+            "description": "Private file storage is unavailable.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+patient_photo_verify_spec = {
+    "tags": ["Patients"],
+    "summary": "Mark a patient profile photo verified or unverified",
+    "parameters": [
+        {
+            "name": "patient_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        },
+        {
+            "name": "body",
+            "in": "body",
+            "required": True,
+            "schema": {"$ref": "#/definitions/PatientPhotoVerification"},
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "Patient photo verification updated successfully.",
+            "schema": {"$ref": "#/definitions/PatientSuccessResponse"},
+        },
+        400: {
+            "description": "A boolean verified value is required.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+        404: {
+            "description": "Patient or patient photo not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+patient_photo_delete_spec = {
+    "tags": ["Patients"],
+    "summary": "Delete a patient profile photo",
+    "parameters": [
+        {
+            "name": "patient_id",
+            "in": "path",
+            "type": "integer",
+            "required": True,
+        }
+    ],
+    "responses": {
+        200: {
+            "description": "Patient photo deleted successfully.",
+            "schema": {"$ref": "#/definitions/PatientSuccessResponse"},
+        },
+        404: {
+            "description": "Patient or patient photo not found.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+        502: {
+            "description": "Private file storage is unavailable.",
             "schema": {"$ref": "#/definitions/ErrorResponse"},
         },
     },

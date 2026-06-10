@@ -12,6 +12,7 @@ class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite+pysqlite:///:memory:"
     CORS_ORIGINS = ["http://localhost:5173"]
     MEDICAL_RECORD_MAX_FILE_SIZE = 1024 * 1024
+    PATIENT_PHOTO_MAX_FILE_SIZE = 512 * 1024
 
 
 class FakeMedicalRecordStorage:
@@ -38,7 +39,9 @@ class FakeMedicalRecordStorage:
 @pytest.fixture()
 def app():
     app = create_app(TestConfig)
-    app.extensions["medical_record_storage"] = FakeMedicalRecordStorage()
+    storage = FakeMedicalRecordStorage()
+    app.extensions["medical_record_storage"] = storage
+    app.extensions["patient_photo_storage"] = storage
 
     with app.app_context():
         db.create_all()
@@ -55,3 +58,8 @@ def client(app):
 @pytest.fixture()
 def medical_record_storage(app):
     return app.extensions["medical_record_storage"]
+
+
+@pytest.fixture()
+def patient_photo_storage(app):
+    return app.extensions["patient_photo_storage"]

@@ -1,12 +1,19 @@
 import { computed, onMounted, ref } from "vue";
 
 import MedicalRecordsSection from "../components/MedicalRecordsSection.js";
-import { getPatient } from "../services/patients.js";
+import PatientAvatar from "../components/PatientAvatar.js";
+import {
+  deletePatientPhoto,
+  getPatient,
+  uploadPatientPhoto,
+  verifyPatientPhoto,
+} from "../services/patients.js";
 import { deleteVisit, listPatientVisits } from "../services/visits.js";
 
 export default {
   components: {
     MedicalRecordsSection,
+    PatientAvatar,
   },
   props: {
     id: {
@@ -23,6 +30,12 @@ export default {
     const deleting = ref(false);
     const selectedVisit = ref(null);
     const confirmDelete = ref(false);
+    const photoDialog = ref(false);
+    const photoFile = ref(null);
+    const uploadingPhoto = ref(false);
+    const updatingVerification = ref(false);
+    const deletingPhoto = ref(false);
+    const confirmPhotoDelete = ref(false);
 
     const visitHeaders = [
       { title: "Visit date", key: "visit_date" },
@@ -80,19 +93,92 @@ export default {
       }
     }
 
+    function openPhotoDialog() {
+      photoFile.value = null;
+      photoDialog.value = true;
+    }
+
+    async function savePhoto() {
+      const file = Array.isArray(photoFile.value)
+        ? photoFile.value[0]
+        : photoFile.value;
+      if (!file) {
+        error.value = "Choose a JPEG or PNG image.";
+        return;
+      }
+
+      uploadingPhoto.value = true;
+      error.value = "";
+      success.value = "";
+      try {
+        const response = await uploadPatientPhoto(patient.value.id, file);
+        patient.value = response.data;
+        photoDialog.value = false;
+        success.value = "Patient photo uploaded successfully.";
+      } catch (err) {
+        error.value = err.payload?.errors?.file || err.message;
+      } finally {
+        uploadingPhoto.value = false;
+      }
+    }
+
+    async function togglePhotoVerification() {
+      updatingVerification.value = true;
+      error.value = "";
+      success.value = "";
+      try {
+        const verified = !patient.value.photo_verified;
+        const response = await verifyPatientPhoto(patient.value.id, verified);
+        patient.value = response.data;
+        success.value = verified
+          ? "Patient photo marked verified."
+          : "Patient photo marked unverified.";
+      } catch (err) {
+        error.value = err.message;
+      } finally {
+        updatingVerification.value = false;
+      }
+    }
+
+    async function removePhoto() {
+      deletingPhoto.value = true;
+      error.value = "";
+      success.value = "";
+      try {
+        const response = await deletePatientPhoto(patient.value.id);
+        patient.value = response.data;
+        confirmPhotoDelete.value = false;
+        success.value = "Patient photo deleted successfully.";
+      } catch (err) {
+        error.value = err.message;
+      } finally {
+        deletingPhoto.value = false;
+      }
+    }
+
     onMounted(loadPatient);
 
     return {
       error,
       askDelete,
       confirmDelete,
+      confirmPhotoDelete,
       deleting,
+      deletingPhoto,
       fullName,
       loading,
+      openPhotoDialog,
       patient,
+      photoDialog,
+      photoFile,
+      removePhoto,
       removeVisit,
+      savePhoto,
       selectedVisit,
       success,
+      togglePhotoVerification,
+      updatingVerification,
+      uploadingPhoto,
       visitHeaders,
       visits,
     };
@@ -115,18 +201,55 @@ export default {
       <template v-else-if="patient">
         <v-row align="center" class="mb-5">
           <v-col cols="12" md="8">
-            <h1 class="text-h4 font-weight-bold mb-2">{{ fullName }}</h1>
-            <v-chip :color="patient.status === 'active' ? 'success' : 'grey'" size="small">
-              {{ patient.status }}
-            </v-chip>
+            <div class="d-flex align-center ga-4">
+              <PatientAvatar :patient="patient" :size="88" show-verification />
+              <div>
+                <h1 class="text-h4 font-weight-bold mb-2">{{ fullName }}</h1>
+                <div class="d-flex flex-wrap align-center ga-2">
+                  <StatusChip :status="patient.status" />
+                  <v-chip
+                    v-if="patient.has_photo"
+                    :color="patient.photo_verified ? 'success' : 'warning'"
+                    size="small"
+                    variant="tonal"
+                    :prepend-icon="patient.photo_verified ? 'mdi-check-decagram' : 'mdi-alert-circle-outline'"
+                  >
+                    {{ patient.photo_verified ? 'Photo verified' : 'Photo not verified' }}
+                  </v-chip>
+                </div>
+              </div>
+            </div>
           </v-col>
           <v-col cols="12" md="4" class="text-md-right">
-            <v-btn color="primary" prepend-icon="mdi-calendar-plus-outline" :to="\`/visits/new?patient_id=\${patient.id}\`" class="mr-2">
-              New visit
-            </v-btn>
-            <v-btn color="primary" variant="tonal" prepend-icon="mdi-pencil-outline" :to="\`/patients/\${patient.id}/edit\`">
-              Edit patient
-            </v-btn>
+            <div class="d-flex flex-wrap justify-md-end ga-2">
+              <v-btn color="primary" prepend-icon="mdi-calendar-plus-outline" :to="\`/visits/new?patient_id=\${patient.id}\`">
+                New visit
+              </v-btn>
+              <v-btn color="primary" variant="tonal" prepend-icon="mdi-pencil-outline" :to="\`/patients/\${patient.id}/edit\`">
+                Edit patient
+              </v-btn>
+              <v-btn variant="outlined" prepend-icon="mdi-camera-outline" @click="openPhotoDialog">
+                {{ patient.has_photo ? 'Replace photo' : 'Upload photo' }}
+              </v-btn>
+              <v-btn
+                v-if="patient.has_photo"
+                variant="outlined"
+                :prepend-icon="patient.photo_verified ? 'mdi-shield-off-outline' : 'mdi-check-decagram-outline'"
+                :loading="updatingVerification"
+                @click="togglePhotoVerification"
+              >
+                {{ patient.photo_verified ? 'Mark unverified' : 'Mark verified' }}
+              </v-btn>
+              <v-btn
+                v-if="patient.has_photo"
+                color="error"
+                variant="text"
+                prepend-icon="mdi-delete-outline"
+                @click="confirmPhotoDelete = true"
+              >
+                Delete photo
+              </v-btn>
+            </div>
           </v-col>
         </v-row>
 
@@ -190,21 +313,48 @@ export default {
         </v-card>
       </template>
 
-      <v-dialog v-model="confirmDelete" max-width="440">
+      <v-dialog v-model="photoDialog" max-width="560">
         <v-card>
-          <v-card-title>Delete visit</v-card-title>
+          <v-card-title class="d-flex align-center ga-2">
+            <v-icon icon="mdi-camera-outline" color="primary" />
+            {{ patient?.has_photo ? 'Replace patient photo' : 'Upload patient photo' }}
+          </v-card-title>
           <v-card-text>
-            Delete {{ selectedVisit?.visit_type }} from {{ selectedVisit?.visit_date }}?
+            <v-file-input
+              v-model="photoFile"
+              label="Patient photo *"
+              accept=".jpg,.jpeg,.png"
+              prepend-icon="mdi-image-outline"
+              show-size
+              hint="JPEG or PNG. Maximum 5 MB. New photos start unverified."
+              persistent-hint
+            />
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn variant="text" @click="confirmDelete = false">Cancel</v-btn>
-            <v-btn color="error" variant="flat" :loading="deleting" @click="removeVisit">
-              Delete
+            <v-btn variant="text" @click="photoDialog = false">Cancel</v-btn>
+            <v-btn color="primary" :loading="uploadingPhoto" @click="savePhoto">
+              {{ patient?.has_photo ? 'Replace photo' : 'Upload photo' }}
             </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
+
+      <ConfirmDialog
+        v-model="confirmPhotoDelete"
+        title="Delete patient photo"
+        message="Delete this patient profile photo? The private stored image will also be removed."
+        :loading="deletingPhoto"
+        @confirm="removePhoto"
+      />
+
+      <ConfirmDialog
+        v-model="confirmDelete"
+        title="Delete visit"
+        :message="\`Delete \${selectedVisit?.visit_type || 'this visit'} from \${selectedVisit?.visit_date || 'the patient record'}?\`"
+        :loading="deleting"
+        @confirm="removeVisit"
+      />
     </div>
   `,
 };
