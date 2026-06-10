@@ -118,6 +118,17 @@ GitHub Actions runs basic checks on pull requests and pushes to `main`:
 - Frontend CI installs Node dependencies from the lockfile and runs the Vite build.
 - Docker Build validates the Compose file and builds the backend and frontend images without pushing them.
 
+## Printable Reports
+
+Print-friendly reports are available from the detail pages for patients,
+visits, aide notes, nurse notes, and patient assessments. Use the report's
+`Print / Save PDF` action to open the browser print dialog, then select a
+printer or choose the browser's PDF destination.
+
+Printable patient summaries include recent visits, assessments, and medical
+record metadata. Uploaded medical record files are referenced by name and are
+not embedded in reports.
+
 ## Development Workflow
 
 - Start new work from an up-to-date `main` branch.

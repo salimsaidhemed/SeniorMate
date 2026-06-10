@@ -230,6 +230,9 @@ export default {
               <v-btn color="primary" variant="tonal" prepend-icon="mdi-pencil-outline" :to="\`/patients/\${patient.id}/edit\`">
                 Edit patient
               </v-btn>
+              <v-btn variant="outlined" prepend-icon="mdi-printer-outline" :to="\`/patients/\${patient.id}/print\`">
+                Print summary
+              </v-btn>
               <v-btn variant="outlined" prepend-icon="mdi-camera-outline" @click="openPhotoDialog">
                 {{ patient.has_photo ? 'Replace photo' : 'Upload photo' }}
               </v-btn>

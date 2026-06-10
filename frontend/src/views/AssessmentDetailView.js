@@ -107,6 +107,13 @@ export default {
         >
           <template #actions>
             <v-btn
+              variant="outlined"
+              prepend-icon="mdi-printer-outline"
+              :to="\`/assessments/\${assessment.id}/print\`"
+            >
+              Print assessment
+            </v-btn>
+            <v-btn
               color="primary"
               prepend-icon="mdi-pencil-outline"
               :to="\`/assessments/\${assessment.id}/edit\`"
