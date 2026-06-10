@@ -189,6 +189,9 @@ export default {
             <v-btn color="primary" prepend-icon="mdi-pencil-outline" :to="\`/visits/\${visit.id}/edit\`">
               Edit visit
             </v-btn>
+            <v-btn variant="outlined" prepend-icon="mdi-printer-outline" :to="\`/visits/\${visit.id}/print\`">
+              Print summary
+            </v-btn>
             </div>
           </v-col>
         </v-row>

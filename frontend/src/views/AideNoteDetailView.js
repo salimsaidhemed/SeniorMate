@@ -110,9 +110,14 @@ export default {
             </div>
           </v-col>
           <v-col cols="12" md="4" class="text-md-right">
-            <v-btn color="primary" prepend-icon="mdi-pencil-outline" :to="\`/aide-notes/\${aideNote.id}/edit\`">
-              Edit aide note
-            </v-btn>
+            <div class="d-flex flex-wrap justify-md-end ga-2">
+              <v-btn variant="outlined" prepend-icon="mdi-printer-outline" :to="\`/aide-notes/\${aideNote.id}/print\`">
+                Print note
+              </v-btn>
+              <v-btn color="primary" prepend-icon="mdi-pencil-outline" :to="\`/aide-notes/\${aideNote.id}/edit\`">
+                Edit aide note
+              </v-btn>
+            </div>
           </v-col>
         </v-row>
 
