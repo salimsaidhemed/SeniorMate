@@ -1,6 +1,5 @@
 import { apiRequest } from "./http.js";
-import { apiBaseUrl } from "../config.js";
-import { parseResponse } from "./http.js";
+import { apiBlobRequest } from "./http.js";
 import { withQuery } from "./query.js";
 
 export async function listPatients(params = {}) {
@@ -41,11 +40,7 @@ export async function uploadPatientPhoto(patientId, file) {
 }
 
 export async function getPatientPhoto(patientId) {
-  const response = await fetch(`${apiBaseUrl}/patients/${patientId}/photo`);
-  if (!response.ok) {
-    await parseResponse(response);
-  }
-  return response.blob();
+  return apiBlobRequest(`/patients/${patientId}/photo`);
 }
 
 export async function verifyPatientPhoto(patientId, verified) {

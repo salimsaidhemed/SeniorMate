@@ -1,6 +1,6 @@
 # Local Development
 
-SeniorMate runs locally with Docker Compose. The default stack includes the Flask backend, Vue/Vite frontend, PostgreSQL, and MinIO. Keycloak is documented as an optional future authentication service and is not required for normal local development yet.
+SeniorMate runs locally with Docker Compose. The default stack includes the Flask backend, Vue/Vite frontend, PostgreSQL, and MinIO. Keycloak is available through the optional `auth` profile.
 
 ## Prerequisites
 
@@ -136,19 +136,44 @@ Docker Compose uses named volumes for persistent local data:
 
 ## Keycloak
 
-Authentication is not implemented yet. A Keycloak service placeholder is available behind the `auth` profile for future work:
+Authentication is disabled by default so local development and tests do not
+depend on a live identity provider. To run the authenticated stack, set these
+values in `.env`:
 
 ```bash
-docker compose --profile auth up keycloak
+AUTH_ENABLED=true
+VITE_AUTH_ENABLED=true
 ```
 
-The main app remains usable without login for now.
+Then start all services with:
+
+```bash
+docker compose --profile auth up --build
+```
+
+- Keycloak: `http://localhost:8080`
+- Keycloak admin console: `http://localhost:8080/admin`
+- Realm: `seniormate`
+- Frontend client: `seniormate-frontend`
+- API audience: `seniormate-api`
+
+The imported realm and development accounts are described in
+[keycloak-local-setup.md](keycloak-local-setup.md). The credentials in that
+document are local placeholders and must never be reused outside development.
 
 ## Troubleshooting
 
 - If ports are already in use, adjust `BACKEND_PORT`, `FRONTEND_PORT`, `POSTGRES_PORT`, `MINIO_API_PORT`, or `MINIO_CONSOLE_PORT` in `.env`.
 - If the backend health endpoint reports `database: unavailable`, wait for PostgreSQL to finish starting or restart the backend container.
-- If frontend dependencies behave oddly, rebuild the frontend container with `docker compose build frontend`.
+- The frontend container synchronizes npm dependencies on startup so the
+  persistent `frontend_node_modules` volume stays current after package changes.
+  If dependencies still behave oddly, recreate the frontend container with
+  `docker compose up -d --force-recreate frontend`.
+- If login cannot reach Keycloak, confirm the stack was started with
+  `--profile auth` and that both auth feature flags have the same value.
+- If an authenticated API request returns `401`, confirm the token issuer is
+  `http://localhost:8080/realms/seniormate` and includes the
+  `seniormate-api` audience.
 - If medical record uploads fail, confirm MinIO is running and that the backend
   `MINIO_ACCESS_KEY` and `MINIO_SECRET_KEY` match the local MinIO root
   credentials.

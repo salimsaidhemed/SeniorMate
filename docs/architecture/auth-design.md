@@ -2,7 +2,10 @@
 
 ## Status
 
-This document defines the intended authentication and authorization architecture for SeniorMate. It is a design reference only. Authentication, login UI, token validation, and permission enforcement are not implemented by this feature.
+SeniorMate now implements the first authentication and authorization layer
+described here. The Vue application uses the official Keycloak JavaScript
+adapter, while the Flask backend validates JWTs against the realm JWKS and
+enforces centralized role-to-permission mappings.
 
 ## Architecture Overview
 
@@ -76,7 +79,10 @@ Realm roles may identify broad SeniorMate access. Client roles on `seniormate-ap
 
 ## Permission Model
 
-The first implementation should translate roles into named permissions rather than scattering role-name checks throughout routes. Example permissions include `patients.read`, `patients.write`, `nurse_notes.write`, and `branding.manage`.
+The implementation translates roles into named permissions in the backend auth
+module rather than scattering role-name checks throughout routes. Example
+permissions include `patients.read`, `patients.write`, and
+`nurse_notes.write`.
 
 Legend:
 
@@ -137,14 +143,18 @@ The exact token shape may use Keycloak's `realm_access`, `resource_access`, and 
 
 ## Frontend Behavior
 
-Future frontend authentication should:
+The frontend authentication layer:
 
-- Redirect unauthenticated users to Keycloak.
-- Restore the intended route after successful login.
-- Keep access tokens in memory where practical.
-- Refresh sessions through the OIDC client without storing long-lived secrets.
-- Use route metadata and permission helpers to hide unavailable actions.
-- Treat backend `401` and `403` responses as authoritative.
+- Redirects unauthenticated users to Keycloak with Authorization Code and PKCE.
+- Keeps access tokens in the Keycloak adapter's in-memory state.
+- Refreshes short-lived access tokens before API requests and on expiry.
+- Adds bearer tokens to JSON, multipart, photo, and document requests.
+- Uses route metadata for write-screen navigation.
+- Treats backend `401` and `403` responses as authoritative.
+
+`AUTH_ENABLED=false` and `VITE_AUTH_ENABLED=false` provide an explicit local
+development and test bypass. Both flags should be enabled together when
+testing real authentication.
 
 ## Multi-Organization Direction
 
@@ -162,10 +172,9 @@ Cross-organization access should be explicit, rare, and audited.
 
 ## Implementation Sequence
 
-1. Add Keycloak local configuration and OIDC client settings.
-2. Add backend JWT validation and normalized identity context.
-3. Add permission mapping and protected API decorators/services.
-4. Add frontend login, logout, session restoration, and route guards.
-5. Add organization scoping to domain records.
-6. Add audit logging for sensitive actions.
-
+1. Completed: Keycloak local configuration and OIDC client settings.
+2. Completed: backend JWT validation and normalized identity context.
+3. Completed: permission mapping and protected API helpers.
+4. Completed: frontend login, logout, token refresh, and route guards.
+5. Future: organization scoping for domain records.
+6. Future: audit logging for sensitive actions.

@@ -4,6 +4,7 @@ from flasgger import Swagger, swag_from
 from sqlalchemy import text
 
 from app.config import Config
+from app.auth import protect_api_request
 from app.extensions import db, migrate
 from app.models import AideNote as AideNote
 from app.models import MedicalRecord as MedicalRecord
@@ -29,6 +30,7 @@ def create_app(config_object=Config):
 
     db.init_app(app)
     migrate.init_app(app, db)
+    app.before_request(protect_api_request)
     app.register_blueprint(assessments_bp)
     app.register_blueprint(aide_notes_bp)
     app.register_blueprint(dashboard_bp)

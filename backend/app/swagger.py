@@ -473,6 +473,17 @@ swagger_template = {
     "schemes": ["http"],
     "consumes": ["application/json"],
     "produces": ["application/json"],
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+            "description": (
+                "Keycloak access token. Enter the value as: Bearer <token>"
+            ),
+        }
+    },
+    "security": [{"BearerAuth": []}],
     "definitions": {
         "Patient": {
             "type": "object",
@@ -758,6 +769,7 @@ swagger_template = {
 health_spec = {
     "tags": ["Health"],
     "summary": "Check backend and database health",
+    "security": [],
     "responses": {
         200: {
             "description": "Backend and database are available.",

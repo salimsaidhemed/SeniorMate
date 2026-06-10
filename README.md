@@ -47,7 +47,7 @@ SeniorMate/
 
 ## Local Development
 
-Docker Compose is the recommended way to run the local SeniorMate stack. It starts the Flask backend, Vue/Vite frontend, PostgreSQL, and MinIO with safe local defaults from `.env.example`.
+Docker Compose is the recommended way to run the local SeniorMate stack. It starts the Flask backend, Vue/Vite frontend, PostgreSQL, and MinIO with safe local defaults from `.env.example`. Keycloak can be enabled through the `auth` profile.
 
 ### Prerequisites
 
@@ -108,7 +108,19 @@ Docker Compose is the recommended way to run the local SeniorMate stack. It star
    - MinIO console: `http://localhost:9001`
    - PostgreSQL: `localhost:5432`
 
-Keycloak is included as an optional Compose profile for future authentication work. It is not required for local development yet.
+Authentication is disabled by default for quick local development and automated
+tests. To exercise the full Keycloak login and role-based authorization flow,
+set `AUTH_ENABLED=true` and `VITE_AUTH_ENABLED=true` in `.env`, then start:
+
+```bash
+docker compose --profile auth up --build
+```
+
+Keycloak runs at `http://localhost:8080`. SeniorMate uses Authorization Code
+with PKCE in the frontend and validates signed access tokens, issuer, audience,
+and expiry in the backend. See
+[docs/setup/keycloak-local-setup.md](docs/setup/keycloak-local-setup.md) for
+the imported realm, local demo users, roles, and Swagger testing workflow.
 
 ## CI Checks
 

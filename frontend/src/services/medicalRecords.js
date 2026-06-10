@@ -1,5 +1,4 @@
-import { apiBaseUrl } from "../config.js";
-import { apiRequest, parseResponse } from "./http.js";
+import { apiBlobRequest, apiRequest } from "./http.js";
 
 
 export async function listMedicalRecords() {
@@ -42,9 +41,5 @@ export async function getPatientMedicalRecords(patientId) {
 }
 
 export async function downloadMedicalRecord(id) {
-  const response = await fetch(`${apiBaseUrl}/medical-records/${id}/download`);
-  if (!response.ok) {
-    await parseResponse(response);
-  }
-  return response.blob();
+  return apiBlobRequest(`/medical-records/${id}/download`);
 }

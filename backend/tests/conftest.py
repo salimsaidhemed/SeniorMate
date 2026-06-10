@@ -9,6 +9,7 @@ from app.extensions import db
 
 class TestConfig(Config):
     TESTING = True
+    AUTH_ENABLED = False
     SQLALCHEMY_DATABASE_URI = "sqlite+pysqlite:///:memory:"
     CORS_ORIGINS = ["http://localhost:5173"]
     MEDICAL_RECORD_MAX_FILE_SIZE = 1024 * 1024

@@ -1,4 +1,5 @@
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import { authState, login, logout } from "../auth.js";
 
 const navItems = [
   { title: "Dashboard", icon: "mdi-view-dashboard-outline", to: "/" },
@@ -11,10 +12,28 @@ const navItems = [
 export default {
   setup() {
     const drawer = ref(true);
+    const displayRole = computed(() => authState.roles[0] || "user");
+    const userInitials = computed(() => {
+      const name = authState.profile?.name || "";
+      return (
+        name
+          .split(/\s+/)
+          .filter(Boolean)
+          .slice(0, 2)
+          .map((part) => part[0])
+          .join("")
+          .toUpperCase() || "SM"
+      );
+    });
 
     return {
+      authState,
+      displayRole,
       drawer,
+      login,
+      logout,
       navItems,
+      userInitials,
     };
   },
   template: `
@@ -47,8 +66,29 @@ export default {
         </v-list>
 
         <template #append>
-          <div class="pa-4 text-caption text-medium-emphasis">
-            SeniorMate development
+          <div class="pa-3">
+            <v-list-item
+              :title="authState.profile?.name || 'SeniorMate user'"
+              :subtitle="displayRole"
+              rounded="lg"
+            >
+              <template #prepend>
+                <v-avatar color="primary" size="36">
+                  <span class="text-caption font-weight-bold">{{ userInitials }}</span>
+                </v-avatar>
+              </template>
+            </v-list-item>
+            <v-btn
+              v-if="authState.enabled"
+              block
+              variant="text"
+              color="secondary"
+              prepend-icon="mdi-logout"
+              class="mt-2"
+              @click="logout"
+            >
+              Log out
+            </v-btn>
           </div>
         </template>
       </v-navigation-drawer>
@@ -61,7 +101,15 @@ export default {
       </v-app-bar>
 
       <v-main class="app-surface">
-        <router-view />
+        <v-container v-if="authState.error" class="py-12" max-width="720">
+          <v-alert type="error" variant="tonal" title="Sign-in unavailable">
+            {{ authState.error }}
+            <template #append>
+              <v-btn variant="text" @click="login">Retry</v-btn>
+            </template>
+          </v-alert>
+        </v-container>
+        <router-view v-else />
       </v-main>
     </v-app>
   `,
