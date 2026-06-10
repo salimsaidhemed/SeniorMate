@@ -156,6 +156,10 @@ The frontend authentication layer:
 development and test bypass. Both flags should be enabled together when
 testing real authentication.
 
+Branding settings are readable by authenticated roles. Only `admin` and
+`manager` roles receive `branding.write`; the public branding and logo preview
+endpoints remain unauthenticated so identity can resolve before login.
+
 ## Multi-Organization Direction
 
 Future domain tables should include `organization_id` where records are organization-owned. The backend must derive organization context from validated identity claims and filter every query by that organization. Client-provided organization identifiers must never be trusted as the sole source of scope.

@@ -102,6 +102,7 @@ Docker Compose is the recommended way to run the local SeniorMate stack. It star
    - Visits UI: `http://localhost:5173/visits`
    - Aide Notes UI: `http://localhost:5173/aide-notes`
    - Nurse Notes UI: `http://localhost:5173/nurse-notes`
+   - Branding settings: `http://localhost:5173/settings/branding`
    - Backend health: `http://localhost:5001/api/health`
    - Swagger UI: `http://localhost:5001/api/docs`
    - OpenAPI JSON: `http://localhost:5001/api/openapi.json`
@@ -121,6 +122,10 @@ with PKCE in the frontend and validates signed access tokens, issuer, audience,
 and expiry in the backend. See
 [docs/setup/keycloak-local-setup.md](docs/setup/keycloak-local-setup.md) for
 the imported realm, local demo users, roles, and Swagger testing workflow.
+
+Administrators and managers can customize the app and organization names,
+logo, theme colors, banner text, and footer text from `Settings → Branding`.
+Custom logos remain private in MinIO and are delivered through the backend.
 
 ## CI Checks
 

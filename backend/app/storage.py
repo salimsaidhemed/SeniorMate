@@ -87,3 +87,11 @@ def get_patient_photo_storage():
         storage = build_minio_storage()
         current_app.extensions["patient_photo_storage"] = storage
     return storage
+
+
+def get_branding_logo_storage():
+    storage = current_app.extensions.get("branding_logo_storage")
+    if storage is None:
+        storage = build_minio_storage()
+        current_app.extensions["branding_logo_storage"] = storage
+    return storage

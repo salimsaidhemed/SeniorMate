@@ -750,6 +750,67 @@ swagger_template = {
                 },
             },
         },
+        "BrandingSettings": {
+            "type": "object",
+            "properties": {
+                "organization_name": {"type": "string", "example": "Harbor Care"},
+                "app_display_name": {"type": "string", "example": "HarborMate"},
+                "has_custom_logo": {"type": "boolean", "example": True},
+                "logo_file_name": {
+                    "type": "string",
+                    "nullable": True,
+                    "example": "harbor-care.svg",
+                },
+                "logo_url": {
+                    "type": "string",
+                    "nullable": True,
+                    "example": "/api/public/branding/logo",
+                },
+                "primary_color": {"type": "string", "example": "#1F6F68"},
+                "secondary_color": {"type": "string", "example": "#4D6D78"},
+                "accent_color": {"type": "string", "example": "#32817A"},
+                "sidebar_color": {"type": "string", "example": "#FFFFFF"},
+                "login_banner_text": {
+                    "type": "string",
+                    "example": "Welcome to Harbor Care.",
+                },
+                "footer_text": {
+                    "type": "string",
+                    "example": "Harbor Care clinical operations",
+                },
+                "updated_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "nullable": True,
+                },
+            },
+        },
+        "BrandingSettingsUpdate": {
+            "type": "object",
+            "properties": {
+                "organization_name": {"type": "string"},
+                "app_display_name": {"type": "string"},
+                "primary_color": {"type": "string", "pattern": "^#[0-9A-Fa-f]{6}$"},
+                "secondary_color": {
+                    "type": "string",
+                    "pattern": "^#[0-9A-Fa-f]{6}$",
+                },
+                "accent_color": {"type": "string", "pattern": "^#[0-9A-Fa-f]{6}$"},
+                "sidebar_color": {"type": "string", "pattern": "^#[0-9A-Fa-f]{6}$"},
+                "login_banner_text": {"type": "string"},
+                "footer_text": {"type": "string"},
+            },
+        },
+        "BrandingSettingsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {"$ref": "#/definitions/BrandingSettings"},
+                "message": {
+                    "type": "string",
+                    "example": "Branding settings retrieved successfully",
+                },
+            },
+        },
         "DeleteSuccessResponse": {
             "type": "object",
             "properties": {
@@ -1768,6 +1829,119 @@ medical_record_download_spec = {
         },
         502: {
             "description": "Medical record storage is unavailable.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+branding_get_spec = {
+    "tags": ["Branding"],
+    "summary": "Retrieve resolved organization branding",
+    "responses": {
+        200: {
+            "description": "Branding settings retrieved successfully.",
+            "schema": {"$ref": "#/definitions/BrandingSettingsResponse"},
+        }
+    },
+}
+
+branding_update_spec = {
+    "tags": ["Branding"],
+    "summary": "Update organization branding",
+    "description": "Requires the admin or manager role.",
+    "parameters": [
+        {
+            "name": "body",
+            "in": "body",
+            "required": True,
+            "schema": {"$ref": "#/definitions/BrandingSettingsUpdate"},
+        }
+    ],
+    "responses": {
+        200: {
+            "description": "Branding settings updated successfully.",
+            "schema": {"$ref": "#/definitions/BrandingSettingsResponse"},
+        },
+        400: {
+            "description": "Invalid color or settings payload.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+        403: {
+            "description": "The current user cannot update branding.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+branding_upload_logo_spec = {
+    "tags": ["Branding"],
+    "summary": "Upload or replace the organization logo",
+    "description": "Requires the admin or manager role. Accepts SVG, PNG, or JPEG.",
+    "consumes": ["multipart/form-data"],
+    "parameters": [
+        {
+            "name": "file",
+            "in": "formData",
+            "type": "file",
+            "required": True,
+        }
+    ],
+    "responses": {
+        201: {
+            "description": "Branding logo uploaded successfully.",
+            "schema": {"$ref": "#/definitions/BrandingSettingsResponse"},
+        },
+        400: {
+            "description": "Invalid or unsafe logo.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+        403: {
+            "description": "The current user cannot update branding.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+branding_delete_logo_spec = {
+    "tags": ["Branding"],
+    "summary": "Delete the custom organization logo",
+    "description": "Requires the admin or manager role.",
+    "responses": {
+        200: {
+            "description": "The default SeniorMate logo is now active.",
+            "schema": {"$ref": "#/definitions/BrandingSettingsResponse"},
+        },
+        403: {
+            "description": "The current user cannot update branding.",
+            "schema": {"$ref": "#/definitions/ErrorResponse"},
+        },
+    },
+}
+
+branding_public_get_spec = {
+    "tags": ["Branding"],
+    "summary": "Retrieve safe public branding",
+    "security": [],
+    "responses": {
+        200: {
+            "description": "Public branding retrieved successfully.",
+            "schema": {"$ref": "#/definitions/BrandingSettingsResponse"},
+        }
+    },
+}
+
+branding_public_logo_spec = {
+    "tags": ["Branding"],
+    "summary": "Preview the public organization logo",
+    "security": [],
+    "produces": ["image/svg+xml", "image/png", "image/jpeg"],
+    "responses": {
+        200: {
+            "description": "The custom logo is streamed through the backend.",
+            "schema": {"type": "file"},
+        },
+        404: {
+            "description": "No custom logo is configured.",
             "schema": {"$ref": "#/definitions/ErrorResponse"},
         },
     },

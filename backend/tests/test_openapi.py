@@ -43,6 +43,10 @@ def test_openapi_json_includes_health_and_patient_endpoints(client):
     assert "/api/assessments/{assessment_id}" in paths
     assert "/api/patients/{patient_id}/assessments" in paths
     assert "/api/visits/{visit_id}/assessments" in paths
+    assert "/api/settings/branding" in paths
+    assert "/api/settings/branding/logo" in paths
+    assert "/api/public/branding" in paths
+    assert "/api/public/branding/logo" in paths
     assert "get" in paths["/api/health"]
     assert "get" in paths["/api/dashboard/stats"]
     assert {"get", "post"} <= set(paths["/api/patients"].keys())
@@ -80,6 +84,10 @@ def test_openapi_json_includes_health_and_patient_endpoints(client):
     )
     assert "get" in paths["/api/patients/{patient_id}/assessments"]
     assert "get" in paths["/api/visits/{visit_id}/assessments"]
+    assert {"get", "put"} <= set(paths["/api/settings/branding"].keys())
+    assert {"post", "delete"} <= set(paths["/api/settings/branding/logo"].keys())
+    assert "get" in paths["/api/public/branding"]
+    assert "get" in paths["/api/public/branding/logo"]
 
 
 def test_openapi_json_includes_patient_schemas(client):
@@ -122,3 +130,6 @@ def test_openapi_json_includes_patient_schemas(client):
     assert "PatientAssessmentUpdate" in definitions
     assert "PatientAssessmentResponse" in definitions
     assert "PatientAssessmentListResponse" in definitions
+    assert "BrandingSettings" in definitions
+    assert "BrandingSettingsUpdate" in definitions
+    assert "BrandingSettingsResponse" in definitions

@@ -2,7 +2,9 @@
 
 ## Status
 
-This document defines the future SeniorMate branding architecture. It does not add database models, settings APIs, uploads, or dynamic theme behavior.
+SeniorMate now implements a single default organization branding record,
+private logo storage, public pre-authentication branding delivery, and dynamic
+frontend theme behavior. Full multi-organization branding remains future work.
 
 ## Goals
 
@@ -47,9 +49,7 @@ Required defaults:
 
 The application must never show a broken image icon. Logo loading should fall back to the bundled default asset.
 
-## Proposed Data Model
-
-This is a future model proposal, not an implementation.
+## Data Model
 
 ### OrganizationSettings
 
@@ -68,7 +68,9 @@ created_at
 updated_at
 ```
 
-An organization should have at most one active settings record. Color values should be normalized to six-digit hexadecimal values and validated for acceptable contrast before saving.
+The first implementation uses the singleton row with `id=1`. Logo metadata is
+stored with the settings record while file bytes remain in MinIO. Color values
+are normalized to uppercase six-digit hexadecimal values.
 
 ### Optional Organization
 
@@ -87,9 +89,11 @@ When multi-organization support is introduced, `OrganizationSettings` should ref
 
 - Store uploaded logo binaries in a private MinIO bucket.
 - Store only object keys and metadata in PostgreSQL.
-- Serve logos through an authenticated backend endpoint or short-lived presigned URL.
-- Validate MIME type, file signature, dimensions, and file size.
-- Initially accept SVG only if it is sanitized safely; otherwise limit uploads to PNG and JPEG.
+- Serve custom logos through the safe public backend preview endpoint without
+  exposing the private object key.
+- Validate MIME type, extension, file signature, and configured file size.
+- Parse SVG XML and reject scripts, event handlers, foreign embedded content,
+  data URLs, and external references.
 - Cache resolved branding in the frontend with a clear invalidation strategy after settings updates.
 
 Bundled SeniorMate default assets remain part of the frontend build and require no storage service.
@@ -124,32 +128,43 @@ Four original vector concepts are available under:
 
 It is the clearest at first glance, works in healthcare and administrative contexts without feeling institutional, and separates cleanly into a square mark and horizontal wordmark. Its simple geometry remains legible at sidebar, favicon, login, print, and document-header sizes. The recommendation is intentionally easy to override after maintainer review.
 
-No concept is wired into the production app by this feature.
+The Care Cross Wordmark is now the bundled production fallback. A missing or
+unavailable custom logo immediately falls back to this asset.
 
-## Future Settings UI
+## Settings UI
 
-A later feature should implement:
+`Settings → Branding` is available to administrators and managers. It includes:
 
 - `Settings → Branding` navigation.
 - Organization and app display name fields.
 - Logo upload, preview, replacement, and deletion.
 - Color pickers with validated hex inputs.
 - Live desktop and login preview.
-- Accessible contrast warnings.
-- Save/reset actions backed by a settings API.
+- Hex color validation.
+- Save, custom-logo deletion, and reset-to-default actions backed by the
+  branding API.
 - Dynamic application of branding to navigation, login, and print surfaces.
 
-## API Direction
-
-Potential future endpoints:
+## API
 
 ```text
-GET    /api/organization/settings
-PUT    /api/organization/settings
-POST   /api/organization/settings/logo
-GET    /api/organization/settings/logo
-DELETE /api/organization/settings/logo
+GET    /api/settings/branding
+PUT    /api/settings/branding
+POST   /api/settings/branding/logo
+DELETE /api/settings/branding/logo
+GET    /api/public/branding
+GET    /api/public/branding/logo
 ```
 
-Only users with `branding.manage` should mutate settings. A public or pre-authentication branding endpoint may later expose a deliberately limited, non-sensitive subset for the login screen.
+Authenticated users may read settings. Only `admin` and `manager` roles may
+mutate settings or logos. The public endpoint returns resolved display values
+and a backend preview URL only; it never returns private bucket details or
+object keys.
 
+## Login Branding
+
+The frontend loads public branding before starting OIDC, which allows the
+document title and post-login application shell to use organization branding.
+The actual login form is hosted by Keycloak and is not customized by this
+feature. A future Keycloak theme can consume the same approved identity without
+changing SeniorMate's settings model.

@@ -14,6 +14,7 @@ class TestConfig(Config):
     CORS_ORIGINS = ["http://localhost:5173"]
     MEDICAL_RECORD_MAX_FILE_SIZE = 1024 * 1024
     PATIENT_PHOTO_MAX_FILE_SIZE = 512 * 1024
+    BRANDING_LOGO_MAX_FILE_SIZE = 256 * 1024
 
 
 class FakeMedicalRecordStorage:
@@ -43,6 +44,7 @@ def app():
     storage = FakeMedicalRecordStorage()
     app.extensions["medical_record_storage"] = storage
     app.extensions["patient_photo_storage"] = storage
+    app.extensions["branding_logo_storage"] = storage
 
     with app.app_context():
         db.create_all()
@@ -64,3 +66,8 @@ def medical_record_storage(app):
 @pytest.fixture()
 def patient_photo_storage(app):
     return app.extensions["patient_photo_storage"]
+
+
+@pytest.fixture()
+def branding_logo_storage(app):
+    return app.extensions["branding_logo_storage"]

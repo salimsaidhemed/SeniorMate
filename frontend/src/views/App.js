@@ -1,5 +1,10 @@
 import { computed, ref } from "vue";
 import { authState, login, logout } from "../auth.js";
+import {
+  brandingState,
+  defaultLogoUrl,
+  useDefaultLogo,
+} from "../branding.js";
 
 const navItems = [
   { title: "Dashboard", icon: "mdi-view-dashboard-outline", to: "/" },
@@ -25,27 +30,58 @@ export default {
           .toUpperCase() || "SM"
       );
     });
+    const canManageBranding = computed(
+      () =>
+        !authState.enabled ||
+        authState.roles.some((role) => ["admin", "manager"].includes(role)),
+    );
+    const sidebarTextColor = computed(() => {
+      const hex = brandingState.sidebar_color.replace("#", "");
+      const [red, green, blue] = [0, 2, 4].map((index) =>
+        Number.parseInt(hex.slice(index, index + 2), 16),
+      );
+      return (red * 299 + green * 587 + blue * 114) / 1000 > 150
+        ? "#20302F"
+        : "#FFFFFF";
+    });
 
     return {
       authState,
+      brandingState,
+      canManageBranding,
+      defaultLogoUrl,
       displayRole,
       drawer,
       login,
       logout,
       navItems,
+      sidebarTextColor,
+      useDefaultLogo,
       userInitials,
     };
   },
   template: `
     <v-app>
-      <v-navigation-drawer v-model="drawer" width="260" color="surface">
+      <v-navigation-drawer
+        v-model="drawer"
+        width="260"
+        :color="brandingState.sidebar_color"
+        :style="{ color: sidebarTextColor }"
+      >
         <div class="app-brand">
-          <div class="app-brand__mark">
-            <v-icon icon="mdi-heart-pulse" size="22" />
-          </div>
+          <img
+            :src="brandingState.logo_src"
+            :alt="brandingState.app_display_name"
+            class="app-brand__logo"
+            @error="useDefaultLogo"
+          />
           <div>
-            <div class="app-brand__name">SeniorMate</div>
-            <div class="app-brand__caption">Care operations</div>
+            <div v-if="brandingState.has_custom_logo" class="app-brand__name">
+              {{ brandingState.app_display_name }}
+            </div>
+            <div class="app-brand__caption">
+              {{ brandingState.organization_name || 'Care operations' }}
+            </div>
           </div>
         </div>
 
@@ -62,6 +98,17 @@ export default {
             active-color="primary"
             rounded="lg"
             class="mb-1"
+          />
+        </v-list>
+
+        <v-list v-if="canManageBranding" density="comfortable" nav class="px-3">
+          <v-list-subheader>Settings</v-list-subheader>
+          <v-list-item
+            prepend-icon="mdi-palette-outline"
+            title="Branding"
+            to="/settings/branding"
+            color="primary"
+            rounded="lg"
           />
         </v-list>
 
@@ -89,6 +136,12 @@ export default {
             >
               Log out
             </v-btn>
+            <div
+              v-if="brandingState.footer_text"
+              class="app-brand__footer"
+            >
+              {{ brandingState.footer_text }}
+            </div>
           </div>
         </template>
       </v-navigation-drawer>
@@ -96,7 +149,7 @@ export default {
       <v-app-bar flat border color="surface" height="64">
         <v-app-bar-nav-icon aria-label="Toggle navigation" @click="drawer = !drawer" />
         <v-app-bar-title class="text-subtitle-1 font-weight-medium">
-          Care workspace
+          {{ brandingState.app_display_name }} workspace
         </v-app-bar-title>
       </v-app-bar>
 

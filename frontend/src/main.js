@@ -23,72 +23,83 @@ import SectionCard from "./components/SectionCard.js";
 import SignatureBlock from "./components/SignatureBlock.js";
 import StatusChip from "./components/StatusChip.js";
 import { initializeAuth } from "./auth.js";
+import {
+  bindVuetifyBranding,
+  brandingState,
+  initializeBranding,
+} from "./branding.js";
 
-const vuetify = createVuetify({
-  components,
-  directives,
-  icons: {
-    defaultSet: "mdi",
-    aliases,
-    sets: { mdi },
-  },
-  theme: {
-    defaultTheme: "seniorMateLight",
-    themes: {
-      seniorMateLight: {
-        dark: false,
-        colors: {
-          background: "#F4F7F7",
-          surface: "#FFFFFF",
-          primary: "#1F6F68",
-          secondary: "#4D6D78",
-          success: "#3E7D5A",
-          info: "#3E7188",
-          warning: "#9B6B23",
-          error: "#B54747",
-          "on-background": "#20302F",
-          "on-surface": "#20302F",
-        },
-        variables: {
-          "border-color": "#CBD7D5",
-          "border-opacity": 0.72,
-          "high-emphasis-opacity": 0.9,
-          "medium-emphasis-opacity": 0.72,
+function createSeniorMateVuetify() {
+  return createVuetify({
+    components,
+    directives,
+    icons: {
+      defaultSet: "mdi",
+      aliases,
+      sets: { mdi },
+    },
+    theme: {
+      defaultTheme: "seniorMateLight",
+      themes: {
+        seniorMateLight: {
+          dark: false,
+          colors: {
+            background: "#F4F7F7",
+            surface: "#FFFFFF",
+            primary: brandingState.primary_color,
+            secondary: brandingState.secondary_color,
+            accent: brandingState.accent_color,
+            success: "#3E7D5A",
+            info: "#3E7188",
+            warning: "#9B6B23",
+            error: "#B54747",
+            "on-background": "#20302F",
+            "on-surface": "#20302F",
+          },
+          variables: {
+            "border-color": "#CBD7D5",
+            "border-opacity": 0.72,
+            "high-emphasis-opacity": 0.9,
+            "medium-emphasis-opacity": 0.72,
+          },
         },
       },
     },
-  },
-  defaults: {
-    VCard: {
-      elevation: 0,
-      border: true,
-      rounded: "lg",
+    defaults: {
+      VCard: {
+        elevation: 0,
+        border: true,
+        rounded: "lg",
+      },
+      VBtn: {
+        rounded: "lg",
+      },
+      VTextField: {
+        variant: "outlined",
+        density: "comfortable",
+      },
+      VSelect: {
+        variant: "outlined",
+        density: "comfortable",
+      },
+      VTextarea: {
+        variant: "outlined",
+        density: "comfortable",
+      },
     },
-    VBtn: {
-      rounded: "lg",
-    },
-    VTextField: {
-      variant: "outlined",
-      density: "comfortable",
-    },
-    VSelect: {
-      variant: "outlined",
-      density: "comfortable",
-    },
-    VTextarea: {
-      variant: "outlined",
-      density: "comfortable",
-    },
-  },
-});
+  });
+}
 
 async function bootstrap() {
+  await initializeBranding();
   try {
     await initializeAuth();
   } catch (error) {
     console.error("SeniorMate authentication initialization failed.", error);
   }
   const { default: router } = await import("./router.js");
+  const vuetify = createSeniorMateVuetify();
+  bindVuetifyBranding(vuetify);
 
   createApp(App)
     .component("ChecklistSummary", ChecklistSummary)

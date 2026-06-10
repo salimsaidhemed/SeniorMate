@@ -30,4 +30,7 @@ class Config:
     PATIENT_PHOTO_MAX_FILE_SIZE = int(
         os.getenv("PATIENT_PHOTO_MAX_FILE_SIZE", str(5 * 1024 * 1024))
     )
+    BRANDING_LOGO_MAX_FILE_SIZE = int(
+        os.getenv("BRANDING_LOGO_MAX_FILE_SIZE", str(2 * 1024 * 1024))
+    )
     CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
