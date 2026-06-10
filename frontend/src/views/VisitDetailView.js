@@ -113,72 +113,85 @@ export default {
       <v-skeleton-loader v-if="loading" type="heading, paragraph, card" />
 
       <template v-else-if="visit">
-        <v-row align="center" class="mb-5">
-          <v-col cols="12" md="8">
-            <div class="d-flex align-center ga-4">
-              <PatientAvatar v-if="patient" :patient="patient" :size="60" show-verification />
-              <div>
-                <h1 class="text-h4 font-weight-bold mb-2">{{ visit.visit_type }}</h1>
-                <div class="text-body-1 text-medium-emphasis mb-2">{{ visit.visit_date }} · {{ patientName }}</div>
-                <v-chip :color="visit.status === 'completed' ? 'success' : visit.status === 'cancelled' ? 'grey' : 'primary'" size="small">
-                  {{ visit.status }}
-                </v-chip>
-              </div>
-            </div>
-          </v-col>
-          <v-col cols="12" md="4">
-            <div class="d-flex flex-wrap justify-md-end ga-2">
+        <DetailHeader
+          eyebrow="Visit record"
+          :title="visit.visit_type"
+          :subtitle="\`\${visit.visit_date} · \${patientName}\`"
+        >
+          <template #avatar>
+            <PatientAvatar v-if="patient" :patient="patient" :size="68" show-verification />
+          </template>
+          <template #meta>
+            <StatusChip :status="visit.status" />
+            <v-chip size="small" variant="outlined" prepend-icon="mdi-account-badge-outline">
+              {{ visit.staff_role || 'Staff role not provided' }}
+            </v-chip>
+            <v-chip v-if="visit.time_in || visit.time_out" size="small" variant="outlined" prepend-icon="mdi-clock-outline">
+              {{ visit.time_in || '—' }} – {{ visit.time_out || '—' }}
+            </v-chip>
+          </template>
+          <template #actions>
+            <v-btn variant="outlined" prepend-icon="mdi-account-outline" :to="\`/patients/\${visit.patient_id}\`">
+              Patient
+            </v-btn>
+            <v-btn variant="outlined" prepend-icon="mdi-printer-outline" :to="\`/visits/\${visit.id}/print\`">
+              Print summary
+            </v-btn>
+            <v-btn color="primary" prepend-icon="mdi-pencil-outline" :to="\`/visits/\${visit.id}/edit\`">
+              Edit visit
+            </v-btn>
+          </template>
+        </DetailHeader>
+
+        <SectionCard
+          title="Care documentation"
+          subtitle="Complete or review the clinical records linked to this visit."
+          icon="mdi-clipboard-text-multiple-outline"
+          class="mb-5"
+        >
+          <div class="documentation-actions">
             <v-btn
               v-if="!aideNote"
+              class="documentation-action"
               color="primary"
+              variant="tonal"
               prepend-icon="mdi-clipboard-plus-outline"
               :to="\`/aide-notes/new?visit_id=\${visit.id}\`"
             >
-              Create Aide Note
+              Create aide note
             </v-btn>
             <v-btn
               v-if="!nurseNote"
+              class="documentation-action"
               color="secondary"
+              variant="tonal"
               prepend-icon="mdi-clipboard-pulse-outline"
               :to="\`/nurse-notes/new?visit_id=\${visit.id}\`"
             >
-              Create Nurse Note
+              Create nurse note
             </v-btn>
             <v-btn
               v-if="aideNote"
+              class="documentation-action"
               color="primary"
+              variant="tonal"
               prepend-icon="mdi-clipboard-check-outline"
               :to="\`/aide-notes/\${aideNote.id}\`"
             >
-              View Aide Note
-            </v-btn>
-            <v-btn
-              v-if="aideNote"
-              color="primary"
-              variant="tonal"
-              prepend-icon="mdi-pencil-outline"
-              :to="\`/aide-notes/\${aideNote.id}/edit\`"
-            >
-              Edit Aide Note
+              View aide note
             </v-btn>
             <v-btn
               v-if="nurseNote"
+              class="documentation-action"
               color="secondary"
+              variant="tonal"
               prepend-icon="mdi-clipboard-pulse-outline"
               :to="\`/nurse-notes/\${nurseNote.id}\`"
             >
-              View Nurse Note
+              View nurse note
             </v-btn>
             <v-btn
-              v-if="nurseNote"
-              color="secondary"
-              variant="tonal"
-              prepend-icon="mdi-pencil-outline"
-              :to="\`/nurse-notes/\${nurseNote.id}/edit\`"
-            >
-              Edit Nurse Note
-            </v-btn>
-            <v-btn
+              class="documentation-action"
               color="secondary"
               variant="tonal"
               prepend-icon="mdi-clipboard-text-search-outline"
@@ -186,48 +199,41 @@ export default {
             >
               New assessment
             </v-btn>
-            <v-btn color="primary" prepend-icon="mdi-pencil-outline" :to="\`/visits/\${visit.id}/edit\`">
-              Edit visit
+            <v-btn
+              v-if="aideNote"
+              class="documentation-action"
+              variant="outlined"
+              prepend-icon="mdi-pencil-outline"
+              :to="\`/aide-notes/\${aideNote.id}/edit\`"
+            >
+              Edit aide note
             </v-btn>
-            <v-btn variant="outlined" prepend-icon="mdi-printer-outline" :to="\`/visits/\${visit.id}/print\`">
-              Print summary
+            <v-btn
+              v-if="nurseNote"
+              class="documentation-action"
+              variant="outlined"
+              prepend-icon="mdi-pencil-outline"
+              :to="\`/nurse-notes/\${nurseNote.id}/edit\`"
+            >
+              Edit nurse note
             </v-btn>
-            </div>
-          </v-col>
-        </v-row>
+          </div>
+        </SectionCard>
 
-        <v-alert
-          :type="aideNote ? 'success' : 'info'"
-          variant="tonal"
-          class="mb-5"
-        >
-          {{ aideNote ? 'Aide note completed for this visit.' : 'No aide note has been created for this visit yet.' }}
-        </v-alert>
-
-        <v-alert
-          :type="nurseNote ? 'success' : 'info'"
-          variant="tonal"
-          class="mb-5"
-        >
-          {{ nurseNote ? 'Nurse note completed for this visit.' : 'No nurse note has been created for this visit yet.' }}
-        </v-alert>
-
-        <v-row>
+        <v-row class="detail-grid">
           <v-col cols="12" md="6">
-            <v-card>
-              <v-card-title>Visit metadata</v-card-title>
+            <SectionCard title="Visit details" icon="mdi-calendar-text-outline">
               <v-list>
                 <v-list-item title="Patient" :subtitle="patientName" :to="\`/patients/\${visit.patient_id}\`" />
                 <v-list-item title="Visit date" :subtitle="visit.visit_date || 'Not provided'" />
                 <v-list-item title="Visit type" :subtitle="visit.visit_type || 'Not provided'" />
                 <v-list-item title="Status" :subtitle="visit.status || 'Not provided'" />
               </v-list>
-            </v-card>
+            </SectionCard>
           </v-col>
 
           <v-col cols="12" md="6">
-            <v-card>
-              <v-card-title>Staff details</v-card-title>
+            <SectionCard title="Staff and notes" icon="mdi-account-badge-outline">
               <v-list>
                 <v-list-item title="Staff name" :subtitle="visit.staff_name || 'Not provided'" />
                 <v-list-item title="Staff role" :subtitle="visit.staff_role || 'Not provided'" />
@@ -235,9 +241,9 @@ export default {
                 <v-list-item title="Time out" :subtitle="visit.time_out || 'Not provided'" />
               </v-list>
               <v-divider />
-              <v-card-title>Notes</v-card-title>
-              <v-card-text>{{ visit.notes || 'Not provided' }}</v-card-text>
-            </v-card>
+              <div class="text-subtitle-2 mt-4 mb-2">Visit notes</div>
+              <div class="text-body-2 text-medium-emphasis">{{ visit.notes || 'Not provided' }}</div>
+            </SectionCard>
           </v-col>
         </v-row>
 

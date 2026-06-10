@@ -39,6 +39,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- Polished the demo experience with clearer dashboard metrics, reusable detail headers, tabbed patient records, streamlined visit documentation actions, consistent forms and table actions, responsive refinements, and expanded UI guidelines.
 - Expanded the pull request template with related task, change type, testing, screenshots, documentation, changelog, and maintainer merge checks.
 - Expanded `.gitignore` coverage for Python, Flask, Node/Vue, Docker, editor, environment, and OS-generated files.
 

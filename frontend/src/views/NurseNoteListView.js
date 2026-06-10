@@ -206,9 +206,9 @@ export default {
 
           <template #[\`item.actions\`]="{ item }">
             <div class="table-actions">
-              <v-btn icon="mdi-eye-outline" variant="text" :to="\`/nurse-notes/\${item.id}\`" aria-label="View nurse note" />
-              <v-btn icon="mdi-pencil-outline" variant="text" :to="\`/nurse-notes/\${item.id}/edit\`" aria-label="Edit nurse note" />
-              <v-btn icon="mdi-delete-outline" variant="text" color="error" aria-label="Delete nurse note" @click="askDelete(item)" />
+              <v-btn icon="mdi-eye-outline" variant="text" :to="\`/nurse-notes/\${item.id}\`" aria-label="View nurse note" title="View nurse note" />
+              <v-btn icon="mdi-pencil-outline" variant="text" :to="\`/nurse-notes/\${item.id}/edit\`" aria-label="Edit nurse note" title="Edit nurse note" />
+              <v-btn icon="mdi-delete-outline" variant="text" color="error" aria-label="Delete nurse note" title="Delete nurse note" @click="askDelete(item)" />
             </div>
           </template>
         </v-data-table>
