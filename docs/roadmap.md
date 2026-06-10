@@ -17,7 +17,9 @@ This roadmap captures the early direction for SeniorMate. It is intentionally li
 
 ## Operations and Security
 
-- Add role-based access control through Keycloak.
+- Define authentication, authorization, organization branding, and default identity architecture (`feature/21-auth-branding-design`).
+- Implement Keycloak/OIDC login, backend JWT validation, and role enforcement (`feature/22-keycloak-auth`).
+- Add organization branding settings, logo management, color controls, and live preview (`feature/23-org-branding-ui`).
 - Add secure document upload and storage through MinIO.
 - Provide printable clinical documentation.
 - Build dashboard and reporting views for operational oversight.

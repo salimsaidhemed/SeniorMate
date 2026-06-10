@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="112" viewBox="0 0 420 112" role="img" aria-labelledby="title desc">
+  <title id="title">SeniorMate Care Cross Wordmark</title>
+  <desc id="desc">A calm teal rounded medical cross beside the SeniorMate wordmark.</desc>
+  <rect width="420" height="112" fill="#ffffff"/>
+  <g transform="translate(16 16)">
+    <rect x="26" y="0" width="28" height="80" rx="10" fill="#1f6f68"/>
+    <rect x="0" y="26" width="80" height="28" rx="10" fill="#1f6f68"/>
+    <rect x="31" y="31" width="18" height="18" rx="5" fill="#dcefeb"/>
+  </g>
+  <text x="118" y="58" fill="#20302f" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="700">Senior</text>
+  <text x="229" y="58" fill="#1f6f68" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="700">Mate</text>
+  <text x="120" y="82" fill="#657775" font-family="Inter, Arial, sans-serif" font-size="13">care operations, clearly connected</text>
+</svg>
