@@ -1,6 +1,7 @@
 # Local Development
 
-SeniorMate runs locally with Docker Compose. The default stack includes the Flask backend, Vue/Vite frontend, PostgreSQL, and MinIO. Keycloak is available through the optional `auth` profile.
+SeniorMate runs locally with Docker Compose. The default stack includes Flask,
+Vue/Vite, PostgreSQL, MinIO, and Keycloak with authentication enabled.
 
 ## Prerequisites
 

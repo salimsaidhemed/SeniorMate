@@ -7,6 +7,8 @@ caregivers, and viewers.
 Open **Reports** from the main navigation. Every SeniorMate role currently has
 `reports.read`; backend authorization remains authoritative.
 
+![SeniorMate reports landing page](../images/reports.jpg)
+
 ## Available Reports
 
 ### Patient Census

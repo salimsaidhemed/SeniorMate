@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Added a comprehensive documentation suite with user, administrator, technical, deployment, architecture, workflow, Mermaid diagram, and ERD guides plus a central documentation index.
 - Added permission-protected reporting APIs and frontend views for patient census, visit activity, staff activity, assessments, and medical records with practical filters, charts, tables, and CSV export.
 - Added guarded, repeatable demo seed and clear commands with explicit demo markers, fictional patients and care activity, generated private medical-record PDFs, safety tests, and setup documentation.
 - Added centralized frontend role permissions, permission-aware navigation and actions, restricted-route handling, an Access Denied page, permission tests, and a user-facing roles guide.
