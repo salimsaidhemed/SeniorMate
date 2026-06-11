@@ -1,6 +1,13 @@
 import { computed, onMounted, ref } from "vue";
 
 import PatientAvatar from "../components/PatientAvatar.js";
+import {
+  canCreateAideNote,
+  canCreateNurseNote,
+  canManageAssessments,
+  canManageVisits,
+  canViewReports,
+} from "../permissions.js";
 import { getVisitAssessments } from "../services/assessments.js";
 import { getVisitAideNote } from "../services/aideNotes.js";
 import { getVisitNurseNote } from "../services/nurseNotes.js";
@@ -92,6 +99,11 @@ export default {
       aideNote,
       assessments,
       assessmentLabels,
+      canCreateAideNote,
+      canCreateNurseNote,
+      canManageAssessments,
+      canManageVisits,
+      canViewReports,
       error,
       loading,
       nurseNote,
@@ -134,10 +146,10 @@ export default {
             <v-btn variant="outlined" prepend-icon="mdi-account-outline" :to="\`/patients/\${visit.patient_id}\`">
               Patient
             </v-btn>
-            <v-btn variant="outlined" prepend-icon="mdi-printer-outline" :to="\`/visits/\${visit.id}/print\`">
+            <v-btn v-if="canViewReports()" variant="outlined" prepend-icon="mdi-printer-outline" :to="\`/visits/\${visit.id}/print\`">
               Print summary
             </v-btn>
-            <v-btn color="primary" prepend-icon="mdi-pencil-outline" :to="\`/visits/\${visit.id}/edit\`">
+            <v-btn v-if="canManageVisits()" color="primary" prepend-icon="mdi-pencil-outline" :to="\`/visits/\${visit.id}/edit\`">
               Edit visit
             </v-btn>
           </template>
@@ -151,7 +163,7 @@ export default {
         >
           <div class="documentation-actions">
             <v-btn
-              v-if="!aideNote"
+              v-if="!aideNote && canCreateAideNote()"
               class="documentation-action"
               color="primary"
               variant="tonal"
@@ -161,7 +173,7 @@ export default {
               Create aide note
             </v-btn>
             <v-btn
-              v-if="!nurseNote"
+              v-if="!nurseNote && canCreateNurseNote()"
               class="documentation-action"
               color="secondary"
               variant="tonal"
@@ -191,6 +203,7 @@ export default {
               View nurse note
             </v-btn>
             <v-btn
+              v-if="canManageAssessments()"
               class="documentation-action"
               color="secondary"
               variant="tonal"
@@ -200,7 +213,7 @@ export default {
               New assessment
             </v-btn>
             <v-btn
-              v-if="aideNote"
+              v-if="aideNote && canCreateAideNote()"
               class="documentation-action"
               variant="outlined"
               prepend-icon="mdi-pencil-outline"
@@ -209,7 +222,7 @@ export default {
               Edit aide note
             </v-btn>
             <v-btn
-              v-if="nurseNote"
+              v-if="nurseNote && canCreateNurseNote()"
               class="documentation-action"
               variant="outlined"
               prepend-icon="mdi-pencil-outline"
@@ -260,6 +273,7 @@ export default {
             message="Create an assessment with this patient and visit already selected."
           >
             <v-btn
+              v-if="canManageAssessments()"
               color="primary"
               :to="\`/assessments/new?visit_id=\${visit.id}\`"
             >

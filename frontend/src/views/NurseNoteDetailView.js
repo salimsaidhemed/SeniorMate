@@ -1,6 +1,7 @@
 import { computed, onMounted, ref } from "vue";
 
 import { getNurseNote } from "../services/nurseNotes.js";
+import { canCreateNurseNote, canViewReports } from "../permissions.js";
 import { listPatients } from "../services/patients.js";
 import { listVisits } from "../services/visits.js";
 
@@ -108,6 +109,8 @@ export default {
 
     return {
       clinicalSections,
+      canCreateNurseNote,
+      canViewReports,
       error,
       formatValue,
       loading,
@@ -140,10 +143,10 @@ export default {
           </v-col>
           <v-col cols="12" md="4" class="text-md-right">
             <div class="d-flex flex-wrap justify-md-end ga-2">
-              <v-btn variant="outlined" prepend-icon="mdi-printer-outline" :to="\`/nurse-notes/\${nurseNote.id}/print\`">
+              <v-btn v-if="canViewReports()" variant="outlined" prepend-icon="mdi-printer-outline" :to="\`/nurse-notes/\${nurseNote.id}/print\`">
                 Print note
               </v-btn>
-              <v-btn color="primary" prepend-icon="mdi-pencil-outline" :to="\`/nurse-notes/\${nurseNote.id}/edit\`">
+              <v-btn v-if="canCreateNurseNote()" color="primary" prepend-icon="mdi-pencil-outline" :to="\`/nurse-notes/\${nurseNote.id}/edit\`">
                 Edit nurse note
               </v-btn>
             </div>

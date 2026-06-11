@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Added centralized frontend role permissions, permission-aware navigation and actions, restricted-route handling, an Access Denied page, permission tests, and a user-facing roles guide.
 - Added admin-only Keycloak user management with a dedicated Admin API client, user and role endpoints, temporary password resets, Swagger documentation, mocked backend tests, and an Admin → Users interface.
 - Added organization branding settings with a singleton database model, private MinIO logo storage, safe public branding delivery, admin/manager APIs, Swagger documentation, dynamic frontend theming, and a Settings → Branding page with live preview and default fallback.
 - Added Keycloak/OIDC authentication with local realm configuration, frontend login/logout and token refresh, backend JWT validation, role-based API permissions, protected routes, Swagger bearer authorization, tests, and setup documentation.

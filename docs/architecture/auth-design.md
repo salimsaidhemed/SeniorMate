@@ -85,28 +85,23 @@ module rather than scattering role-name checks throughout routes. Example
 permissions include `patients.read`, `patients.write`, and
 `nurse_notes.write`.
 
-Legend:
-
-- **Manage**: create, read, update, and delete.
-- **Clinical manage**: create, read, and update clinical records; deletion may require an additional policy or audit action.
-- **Assigned manage**: act only on patients or visits assigned to the user.
-- **Read**: view only.
-- **None**: no access.
-
 | Area | Admin | Manager | Nurse | Caregiver | Viewer |
 | --- | --- | --- | --- | --- | --- |
-| Dashboard | Read all organization data | Read all organization data | Read permitted clinical data | Read assigned activity | Read permitted summaries |
-| Patients | Manage | Manage | Read and update clinical context | Read assigned patients | Read |
-| Visits | Manage | Manage | Manage nursing visits | Assigned manage | Read |
-| Aide notes | Manage | Manage | Read | Assigned manage | Read |
-| Nurse notes | Manage | Read | Clinical manage | None | Read |
-| Assessments | Manage | Read | Clinical manage | Create/read assigned basic assessments | Read |
-| Medical records | Manage | Manage | Clinical manage | Read assigned records when permitted | Read |
-| Patient photos | Manage and verify | Manage and verify | Upload and verify | Upload assigned patients | Read |
-| Printable reports | Generate all | Generate all | Generate permitted clinical reports | Generate assigned care reports | Generate read-only reports |
-| Branding/settings | Manage | Read | None | None | None |
+| Dashboard | Read | Read | Read | No access | Read |
+| Patients | Manage | Manage | Read | Read | Read |
+| Visits | Manage | Manage | Manage | Read | Read |
+| Aide notes | Manage | Manage | Read | Manage | Read |
+| Nurse notes | Manage | Manage | Manage | Read | Read |
+| Assessments | Manage | Manage | Manage | Read | Read |
+| Medical records | Manage | Manage | Manage | Read/download | Read/download |
+| Patient photos | Manage and verify | Manage and verify | Read | Read | Read |
+| Printable reports | Read/print | Read/print | Read/print | Read/print | Read/print |
+| Branding/settings | Manage | Manage | Read applied branding | Read applied branding | Read applied branding |
+| User management | Manage | No access | No access | No access | No access |
 
-This matrix is the initial policy proposal. Before implementation, the maintainer should confirm whether viewers may access clinical narrative fields and whether clinical record deletion should be restricted to administrators.
+This table reflects the permissions currently enforced by the backend. Future
+assignment and organization scoping will narrow record visibility without
+making frontend checks authoritative.
 
 ## Token and Claim Design
 
@@ -150,12 +145,23 @@ The frontend authentication layer:
 - Keeps access tokens in the Keycloak adapter's in-memory state.
 - Refreshes short-lived access tokens before API requests and on expiry.
 - Adds bearer tokens to JSON, multipart, photo, and document requests.
-- Uses route metadata for write-screen navigation.
+- Uses a centralized permission policy that mirrors backend permission names.
+- Filters navigation using read permissions and hides unavailable actions.
+- Uses permission-based route metadata for read, write, report, settings, and
+  administration screens.
+- Redirects direct navigation to a restricted route to a dedicated Access
+  Denied page.
 - Treats backend `401` and `403` responses as authoritative.
 
 `AUTH_ENABLED=false` and `VITE_AUTH_ENABLED=false` provide an explicit local
-development and test bypass. Both flags should be enabled together when
-testing real authentication.
+development and test bypass. The frontend assumes the `admin` role in this
+mode so existing local workflows remain available. Both flags should be
+enabled together when testing real authentication.
+
+Hidden actions and route guards are usability controls only. They reduce
+predictable `403` responses but must never replace backend permission checks.
+See [Roles and Permissions](../user-guide/roles-and-permissions.md) for the
+user-facing behavior.
 
 Branding settings are readable by authenticated roles. Only `admin` and
 `manager` roles receive `branding.write`; the public branding and logo preview

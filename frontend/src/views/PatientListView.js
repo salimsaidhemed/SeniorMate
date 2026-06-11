@@ -1,6 +1,11 @@
 import { computed, onMounted, ref } from "vue";
 
 import PatientAvatar from "../components/PatientAvatar.js";
+import {
+  canCreatePatient,
+  canDeletePatient,
+  canEditPatient,
+} from "../permissions.js";
 import { deletePatient, listPatients } from "../services/patients.js";
 
 export default {
@@ -109,6 +114,9 @@ export default {
       changePage,
       clearFilters,
       confirmDelete,
+      canCreatePatient,
+      canDeletePatient,
+      canEditPatient,
       deleting,
       error,
       filters,
@@ -131,7 +139,7 @@ export default {
         icon="mdi-account-heart-outline"
       >
         <template #actions>
-          <v-btn color="primary" prepend-icon="mdi-plus" to="/patients/new">
+          <v-btn v-if="canCreatePatient()" color="primary" prepend-icon="mdi-plus" to="/patients/new">
             New patient
           </v-btn>
         </template>
@@ -197,8 +205,8 @@ export default {
               icon="mdi-account-plus-outline"
               title="No patients yet"
               description="Create the first patient profile to begin tracking care."
-              action-label="Create patient"
-              action-to="/patients/new"
+              :action-label="canCreatePatient() ? 'Create patient' : ''"
+              :action-to="canCreatePatient() ? '/patients/new' : ''"
             />
           </template>
 
@@ -216,8 +224,8 @@ export default {
           <template #[\`item.actions\`]="{ item }">
             <div class="table-actions">
               <v-btn icon="mdi-eye-outline" variant="text" :to="\`/patients/\${item.id}\`" aria-label="View patient" title="View patient" />
-              <v-btn icon="mdi-pencil-outline" variant="text" :to="\`/patients/\${item.id}/edit\`" aria-label="Edit patient" title="Edit patient" />
-              <v-btn icon="mdi-delete-outline" variant="text" color="error" aria-label="Delete patient" title="Delete patient" @click="askDelete(item)" />
+              <v-btn v-if="canEditPatient()" icon="mdi-pencil-outline" variant="text" :to="\`/patients/\${item.id}/edit\`" aria-label="Edit patient" title="Edit patient" />
+              <v-btn v-if="canDeletePatient()" icon="mdi-delete-outline" variant="text" color="error" aria-label="Delete patient" title="Delete patient" @click="askDelete(item)" />
             </div>
           </template>
         </v-data-table>
