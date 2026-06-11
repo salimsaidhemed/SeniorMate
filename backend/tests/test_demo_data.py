@@ -7,6 +7,7 @@ from app.models import (
     PatientAssessment,
     Visit,
 )
+from app.storage import PrivateObjectStorageError
 
 
 def demo_counts():
@@ -70,6 +71,24 @@ def test_seed_demo_is_repeatable(app, medical_record_storage):
     assert demo_counts()["visits"] == 96
     assert demo_counts()["medical_records"] == 24
     assert len(medical_record_storage.objects) == 24
+
+
+def test_seed_demo_reports_storage_failure_without_traceback(
+    app,
+    medical_record_storage,
+):
+    app.config["DEMO_DATA_ENABLED"] = True
+
+    def unavailable_storage(*args, **kwargs):
+        raise PrivateObjectStorageError("Private file storage is unavailable.")
+
+    medical_record_storage.upload = unavailable_storage
+    result = app.test_cli_runner().invoke(args=["seed-demo"])
+
+    assert result.exit_code == 1
+    assert "Private file storage is unavailable." in result.output
+    assert "Traceback" not in result.output
+    assert Patient.query.count() == 0
 
 
 def test_clear_demo_deletes_only_marked_records(app, medical_record_storage):

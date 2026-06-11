@@ -13,7 +13,7 @@ from app.models import (
     PatientAssessment,
     Visit,
 )
-from app.storage import get_medical_record_storage
+from app.storage import PrivateObjectStorageError, get_medical_record_storage
 
 
 DEMO_PATIENTS = (
@@ -448,12 +448,18 @@ def register_demo_commands(app):
     def seed_demo_command():
         """Replace existing demo records with a fresh deterministic dataset."""
         _require_demo_enabled()
-        counts = seed_demo_records()
+        try:
+            counts = seed_demo_records()
+        except PrivateObjectStorageError as exc:
+            raise click.ClickException(str(exc)) from exc
         click.echo(_format_counts("Demo data seeded", counts))
 
     @app.cli.command("clear-demo")
     def clear_demo_command():
         """Delete only records explicitly marked as demo data."""
         _require_demo_enabled()
-        counts = clear_demo_records()
+        try:
+            counts = clear_demo_records()
+        except PrivateObjectStorageError as exc:
+            raise click.ClickException(str(exc)) from exc
         click.echo(_format_counts("Demo data cleared", counts))
