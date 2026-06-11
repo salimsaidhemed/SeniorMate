@@ -1,21 +1,26 @@
 # SeniorMate
 
-SeniorMate is a caregiver and patient management platform for home healthcare agencies, adult day care centers, assisted living facilities, and independent caregivers.
+SeniorMate is a caregiver and patient management platform for home healthcare
+agencies, adult day care centers, assisted living facilities, and independent
+caregivers.
 
-The project is intended to centralize patient records, caregiver visits, nursing assessments, care plans, clinical documentation, secure document storage, and operational reporting. SeniorMate is currently in early repository setup, with the project structure and contribution workflow being standardised before feature development begins.
+It centralizes patient records, caregiver and nursing visits, care notes,
+assessments, private documents, patient photos, printable summaries,
+organization branding, user administration, and operational reporting.
 
-## Planned Features
+## Features
 
-- Patient profile and demographics management
+- Patient demographics, status, photos, contacts, and diagnosis summaries
 - Caregiver and nursing visit tracking
-- Digital aide notes and nursing progress notes
-- Medical record and document management
-- Patient assessments and care plans
-- Dashboard and operational analytics
-- Role-based access control
-- Printable clinical documentation
-- Secure file storage
-- Docker-based local and deployment workflows
+- Digital Aide Notes and Nurse Notes
+- Patient assessments with optional visit linkage
+- Private MinIO-backed medical records
+- Dashboard metrics, operational reports, filters, and CSV export
+- Browser-printable patient, visit, note, and assessment summaries
+- Keycloak login, role-based access control, and admin user management
+- Configurable organization branding with safe defaults
+- Guarded fictional demo data for local evaluation
+- Docker Compose local environment and GitHub Actions validation
 
 ## Technology Stack
 
@@ -31,15 +36,16 @@ The project is intended to centralize patient records, caregiver visits, nursing
 
 ```text
 SeniorMate/
-├── backend/                 # Flask backend application scaffold
+├── backend/                 # Flask API, models, migrations, and tests
 │   ├── app/                 # Backend package
 │   ├── requirements.txt     # Runtime Python dependencies
 │   └── requirements-dev.txt # Development Python dependencies
-├── frontend/                # Vue frontend application scaffold
+├── frontend/                # Vue/Vuetify application
 │   └── src/                 # Frontend source files
-├── docs/                    # Project documentation
+├── docs/                    # User, admin, technical, and architecture guides
+├── keycloak/                # Local development realm import
 ├── .github/                 # GitHub templates, workflows, and ownership rules
-├── docker-compose.yml       # Local service orchestration scaffold
+├── docker-compose.yml       # Local service orchestration
 ├── .env.example             # Safe local environment template
 ├── CHANGELOG.md             # Project change history
 └── CONTRIBUTING.md          # Contribution workflow
@@ -47,7 +53,9 @@ SeniorMate/
 
 ## Local Development
 
-Docker Compose is the recommended way to run the local SeniorMate stack. It starts the Flask backend, Vue/Vite frontend, PostgreSQL, and MinIO with safe local defaults from `.env.example`. Keycloak can be enabled through the `auth` profile.
+Docker Compose is the recommended way to run the local SeniorMate stack. It
+starts Flask, Vue/Vite, PostgreSQL, MinIO, and Keycloak with safe local
+placeholders from `.env.example`.
 
 ### Prerequisites
 
@@ -175,3 +183,44 @@ Each report supports relevant filters and CSV export. See
 - Do not merge your own pull request. Only the maintainer merges into `main`.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the full contribution process.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    Browser["Browser"] --> Vue["Vue 3 + Vuetify"]
+    Vue -->|OIDC login| Keycloak["Keycloak"]
+    Vue -->|Bearer token| Flask["Flask API"]
+    Flask --> PostgreSQL[("PostgreSQL")]
+    Flask --> MinIO[("Private MinIO")]
+    Flask -->|JWT validation / Admin API| Keycloak
+```
+
+The frontend never connects directly to PostgreSQL, MinIO, or Keycloak Admin
+API. PostgreSQL stores domain data and file metadata; MinIO stores private
+document, patient-photo, and branding-logo bytes.
+
+See [Architecture Overview](docs/architecture/overview.md) and the
+[diagram suite](docs/index.md#diagrams).
+
+## Documentation
+
+The [documentation index](docs/index.md) is the central starting point:
+
+- [User Guide](docs/index.md#user-guide)
+- [Administrator Guide](docs/index.md#administrator-guide)
+- [Technical Guide](docs/index.md#technical-guide)
+- [Architecture](docs/index.md#architecture)
+- [Diagrams and ERD](docs/index.md#diagrams)
+- [Deployment Guide](docs/technical/deployment-guide.md)
+- [API Overview](docs/technical/api-overview.md)
+
+## Screenshots
+
+Screenshots captured from fictional local demo data are stored under
+[`docs/images/`](docs/images/README.md). Organization branding can change the
+app name, logo, and theme colors shown in these examples.
+
+| Dashboard | Patient management |
+| --- | --- |
+| ![SeniorMate dashboard](docs/images/dashboard.jpg) | ![SeniorMate patients](docs/images/patients.jpg) |
