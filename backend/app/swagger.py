@@ -487,6 +487,111 @@ admin_user_update_properties = {
     key: value for key, value in admin_user_properties.items() if key != "id"
 }
 
+report_filter_parameters = [
+    {
+        "name": "start_date",
+        "in": "query",
+        "type": "string",
+        "format": "date",
+        "required": False,
+    },
+    {
+        "name": "end_date",
+        "in": "query",
+        "type": "string",
+        "format": "date",
+        "required": False,
+    },
+    {
+        "name": "patient_id",
+        "in": "query",
+        "type": "integer",
+        "required": False,
+    },
+    {
+        "name": "status",
+        "in": "query",
+        "type": "string",
+        "required": False,
+    },
+    {
+        "name": "staff_role",
+        "in": "query",
+        "type": "string",
+        "required": False,
+    },
+    {
+        "name": "staff_name",
+        "in": "query",
+        "type": "string",
+        "required": False,
+    },
+    {
+        "name": "visit_type",
+        "in": "query",
+        "type": "string",
+        "required": False,
+        "description": (
+            "Visit type for visit/staff reports; record type for the "
+            "medical-records summary."
+        ),
+    },
+    {
+        "name": "format",
+        "in": "query",
+        "type": "string",
+        "enum": ["json", "csv"],
+        "required": False,
+        "description": "JSON is returned by default. Use csv to download rows.",
+    },
+]
+
+
+def report_spec(summary):
+    return {
+        "tags": ["Reports"],
+        "summary": summary,
+        "parameters": report_filter_parameters,
+        "responses": {
+            200: {
+                "description": "Report data or CSV export.",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "data": {
+                            "type": "object",
+                            "properties": {
+                                "summary": {"type": "object"},
+                                "groups": {"type": "object"},
+                                "recent": {
+                                    "type": "array",
+                                    "items": {"type": "object"},
+                                },
+                                "rows": {
+                                    "type": "array",
+                                    "items": {"type": "object"},
+                                },
+                            },
+                        },
+                        "message": {"type": "string"},
+                    },
+                },
+            },
+            400: {"description": "Invalid report filter."},
+            401: {"description": "Authentication required."},
+            403: {"description": "Reports permission required."},
+        },
+    }
+
+
+patient_census_report_spec = report_spec("Patient census report")
+visit_activity_report_spec = report_spec("Visit activity report")
+staff_activity_report_spec = report_spec("Staff activity report")
+assessment_summary_report_spec = report_spec("Assessment summary report")
+medical_records_summary_report_spec = report_spec(
+    "Medical records summary report"
+)
+
 swagger_config = {
     "headers": [],
     "specs": [

@@ -18,6 +18,8 @@ import PatientDetailView from "./views/PatientDetailView.js";
 import PatientFormView from "./views/PatientFormView.js";
 import PatientListView from "./views/PatientListView.js";
 import PatientPrintView from "./views/PatientPrintView.js";
+import ReportDetailView from "./views/ReportDetailView.js";
+import ReportsHomeView from "./views/ReportsHomeView.js";
 import NurseNoteDetailView from "./views/NurseNoteDetailView.js";
 import NurseNoteFormView from "./views/NurseNoteFormView.js";
 import NurseNoteListView from "./views/NurseNoteListView.js";
@@ -195,6 +197,47 @@ const routes = [
     name: "nurse-note-print",
     component: NurseNotePrintView,
     props: true,
+    meta: { permission: "reports.read" },
+  },
+  {
+    path: "/reports",
+    name: "reports",
+    component: ReportsHomeView,
+    meta: { permission: "reports.read" },
+  },
+  {
+    path: "/reports/patient-census",
+    name: "report-patient-census",
+    component: ReportDetailView,
+    props: { reportKey: "patient-census" },
+    meta: { permission: "reports.read" },
+  },
+  {
+    path: "/reports/visit-activity",
+    name: "report-visit-activity",
+    component: ReportDetailView,
+    props: { reportKey: "visit-activity" },
+    meta: { permission: "reports.read" },
+  },
+  {
+    path: "/reports/staff-activity",
+    name: "report-staff-activity",
+    component: ReportDetailView,
+    props: { reportKey: "staff-activity" },
+    meta: { permission: "reports.read" },
+  },
+  {
+    path: "/reports/assessment-summary",
+    name: "report-assessment-summary",
+    component: ReportDetailView,
+    props: { reportKey: "assessment-summary" },
+    meta: { permission: "reports.read" },
+  },
+  {
+    path: "/reports/medical-records-summary",
+    name: "report-medical-records-summary",
+    component: ReportDetailView,
+    props: { reportKey: "medical-records-summary" },
     meta: { permission: "reports.read" },
   },
   {

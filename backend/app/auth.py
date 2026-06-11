@@ -164,6 +164,8 @@ def _resource_for_path(path):
         return "branding"
     if path.startswith("/api/dashboard"):
         return "dashboard"
+    if path.startswith("/api/reports"):
+        return "reports"
     if "/medical-records" in path:
         return "medical_records"
     if "/aide-notes" in path or "/aide-note" in path:

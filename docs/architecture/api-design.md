@@ -1459,3 +1459,64 @@ Assessments are returned newest assessment date first.
 
 This endpoint returns all assessments linked to the visit. A visit can have
 multiple assessment types.
+
+## Reporting and Analytics
+
+All report endpoints require `reports.read` and return JSON by default:
+
+- `GET /api/reports/patient-census`
+- `GET /api/reports/visit-activity`
+- `GET /api/reports/staff-activity`
+- `GET /api/reports/assessment-summary`
+- `GET /api/reports/medical-records-summary`
+
+JSON report responses use a consistent structure:
+
+```json
+{
+  "data": {
+    "summary": {},
+    "groups": {},
+    "recent": [],
+    "rows": []
+  },
+  "message": "Visit Activity retrieved successfully"
+}
+```
+
+`summary` powers metric cards, `groups` contains chart-ready label/count
+arrays, `recent` contains up to ten current records, and `rows` contains the
+complete filtered table.
+
+### Report Filters
+
+Supported parameters are applied where relevant:
+
+- `start_date` and `end_date` in `YYYY-MM-DD` format.
+- `patient_id`.
+- `staff_role`.
+- `staff_name` using partial case-insensitive matching.
+- `visit_type`.
+- `status`.
+
+For the Medical Records Summary, `visit_type` represents the record type to
+keep the shared report query contract small. Invalid dates and reversed date
+ranges return `400` with a clear message.
+
+Example:
+
+```text
+GET /api/reports/visit-activity?start_date=2026-06-01&status=completed
+```
+
+### CSV Export
+
+Add `format=csv` to any report endpoint:
+
+```text
+GET /api/reports/staff-activity?staff_role=nurse&format=csv
+```
+
+The response uses `text/csv` and an attachment filename. CSV contains the
+report's detailed rows after applying the same filters. Server-side PDF and
+Excel exports are not implemented.

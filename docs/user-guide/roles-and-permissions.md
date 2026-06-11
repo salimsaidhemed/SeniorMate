@@ -27,6 +27,7 @@ forbidden actions.
 | Assessments | Manage | Manage | Manage | View | View |
 | Medical records | Manage | Manage | Manage | View/download | View/download |
 | Patient photos | Manage/verify | Manage/verify | View | View | View |
+| Analytics reports | View/export | View/export | View/export | View/export | View/export |
 | Printable reports | View/print | View/print | View/print | View/print | View/print |
 | Branding settings | Manage | Manage | Hidden | Hidden | Hidden |
 | Admin users | Manage | Hidden | Hidden | Hidden | Hidden |

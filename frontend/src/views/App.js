@@ -42,6 +42,12 @@ const navItems = [
     to: "/nurse-notes",
     permission: "nurse_notes.read",
   },
+  {
+    title: "Reports",
+    icon: "mdi-chart-box-outline",
+    to: "/reports",
+    permission: "reports.read",
+  },
 ];
 
 export default {
