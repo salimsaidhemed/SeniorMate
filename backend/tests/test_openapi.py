@@ -47,6 +47,11 @@ def test_openapi_json_includes_health_and_patient_endpoints(client):
     assert "/api/settings/branding/logo" in paths
     assert "/api/public/branding" in paths
     assert "/api/public/branding/logo" in paths
+    assert "/api/reports/patient-census" in paths
+    assert "/api/reports/visit-activity" in paths
+    assert "/api/reports/staff-activity" in paths
+    assert "/api/reports/assessment-summary" in paths
+    assert "/api/reports/medical-records-summary" in paths
     assert "get" in paths["/api/health"]
     assert "get" in paths["/api/dashboard/stats"]
     assert {"get", "post"} <= set(paths["/api/patients"].keys())
@@ -88,6 +93,11 @@ def test_openapi_json_includes_health_and_patient_endpoints(client):
     assert {"post", "delete"} <= set(paths["/api/settings/branding/logo"].keys())
     assert "get" in paths["/api/public/branding"]
     assert "get" in paths["/api/public/branding/logo"]
+    assert "get" in paths["/api/reports/patient-census"]
+    assert "get" in paths["/api/reports/visit-activity"]
+    assert "get" in paths["/api/reports/staff-activity"]
+    assert "get" in paths["/api/reports/assessment-summary"]
+    assert "get" in paths["/api/reports/medical-records-summary"]
 
 
 def test_openapi_json_includes_patient_schemas(client):

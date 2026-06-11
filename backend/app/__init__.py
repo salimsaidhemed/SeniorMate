@@ -22,6 +22,7 @@ from app.routes.branding import branding_bp
 from app.routes.medical_records import medical_records_bp
 from app.routes.nurse_notes import nurse_notes_bp
 from app.routes.patients import patients_bp
+from app.routes.reports import reports_bp
 from app.routes.visits import visits_bp
 from app.swagger import health_spec, swagger_config, swagger_template
 
@@ -43,6 +44,7 @@ def create_app(config_object=Config):
     app.register_blueprint(medical_records_bp)
     app.register_blueprint(nurse_notes_bp)
     app.register_blueprint(patients_bp)
+    app.register_blueprint(reports_bp)
     app.register_blueprint(visits_bp)
     register_demo_commands(app)
 

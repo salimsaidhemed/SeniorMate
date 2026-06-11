@@ -161,6 +161,11 @@ Printable patient summaries include recent visits, assessments, and medical
 record metadata. Uploaded medical record files are referenced by name and are
 not embedded in reports.
 
+Operational analytics are available from the Reports section with patient
+census, visit activity, staff activity, assessment, and medical-record views.
+Each report supports relevant filters and CSV export. See
+[docs/user-guide/reports.md](docs/user-guide/reports.md).
+
 ## Development Workflow
 
 - Start new work from an up-to-date `main` branch.
