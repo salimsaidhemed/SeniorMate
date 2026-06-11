@@ -8,6 +8,10 @@ It centralizes patient records, caregiver and nursing visits, care notes,
 assessments, private documents, patient photos, printable summaries,
 organization branding, user administration, and operational reporting.
 
+**Current version:** `1.0.0`
+
+**Release status:** Stable initial public release prepared for tag `v1.0.0`
+
 ## Features
 
 - Patient demographics, status, photos, contacts, and diagnosis summaries
@@ -207,6 +211,7 @@ See [Architecture Overview](docs/architecture/overview.md) and the
 
 The [documentation index](docs/index.md) is the central starting point:
 
+- [SeniorMate 1.0.0 Release Notes](docs/releases/v1.0.0.md)
 - [User Guide](docs/index.md#user-guide)
 - [Administrator Guide](docs/index.md#administrator-guide)
 - [Technical Guide](docs/index.md#technical-guide)

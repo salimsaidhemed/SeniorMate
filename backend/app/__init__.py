@@ -25,6 +25,7 @@ from app.routes.patients import patients_bp
 from app.routes.reports import reports_bp
 from app.routes.visits import visits_bp
 from app.swagger import health_spec, swagger_config, swagger_template
+from app.version import __version__
 
 
 def create_app(config_object=Config):
@@ -63,6 +64,7 @@ def create_app(config_object=Config):
         return jsonify(
             {
                 "service": "seniormate-backend",
+                "version": __version__,
                 "status": "ok" if status_code == 200 else "degraded",
                 "database": database,
                 "minio_endpoint": app.config["MINIO_ENDPOINT"],
@@ -74,6 +76,7 @@ def create_app(config_object=Config):
         return jsonify(
             {
                 "service": "seniormate-backend",
+                "version": __version__,
                 "message": "SeniorMate backend is running.",
             }
         )

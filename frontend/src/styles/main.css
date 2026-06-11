@@ -70,6 +70,15 @@ body {
   opacity: 0.68;
 }
 
+.app-brand__version {
+  margin-top: 10px;
+  padding: 0 12px;
+  color: currentColor;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  opacity: 0.68;
+}
+
 .branding-color-field {
   display: grid;
   grid-template-columns: 48px minmax(0, 1fr);
