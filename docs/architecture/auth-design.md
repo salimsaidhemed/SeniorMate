@@ -153,10 +153,11 @@ The frontend authentication layer:
   Denied page.
 - Treats backend `401` and `403` responses as authoritative.
 
-`AUTH_ENABLED=false` and `VITE_AUTH_ENABLED=false` provide an explicit local
+Authentication is enabled by default in the application and local Compose
+stack. `AUTH_ENABLED=false` and `VITE_AUTH_ENABLED=false` provide an explicit
 development and test bypass. The frontend assumes the `admin` role in this
-mode so existing local workflows remain available. Both flags should be
-enabled together when testing real authentication.
+mode so existing local workflows remain available. Both flags must use the
+same value.
 
 Hidden actions and route guards are usability controls only. They reduce
 predictable `403` responses but must never replace backend permission checks.
