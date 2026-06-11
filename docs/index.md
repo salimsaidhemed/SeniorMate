@@ -3,6 +3,10 @@
 SeniorMate documentation is organized by audience. Start with the guide that
 best matches what you need to do.
 
+## Releases
+
+- [SeniorMate 1.0.0 - Initial Public Release](releases/v1.0.0.md)
+
 ## User Guide
 
 - [Getting Started](user-guide/getting-started.md)

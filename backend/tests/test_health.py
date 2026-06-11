@@ -9,3 +9,4 @@ def test_health_endpoint_returns_success(client):
     assert response.status_code == 200
     assert response.get_json()["status"] == "ok"
     assert response.get_json()["database"] == "ok"
+    assert response.get_json()["version"] == "1.0.0"

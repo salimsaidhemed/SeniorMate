@@ -11,6 +11,7 @@ def test_openapi_json_is_reachable(client):
 
     assert response.status_code == 200
     assert body["info"]["title"] == "SeniorMate API"
+    assert body["info"]["version"] == "1.0.0"
     assert body["swagger"] == "2.0"
 
 

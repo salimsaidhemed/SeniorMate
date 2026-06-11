@@ -1,3 +1,6 @@
+from app.version import __version__
+
+
 demo_marker_property = {
     "type": "boolean",
     "readOnly": True,
@@ -612,7 +615,7 @@ swagger_template = {
     "info": {
         "title": "SeniorMate API",
         "description": "Interactive API documentation for SeniorMate.",
-        "version": "0.1.0",
+        "version": __version__,
     },
     "basePath": "/",
     "schemes": ["http"],
@@ -1252,6 +1255,7 @@ health_spec = {
                         "type": "string",
                         "example": "seniormate-backend",
                     },
+                    "version": {"type": "string", "example": __version__},
                     "status": {"type": "string", "example": "ok"},
                     "database": {"type": "string", "example": "ok"},
                     "minio_endpoint": {

@@ -10,6 +10,7 @@ import {
   canManageBranding,
   canManageUsers,
 } from "../permissions.js";
+import { appVersion } from "../config.js";
 
 const navItems = [
   {
@@ -82,6 +83,7 @@ export default {
     });
 
     return {
+      appVersion,
       authState,
       brandingState,
       defaultLogoUrl,
@@ -192,6 +194,9 @@ export default {
               class="app-brand__footer"
             >
               {{ brandingState.footer_text }}
+            </div>
+            <div class="app-brand__version">
+              SeniorMate Version {{ appVersion }}
             </div>
           </div>
         </template>
