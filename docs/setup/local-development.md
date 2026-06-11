@@ -73,7 +73,8 @@ if it does not exist. The bucket is not configured for public access.
 
 Medical Record storage settings:
 
-- `MINIO_ENDPOINT`: backend connection URL for MinIO
+- `MINIO_ENDPOINT`: host-side backend connection URL for MinIO
+- `MINIO_DOCKER_ENDPOINT`: backend container connection URL for MinIO
 - `MINIO_ACCESS_KEY`: application access key
 - `MINIO_SECRET_KEY`: application secret key
 - `MINIO_BUCKET`: private bucket used for patient documents

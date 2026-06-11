@@ -27,6 +27,12 @@ The checked-in default remains `false`.
 The commands also refuse to run when `APP_ENV=production`, even if the demo
 flag is mistakenly enabled.
 
+The backend container connects to MinIO through
+`MINIO_DOCKER_ENDPOINT=http://minio:9000`. `MINIO_ENDPOINT=http://localhost:9000`
+is reserved for running the Flask backend directly on the host. If the seeder
+reports that private storage is unavailable, recreate the backend container
+and confirm the `minio` service is running.
+
 ## Prepare the Database
 
 Apply the latest migration before seeding:

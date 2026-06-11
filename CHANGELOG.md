@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- Fixed demo seeding from Docker by separating the backend container's MinIO service endpoint from the host-side endpoint.
 - Enabled authentication and the Keycloak service by default in the standard local Docker Compose stack.
 - Fixed Aide Notes and Nurse Notes list routes failing to render and leaving subsequent navigation blank.
 
