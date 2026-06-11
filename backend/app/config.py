@@ -2,6 +2,7 @@ import os
 
 
 class Config:
+    APP_ENV = os.getenv("APP_ENV", "development")
     SECRET_KEY = os.getenv("APP_SECRET_KEY", "change-me-local-only")
     DEBUG = os.getenv("APP_DEBUG", "false").lower() == "true"
     SQLALCHEMY_DATABASE_URI = os.getenv(
@@ -9,6 +10,7 @@ class Config:
         "postgresql+psycopg://seniormate:change-me-local-only@localhost:5432/seniormate",
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    DEMO_DATA_ENABLED = os.getenv("DEMO_DATA_ENABLED", "false").lower() == "true"
     AUTH_ENABLED = os.getenv("AUTH_ENABLED", "true").lower() == "true"
     KEYCLOAK_ISSUER = os.getenv(
         "KEYCLOAK_ISSUER",

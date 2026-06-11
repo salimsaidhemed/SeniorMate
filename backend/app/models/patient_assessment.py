@@ -39,6 +39,12 @@ class PatientAssessment(db.Model):
     findings = db.Column(db.JSON, nullable=True)
     recommendations = db.Column(db.Text, nullable=True)
     status = db.Column(db.String(20), nullable=False, default="draft")
+    is_demo_data = db.Column(
+        db.Boolean,
+        nullable=False,
+        default=False,
+        index=True,
+    )
     created_at = db.Column(
         db.DateTime(timezone=True),
         nullable=False,
@@ -68,6 +74,7 @@ class PatientAssessment(db.Model):
             "findings": self.findings,
             "recommendations": self.recommendations,
             "status": self.status,
+            "is_demo_data": self.is_demo_data,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }

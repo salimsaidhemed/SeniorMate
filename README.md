@@ -127,6 +127,11 @@ For a temporary unauthenticated development session, set both
 `AUTH_ENABLED=false` and `VITE_AUTH_ENABLED=false`. Automated backend tests
 continue to disable authentication explicitly.
 
+Optional fictional demo records can be created through guarded Flask CLI
+commands. Demo seeding is disabled by default and never runs at startup. See
+[docs/setup/demo-data.md](docs/setup/demo-data.md) for enablement, seed, reset,
+and safety instructions.
+
 Administrators and managers can customize the app and organization names,
 logo, theme colors, banner text, and footer text from `Settings → Branding`.
 Custom logos remain private in MinIO and are delivered through the backend.

@@ -33,6 +33,12 @@ class AideNote(db.Model):
     signature_date = db.Column(db.Date, nullable=True)
     time_in = db.Column(db.Time, nullable=True)
     time_out = db.Column(db.Time, nullable=True)
+    is_demo_data = db.Column(
+        db.Boolean,
+        nullable=False,
+        default=False,
+        index=True,
+    )
     created_at = db.Column(
         db.DateTime(timezone=True),
         nullable=False,
@@ -72,6 +78,7 @@ class AideNote(db.Model):
             "time_out": self.time_out.isoformat(timespec="minutes")
             if self.time_out
             else None,
+            "is_demo_data": self.is_demo_data,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }

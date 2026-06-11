@@ -4,6 +4,7 @@ from flasgger import Swagger, swag_from
 from sqlalchemy import text
 
 from app.config import Config
+from app.demo_data import register_demo_commands
 from app.auth import protect_api_request
 from app.extensions import db, migrate
 from app.models import AideNote as AideNote
@@ -43,6 +44,7 @@ def create_app(config_object=Config):
     app.register_blueprint(nurse_notes_bp)
     app.register_blueprint(patients_bp)
     app.register_blueprint(visits_bp)
+    register_demo_commands(app)
 
     @app.get("/api/health")
     @swag_from(health_spec)
