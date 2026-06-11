@@ -1,22 +1,22 @@
 # Local Keycloak Setup
 
 SeniorMate includes a development-only Keycloak realm import for testing login,
-logout, token refresh, and role-based permissions. Authentication remains
-disabled unless both the backend and frontend feature flags are enabled.
+logout, token refresh, and role-based permissions. Authentication is enabled
+by default in the local Compose stack.
 
 ## Start the Authenticated Stack
 
-Create `.env` from the example and set:
+Create `.env` from the example. The default values already enable:
 
 ```bash
 AUTH_ENABLED=true
 VITE_AUTH_ENABLED=true
 ```
 
-Start the Compose profile:
+Start the standard Compose stack:
 
 ```bash
-docker compose --profile auth up --build
+docker compose up --build
 ```
 
 Open:
@@ -79,7 +79,8 @@ Delete or replace these users in any non-local environment.
 - Frontend route guards improve navigation UX; backend permission checks remain
   authoritative.
 - With `AUTH_ENABLED=false`, the backend uses a local development identity and
-  existing tests do not contact Keycloak.
+  existing tests do not contact Keycloak. Set `VITE_AUTH_ENABLED=false` at the
+  same time to bypass frontend login.
 - Admin users can manage realm users at `http://localhost:5173/admin/users`.
   Other SeniorMate roles cannot access the navigation item or backend routes.
 
@@ -100,9 +101,9 @@ Keycloak imports the realm when its data volume is empty. To recreate the local
 realm from the checked-in import:
 
 ```bash
-docker compose --profile auth down
+docker compose down
 docker volume rm seniormate_keycloak_data
-docker compose --profile auth up --build
+docker compose up --build
 ```
 
 Removing the Keycloak volume deletes local users and realm changes.

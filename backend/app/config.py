@@ -9,7 +9,7 @@ class Config:
         "postgresql+psycopg://seniormate:change-me-local-only@localhost:5432/seniormate",
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    AUTH_ENABLED = os.getenv("AUTH_ENABLED", "false").lower() == "true"
+    AUTH_ENABLED = os.getenv("AUTH_ENABLED", "true").lower() == "true"
     KEYCLOAK_ISSUER = os.getenv(
         "KEYCLOAK_ISSUER",
         "http://localhost:8080/realms/seniormate",

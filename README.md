@@ -110,12 +110,11 @@ Docker Compose is the recommended way to run the local SeniorMate stack. It star
    - MinIO console: `http://localhost:9001`
    - PostgreSQL: `localhost:5432`
 
-Authentication is disabled by default for quick local development and automated
-tests. To exercise the full Keycloak login and role-based authorization flow,
-set `AUTH_ENABLED=true` and `VITE_AUTH_ENABLED=true` in `.env`, then start:
+Authentication and Keycloak are enabled by default. Start the complete local
+stack, including the imported development realm, with:
 
 ```bash
-docker compose --profile auth up --build
+docker compose up --build
 ```
 
 Keycloak runs at `http://localhost:8080`. SeniorMate uses Authorization Code
@@ -123,6 +122,10 @@ with PKCE in the frontend and validates signed access tokens, issuer, audience,
 and expiry in the backend. See
 [docs/setup/keycloak-local-setup.md](docs/setup/keycloak-local-setup.md) for
 the imported realm, local demo users, roles, and Swagger testing workflow.
+
+For a temporary unauthenticated development session, set both
+`AUTH_ENABLED=false` and `VITE_AUTH_ENABLED=false`. Automated backend tests
+continue to disable authentication explicitly.
 
 Administrators and managers can customize the app and organization names,
 logo, theme colors, banner text, and footer text from `Settings → Branding`.

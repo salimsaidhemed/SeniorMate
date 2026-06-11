@@ -142,19 +142,18 @@ Docker Compose uses named volumes for persistent local data:
 
 ## Keycloak
 
-Authentication is disabled by default so local development and tests do not
-depend on a live identity provider. To run the authenticated stack, set these
-values in `.env`:
+Authentication and Keycloak are enabled in the standard local stack. The safe
+placeholder values in `.env.example` are sufficient for local development:
 
 ```bash
 AUTH_ENABLED=true
 VITE_AUTH_ENABLED=true
 ```
 
-Then start all services with:
+Start all services with:
 
 ```bash
-docker compose --profile auth up --build
+docker compose up --build
 ```
 
 - Keycloak: `http://localhost:8080`
@@ -167,6 +166,9 @@ The imported realm and development accounts are described in
 [keycloak-local-setup.md](keycloak-local-setup.md). The credentials in that
 document are local placeholders and must never be reused outside development.
 
+To bypass login temporarily, set both auth flags to `false`. Keep the frontend
+and backend values aligned.
+
 ## Troubleshooting
 
 - If ports are already in use, adjust `BACKEND_PORT`, `FRONTEND_PORT`, `POSTGRES_PORT`, `MINIO_API_PORT`, or `MINIO_CONSOLE_PORT` in `.env`.
@@ -175,8 +177,8 @@ document are local placeholders and must never be reused outside development.
   persistent `frontend_node_modules` volume stays current after package changes.
   If dependencies still behave oddly, recreate the frontend container with
   `docker compose up -d --force-recreate frontend`.
-- If login cannot reach Keycloak, confirm the stack was started with
-  `--profile auth` and that both auth feature flags have the same value.
+- If login cannot reach Keycloak, confirm the `keycloak` container is running
+  and that both auth feature flags have the same value.
 - If an authenticated API request returns `401`, confirm the token issuer is
   `http://localhost:8080/realms/seniormate` and includes the
   `seniormate-api` audience.
