@@ -48,6 +48,12 @@ class NurseNote(db.Model):
     narrative = db.Column(db.Text, nullable=True)
     signature_data = db.Column(db.Text, nullable=True)
     signature_date = db.Column(db.Date, nullable=True)
+    is_demo_data = db.Column(
+        db.Boolean,
+        nullable=False,
+        default=False,
+        index=True,
+    )
     created_at = db.Column(
         db.DateTime(timezone=True),
         nullable=False,
@@ -98,6 +104,7 @@ class NurseNote(db.Model):
             "signature_date": self.signature_date.isoformat()
             if self.signature_date
             else None,
+            "is_demo_data": self.is_demo_data,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }

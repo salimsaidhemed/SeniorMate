@@ -1,3 +1,10 @@
+demo_marker_property = {
+    "type": "boolean",
+    "readOnly": True,
+    "description": "True only for records created by the guarded demo seeder.",
+    "example": False,
+}
+
 patient_properties = {
     "id": {"type": "integer", "example": 1},
     "first_name": {"type": "string", "example": "Maria"},
@@ -37,6 +44,7 @@ patient_properties = {
         "enum": ["active", "inactive"],
         "example": "active",
     },
+    "is_demo_data": demo_marker_property,
     "has_photo": {"type": "boolean", "example": True},
     "photo_verified": {"type": "boolean", "example": False},
     "photo_file_name": {
@@ -72,6 +80,7 @@ patient_request_properties = {
         "photo_verified",
         "photo_file_name",
         "photo_uploaded_at",
+        "is_demo_data",
         "created_at",
         "updated_at",
     }
@@ -113,6 +122,7 @@ visit_properties = {
         "enum": ["scheduled", "completed", "cancelled"],
         "example": "scheduled",
     },
+    "is_demo_data": demo_marker_property,
     "created_at": {
         "type": "string",
         "format": "date-time",
@@ -128,7 +138,7 @@ visit_properties = {
 visit_request_properties = {
     key: value
     for key, value in visit_properties.items()
-    if key not in {"id", "created_at", "updated_at"}
+    if key not in {"id", "is_demo_data", "created_at", "updated_at"}
 }
 
 checklist_schema = {
@@ -168,6 +178,7 @@ aide_note_properties = {
     },
     "time_in": {"type": "string", "nullable": True, "example": "09:00"},
     "time_out": {"type": "string", "nullable": True, "example": "10:30"},
+    "is_demo_data": demo_marker_property,
     "created_at": {
         "type": "string",
         "format": "date-time",
@@ -183,7 +194,7 @@ aide_note_properties = {
 aide_note_request_properties = {
     key: value
     for key, value in aide_note_properties.items()
-    if key not in {"id", "created_at", "updated_at"}
+    if key not in {"id", "is_demo_data", "created_at", "updated_at"}
 }
 
 clinical_section_schema = {
@@ -254,6 +265,7 @@ nurse_note_properties = {
         "nullable": True,
         "example": "2026-06-01",
     },
+    "is_demo_data": demo_marker_property,
     "created_at": {
         "type": "string",
         "format": "date-time",
@@ -269,7 +281,7 @@ nurse_note_properties = {
 nurse_note_request_properties = {
     key: value
     for key, value in nurse_note_properties.items()
-    if key not in {"id", "created_at", "updated_at"}
+    if key not in {"id", "is_demo_data", "created_at", "updated_at"}
 }
 
 assessment_findings_schema = {
@@ -316,6 +328,7 @@ patient_assessment_properties = {
         "enum": ["draft", "completed"],
         "example": "completed",
     },
+    "is_demo_data": demo_marker_property,
     "created_at": {
         "type": "string",
         "format": "date-time",
@@ -331,7 +344,7 @@ patient_assessment_properties = {
 patient_assessment_request_properties = {
     key: value
     for key, value in patient_assessment_properties.items()
-    if key not in {"id", "created_at", "updated_at"}
+    if key not in {"id", "is_demo_data", "created_at", "updated_at"}
 }
 
 dashboard_group_item_properties = {
@@ -429,6 +442,7 @@ medical_record_properties = {
         "format": "date-time",
         "example": "2026-06-09T10:00:00+00:00",
     },
+    "is_demo_data": demo_marker_property,
     "created_at": {
         "type": "string",
         "format": "date-time",

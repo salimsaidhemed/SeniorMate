@@ -27,6 +27,12 @@ class MedicalRecord(db.Model):
         nullable=False,
         default=lambda: datetime.now(UTC),
     )
+    is_demo_data = db.Column(
+        db.Boolean,
+        nullable=False,
+        default=False,
+        index=True,
+    )
     created_at = db.Column(
         db.DateTime(timezone=True),
         nullable=False,
@@ -57,6 +63,7 @@ class MedicalRecord(db.Model):
             "uploaded_at": self.uploaded_at.isoformat()
             if self.uploaded_at
             else None,
+            "is_demo_data": self.is_demo_data,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }

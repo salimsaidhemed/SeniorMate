@@ -23,6 +23,12 @@ class Patient(db.Model):
     emergency_contact_phone = db.Column(db.String(50), nullable=True)
     diagnosis_summary = db.Column(db.Text, nullable=True)
     status = db.Column(db.String(20), nullable=False, default="active")
+    is_demo_data = db.Column(
+        db.Boolean,
+        nullable=False,
+        default=False,
+        index=True,
+    )
     photo_object_key = db.Column(db.String(1024), nullable=True, unique=True)
     photo_file_name = db.Column(db.String(255), nullable=True)
     photo_mime_type = db.Column(db.String(100), nullable=True)
@@ -82,6 +88,7 @@ class Patient(db.Model):
             "emergency_contact_phone": self.emergency_contact_phone,
             "diagnosis_summary": self.diagnosis_summary,
             "status": self.status,
+            "is_demo_data": self.is_demo_data,
             "has_photo": bool(self.photo_object_key),
             "photo_verified": self.photo_verified,
             "photo_file_name": self.photo_file_name,
