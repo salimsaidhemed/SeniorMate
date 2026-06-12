@@ -1,0 +1,15 @@
+{
+  "name": "seniormate-website",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "mermaid": "11.12.0",
+    "vitepress": "1.6.4"
+  }
+}

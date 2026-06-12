@@ -12,6 +12,8 @@ organization branding, user administration, and operational reporting.
 
 **Release status:** Stable initial public release prepared for tag `v1.0.0`
 
+**Project website:** [salimsaidhemed.github.io/SeniorMate](https://salimsaidhemed.github.io/SeniorMate/)
+
 ## Features
 
 - Patient demographics, status, photos, contacts, and diagnosis summaries
@@ -211,6 +213,7 @@ See [Architecture Overview](docs/architecture/overview.md) and the
 
 The [documentation index](docs/index.md) is the central starting point:
 
+- [Public SeniorMate website](https://salimsaidhemed.github.io/SeniorMate/)
 - [SeniorMate 1.0.0 Release Notes](docs/releases/v1.0.0.md)
 - [User Guide](docs/index.md#user-guide)
 - [Administrator Guide](docs/index.md#administrator-guide)
