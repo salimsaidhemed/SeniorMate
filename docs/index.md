@@ -48,6 +48,7 @@ best matches what you need to do.
 
 ## Developer Learning Path
 
+- [Eight-Week Study Plan](learning/study-plan.md)
 - [SeniorMate Developer Guide](learning/seniormate-developer-guide.md)
 - [Flask Backend Guide](learning/flask-backend-guide.md)
 - [Vue Frontend Guide](learning/vue-frontend-guide.md)

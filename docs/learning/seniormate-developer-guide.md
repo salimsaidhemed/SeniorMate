@@ -280,12 +280,26 @@ When something fails:
 Use the detailed [Troubleshooting Guide](troubleshooting.md) for symptom-based
 diagnosis.
 
+## Technology Learning Index
+
+Every major technology guide follows the same questions: what it is, why
+SeniorMate uses it, where it lives, what to study, and what to experiment with.
+
+| Technology | Learning section |
+| --- | --- |
+| Flask, SQLAlchemy, Alembic, Flasgger | [Flask Backend Guide](flask-backend-guide.md) |
+| Vue, Vue Router, Vuetify, Vite | [Vue Frontend Guide](vue-frontend-guide.md) |
+| PostgreSQL and relational modeling | [Data Model Walkthrough](data-model-walkthrough.md) |
+| Docker, Compose, MinIO, Keycloak, GitHub Actions | [Platform Engineering Guide](platform-engineering-guide.md) |
+| REST/OpenAPI request behavior | [Request Flows](request-flows.md) and backend guide |
+
 ## Recommended Learning Path
 
-1. Follow the [Code Reading Roadmap](code-reading-roadmap.md).
-2. Read the backend and frontend guides side by side.
-3. Trace one workflow in [Request Flows](request-flows.md).
-4. Run the app and compare logs with the sequence diagram.
-5. Complete a small task in [Learning Exercises](exercises.md).
-6. Write down which boundary surprised you. That is usually the best next
+1. Use the [Eight-Week Study Plan](study-plan.md).
+2. Follow the [Code Reading Roadmap](code-reading-roadmap.md).
+3. Read the backend and frontend guides side by side.
+4. Trace one workflow in [Request Flows](request-flows.md).
+5. Run the app and compare logs with the sequence diagram.
+6. Complete a small task in [Learning Exercises](exercises.md).
+7. Write down which boundary surprised you. That is usually the best next
    topic to study.

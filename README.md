@@ -196,7 +196,10 @@ Maintainers and developers learning the codebase can start with the
 [SeniorMate Developer Learning Guide](docs/learning/seniormate-developer-guide.md).
 It connects the Flask backend, Vue frontend, PostgreSQL data model, Keycloak,
 MinIO, Docker Compose, testing, CI/CD, troubleshooting, request diagrams, and
-practical code exercises.
+practical code exercises. The
+[eight-week study plan](docs/learning/study-plan.md) provides a structured path
+from local containers and Flask basics through authentication, CI/CD, and
+production readiness.
 
 ## Architecture
 
