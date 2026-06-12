@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Added
 
 - Added a VitePress public website for SeniorMate v1.0.0 with product, screenshot, architecture, documentation, roadmap, and contact pages plus an automated GitHub Pages deployment workflow.
+- Added a developer learning path covering the SeniorMate backend, frontend, data model, request flows, platform engineering, troubleshooting, code-reading order, and practical maintenance exercises.
 
 ## [1.0.0] - 2026-06-12
 

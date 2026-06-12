@@ -190,6 +190,14 @@ Each report supports relevant filters and CSV export. See
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the full contribution process.
 
+## Developer Learning Path
+
+Maintainers and developers learning the codebase can start with the
+[SeniorMate Developer Learning Guide](docs/learning/seniormate-developer-guide.md).
+It connects the Flask backend, Vue frontend, PostgreSQL data model, Keycloak,
+MinIO, Docker Compose, testing, CI/CD, troubleshooting, request diagrams, and
+practical code exercises.
+
 ## Architecture
 
 ```mermaid
