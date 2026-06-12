@@ -2,6 +2,42 @@
 
 This guide explains the SeniorMate backend as it exists in v1.0.0.
 
+## What Is Flask?
+
+Flask is a lightweight Python web framework built around Werkzeug. It provides
+routing, request/response handling, application and request contexts,
+configuration, extension hooks, and a development CLI without imposing a
+large application architecture.
+
+SeniorMate uses Flask because its API is modular but still small enough to
+benefit from explicit wiring. The application can select SQLAlchemy,
+Flask-Migrate, Flasgger, PyJWT, and MinIO independently rather than adopting a
+larger all-in-one framework.
+
+Flask appears in:
+
+- `backend/app/__init__.py` for application creation and registration.
+- `backend/app/routes/` for blueprints and request handlers.
+- `backend/app/auth.py` for request hooks, `g`, and JSON auth errors.
+- `backend/run.py` for the development entry point.
+- `backend/tests/` through Flask's test client and application contexts.
+
+## Flask Request Lifecycle
+
+For a protected SeniorMate API request:
+
+1. The WSGI server passes the request to Flask.
+2. Flask creates application and request contexts.
+3. `protect_api_request` runs as a `before_request` callback.
+4. Flask matches the URL to a blueprint view.
+5. The view reads `request`, validates input, and performs domain work.
+6. The view returns data/status that Flask converts into a response.
+7. Flask tears down the request context and SQLAlchemy manages scoped-session
+   cleanup.
+
+Objects such as `request`, `current_app`, and `g` are context-local proxies.
+They look global in code but refer to the active request/application context.
+
 ## Application Factory
 
 [`backend/app/__init__.py`](../../backend/app/__init__.py) exposes
@@ -38,6 +74,16 @@ Important settings include:
 binds them to the current app. This avoids circular imports and makes test apps
 possible.
 
+This delayed initialization is also a dependency injection pattern:
+
+- The factory receives a configuration object.
+- Extensions are created once but bound to each app.
+- Tests replace MinIO and Keycloak clients through `app.extensions`.
+- Auth tests replace token decoding with `monkeypatch`.
+
+SeniorMate does not use a dependency injection container. It uses explicit
+factory parameters, extension registries, and test substitution.
+
 ## Blueprints and Routes
 
 Each module under `app/routes/` owns an API area. Blueprints either use a
@@ -62,6 +108,21 @@ POST /api/patients
   -> db.session.commit()
   -> patient.to_dict()
 ```
+
+## SeniorMate-to-Flask Map
+
+| SeniorMate concept | Flask concept |
+| --- | --- |
+| Patient API | Blueprint and view functions |
+| `/api/patients/<id>` | Variable URL rule |
+| `protect_api_request` | `before_request` middleware-style hook |
+| `login_required` / `roles_required` | View decorators |
+| `Config` / `TestConfig` | Configuration objects |
+| `db` and `migrate` | Delayed extension initialization |
+| Demo seed commands | Flask/Click CLI commands |
+| Swagger setup | Extension-based API documentation |
+| Pytest client | Flask test client |
+| `current_app`, `request`, `g` | Application/request context proxies |
 
 ## Models and SQLAlchemy
 
@@ -204,8 +265,27 @@ no permission is resolved.
 
 ## Swagger/OpenAPI
 
+REST is an architectural style for exposing resources through standard HTTP
+methods and status codes. OpenAPI is a machine-readable description of an HTTP
+API. Swagger is the surrounding tooling commonly used to display and interact
+with an OpenAPI specification.
+
+SeniorMate uses these concepts so frontend developers, testers, and API
+consumers can discover request fields, response shapes, authentication
+requirements, and errors without reading every route.
+
 Flasgger is initialized in the factory. Specifications are Python dictionaries
 in `app/swagger.py` and attached with `@swag_from`.
+
+| SeniorMate concept | API documentation concept |
+| --- | --- |
+| `/api/patients` | REST resource collection |
+| `GET`, `POST`, `PUT`, `DELETE` | HTTP methods |
+| `PatientCreate` | Reusable request schema |
+| `PatientResponse` | Reusable response schema |
+| Bearer security definition | OpenAPI security scheme |
+| `/api/docs` | Swagger UI |
+| `/api/openapi.json` | OpenAPI document |
 
 Development URLs:
 
@@ -214,6 +294,38 @@ Development URLs:
 
 When API behavior changes, confirm both the runtime parser and Swagger
 description remain aligned.
+
+### Why Flasgger instead of generated schemas?
+
+This is a comparison, not a record of a formal historical decision.
+
+Flasgger fits the current Flask routes because it can document existing view
+functions without requiring a route rewrite. Flask-Smorest could connect
+Marshmallow validation and OpenAPI more tightly, while FastAPI could generate
+schemas from type annotations and Pydantic models.
+
+Tradeoff: SeniorMate keeps its explicit route structure, but developers must
+update runtime validation and OpenAPI definitions together.
+
+### API Learning Resources
+
+**Beginner**
+
+- [MDN HTTP Overview](https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview)
+- [Swagger: What Is OpenAPI?](https://swagger.io/docs/specification/v3_0/about/)
+
+**Intermediate**
+
+- [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
+- [Flasgger Project](https://github.com/flasgger/flasgger)
+
+**Suggested experiments**
+
+1. Open `/api/openapi.json` and locate the patient create operation.
+2. Add an optional query parameter to a learning endpoint and document it.
+3. Compare a validation error from the running API with its documented error
+   schema.
+4. Use Swagger UI to send an authenticated request with a bearer token.
 
 ## Request-to-Response Walkthrough
 
@@ -255,3 +367,62 @@ cd backend
 
 Start with the test that matches the route module you changed, then run the
 full suite.
+
+## Understanding the Design
+
+### Why Flask instead of FastAPI?
+
+This is an architectural comparison, not a record of a formal historical
+decision.
+
+Flask fits SeniorMate because:
+
+- The project already uses explicit route-level validation and Flasgger.
+- The team can see each request step without framework-generated dependency
+  injection or schema behavior.
+- Flask's extension ecosystem matches SQLAlchemy, migrations, CORS, and CLI
+  needs.
+
+FastAPI would offer first-class type-driven validation, dependency injection,
+and generated OpenAPI. That could reduce duplicated runtime/OpenAPI schemas,
+but adopting it would require rewriting routes, authentication hooks, tests,
+and validation around Pydantic/ASGI conventions.
+
+Tradeoff: Flask keeps control and concepts visible, but SeniorMate must
+maintain validation and OpenAPI alignment manually.
+
+## Learning Resources
+
+### Beginner
+
+- [Official Flask Tutorial](https://flask.palletsprojects.com/en/stable/tutorial/)
+- [Flask Quickstart](https://flask.palletsprojects.com/en/stable/quickstart/)
+- [Miguel Grinberg Flask Mega-Tutorial](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world)
+
+### Intermediate
+
+- [Application Factories](https://flask.palletsprojects.com/en/stable/patterns/appfactories/)
+- [Application Structure and Lifecycle](https://flask.palletsprojects.com/en/stable/lifecycle/)
+- [Blueprints](https://flask.palletsprojects.com/en/stable/blueprints/)
+- [Testing Flask Applications](https://flask.palletsprojects.com/en/stable/testing/)
+- [SQLAlchemy 2.0 Documentation](https://docs.sqlalchemy.org/en/20/)
+- [Alembic Tutorial](https://alembic.sqlalchemy.org/en/latest/tutorial.html)
+
+### Official Documentation
+
+- [Flask Documentation](https://flask.palletsprojects.com/)
+- [Flask API Reference](https://flask.palletsprojects.com/en/stable/api/)
+- [Flask-SQLAlchemy](https://flask-sqlalchemy.palletsprojects.com/)
+- [Flask-Migrate](https://flask-migrate.readthedocs.io/)
+
+## Suggested Flask Experiments
+
+1. Add a public `/api/version` endpoint and test it.
+2. Add a small blueprint with one read-only route, then register it in the
+   factory.
+3. Add an `after_request` callback that sets a safe development-only response
+   header.
+4. Create two test apps with different configuration objects and compare
+   behavior.
+5. Replace fake storage in one test with a deliberately failing adapter and
+   trace the resulting API error.
