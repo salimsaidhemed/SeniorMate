@@ -46,6 +46,18 @@ best matches what you need to do.
 - [Deployment Guide](technical/deployment-guide.md)
 - [Demo Environment](technical/demo-environment.md)
 
+## Developer Learning Path
+
+- [SeniorMate Developer Guide](learning/seniormate-developer-guide.md)
+- [Flask Backend Guide](learning/flask-backend-guide.md)
+- [Vue Frontend Guide](learning/vue-frontend-guide.md)
+- [Platform Engineering Guide](learning/platform-engineering-guide.md)
+- [Data Model Walkthrough](learning/data-model-walkthrough.md)
+- [Request Flow Diagrams](learning/request-flows.md)
+- [Troubleshooting Guide](learning/troubleshooting.md)
+- [Code Reading Roadmap](learning/code-reading-roadmap.md)
+- [Practical Learning Exercises](learning/exercises.md)
+
 ## Architecture
 
 - [Architecture Overview](architecture/overview.md)
