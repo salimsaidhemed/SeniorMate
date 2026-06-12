@@ -21,16 +21,11 @@ may change as real deployments and user feedback clarify priorities.
 - Admin user management
 - Guarded fictional demo data
 - Comprehensive user, admin, technical, deployment, and architecture docs
+- Public VitePress project website deployed through GitHub Pages
 
 Release details: [SeniorMate 1.0.0](releases/v1.0.0.md).
 
 ## Upcoming
-
-### GitHub Pages Website
-
-- Public project overview
-- Documentation entry point
-- Release and demo information
 
 ### Audit Logging
 
